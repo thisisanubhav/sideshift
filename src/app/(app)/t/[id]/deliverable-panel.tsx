@@ -106,9 +106,9 @@ function CreatorSide({ threadId, latest }: { threadId: string; latest: Latest })
               name="file"
               type="file"
               accept="video/mp4,video/quicktime,video/webm,image/jpeg,image/png,image/webp"
-              className="type-small w-full cursor-pointer rounded-[4px] border border-hairline bg-graphite p-2 text-slate file:mr-3 file:cursor-pointer file:rounded-[4px] file:border-0 file:bg-graphite file:px-3 file:py-1.5 file:text-graphite"
+              className="type-small w-full cursor-pointer rounded-[4px] border border-hairline bg-card p-2 text-slate file:mr-3 file:cursor-pointer file:rounded-[4px] file:border-0 file:bg-graphite file:px-3 file:py-1.5 file:text-card"
             />
-            <p className="type-small text-slate">Up to 25MB.</p>
+            <p className="type-small text-slate">Up to <span className="type-timecode">25MB</span>.</p>
           </div>
 
           <Textarea

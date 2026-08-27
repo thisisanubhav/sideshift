@@ -49,7 +49,7 @@ export function CampaignCard({
           </div>
 
           <p className="type-small text-slate">
-            {c.video_count}× {PLATFORM_SHORT[c.platform]} ·{" "}
+            <span className="type-timecode">{c.video_count}</span>× {PLATFORM_SHORT[c.platform]} ·{" "}
             {duration(c.duration_min_seconds, c.duration_max_seconds)} · due{" "}
             {shortDate(c.deadline)}
             {days <= 10 ? (

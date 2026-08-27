@@ -42,9 +42,15 @@ export function SlotRail({
         ))}
       </div>
       <span className="type-small text-slate">
-        {left === 0
-          ? "All slots filled"
-          : `${left} of ${total} slot${total === 1 ? "" : "s"} left`}
+        {left === 0 ? (
+          "All slots filled"
+        ) : (
+          <>
+            <span className="type-timecode">{left}</span> of{" "}
+            <span className="type-timecode">{total}</span> slot
+            {total === 1 ? "" : "s"} left
+          </>
+        )}
       </span>
     </div>
   );
@@ -108,7 +114,8 @@ export function ResponsivenessBadge({
       {/* The denominator is not optional. A percentage without it is exactly the
           ambiguity this product exists to remove. */}
       <span className="text-slate">
-        · {r.answered} of {r.decidable}
+        · <span className="type-timecode">{r.answered}</span> of{" "}
+        <span className="type-timecode">{r.decidable}</span>
       </span>
     </span>
   );
@@ -145,7 +152,7 @@ export function VerticalCount({
             "block w-[13px] rounded-[4px] border",
             active
               ? "border-graphite bg-graphite/15"
-              : "border-hairline bg-bone",
+              : "border-slate/45 bg-bone",
           )}
           style={{ height: 23 }}
         />

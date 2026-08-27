@@ -119,7 +119,7 @@ export function SignUpForm() {
             minLength={8}
             autoComplete="new-password"
           />
-          <p className="type-small text-slate">At least 8 characters.</p>
+          <p className="type-small text-slate">At least <span className="type-timecode">8</span> characters.</p>
         </div>
       </div>
 

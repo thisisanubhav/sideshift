@@ -120,9 +120,9 @@ export default async function Home() {
               body="Escrowed, in review, released — one record, one set of timestamps, rendered by one component for the brand and the creator. Not two views kept in sync by hand."
               demo={
                 <div className="flex items-center gap-2">
-                  <Chip tone="outline">Escrowed</Chip>
+                  <Chip tone="neutral">Escrowed</Chip>
                   <span aria-hidden className="text-slate">→</span>
-                  <Chip tone="solid">Released</Chip>
+                  <Chip tone="clear">Released</Chip>
                 </div>
               }
             />

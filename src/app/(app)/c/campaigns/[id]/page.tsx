@@ -53,7 +53,7 @@ export default async function CampaignDetail({
             <div className="flex items-center gap-3">
               <VerticalCount count={campaign.video_count} />
               <span className="type-micro text-slate">
-                {campaign.video_count}× {PLATFORM_LABEL[campaign.platform]}
+                <span className="type-timecode">{campaign.video_count}</span>× {PLATFORM_LABEL[campaign.platform]}
               </span>
             </div>
             <h1 className="type-display-xl text-balance">{campaign.title}</h1>
@@ -62,9 +62,9 @@ export default async function CampaignDetail({
               <span className="text-slate">·</span>
               <span className="text-slate">{campaign.brand.name}</span>
               {campaign.niche ? (
-                <Chip tone="quiet">{campaign.niche}</Chip>
+                <Chip tone="neutral">{campaign.niche}</Chip>
               ) : null}
-              {closed ? <Chip tone="muted">Closed</Chip> : null}
+              {closed ? <Chip tone="over">Closed</Chip> : null}
             </div>
           </header>
 
@@ -175,10 +175,10 @@ function ApplicationState({
         <Chip
           tone={
             a.status === "accepted"
-              ? "solid"
+              ? "clear"
               : a.status === "pending"
-                ? "outline"
-                : "muted"
+                ? "neutral"
+                : "over"
           }
         >
           {APPLICATION_STATUS_LABEL[a.status]}

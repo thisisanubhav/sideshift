@@ -9,7 +9,8 @@ export function Wordmark({ className = "" }: { className?: string }) {
         aria-hidden
         className="flex h-5 w-[11.25px] items-end overflow-hidden rounded-[4px] bg-graphite"
       >
-        <span className="h-2 w-full bg-graphite" />
+        {/* the tally light in the mark: the only colour in the wordmark */}
+        <span className="h-2 w-full bg-tally-live" />
       </span>
       <span className="type-display-l !text-[18px] tracking-[-0.02em]">
         SideShift

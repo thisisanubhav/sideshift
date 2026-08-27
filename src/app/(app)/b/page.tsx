@@ -194,7 +194,7 @@ export default async function BrandDashboard() {
                         <span className="type-timecode text-[15px]">
                           {money(c.amount)}
                         </span>
-                        <Chip tone={c.payStatus === "released" ? "solid" : "outline"}>
+                        <Chip tone={c.payStatus === "released" ? "clear" : "neutral"}>
                           {PAYMENT_STATUS_LABEL[c.payStatus]}
                         </Chip>
                       </span>
@@ -242,7 +242,7 @@ export default async function BrandDashboard() {
                       <div className="flex min-w-0 flex-col gap-1">
                         <h3 className="type-title text-balance">{c.title}</h3>
                         <p className="type-small text-slate">
-                          {c.video_count}× {PLATFORM_SHORT[c.platform]} · due{" "}
+                          <span className="type-timecode">{c.video_count}</span>× {PLATFORM_SHORT[c.platform]} · due{" "}
                           {shortDate(c.deadline)}
                         </p>
                       </div>
@@ -254,10 +254,10 @@ export default async function BrandDashboard() {
                       <Chip
                         tone={
                           c.status === "open"
-                            ? "outline"
+                            ? "neutral"
                             : c.status === "draft"
-                              ? "dashed"
-                              : "muted"
+                              ? "draft"
+                              : "over"
                         }
                       >
                         {c.status === "open" ? "Live" : c.status === "draft" ? "Draft" : "Closed"}

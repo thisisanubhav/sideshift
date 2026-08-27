@@ -33,11 +33,11 @@ type Row = {
 };
 
 const CHIP_TONE = {
-  pending: "outline",
-  accepted: "solid",
-  declined: "muted",
-  expired: "muted",
-  withdrawn: "muted",
+  pending: "standby",
+  accepted: "clear",
+  declined: "over",
+  expired: "over",
+  withdrawn: "over",
 } as const;
 
 export default async function CreatorApplications() {
@@ -107,7 +107,7 @@ export default async function CreatorApplications() {
                       {c ? (
                         <>
                           {" "}
-                          · {c.video_count}× {PLATFORM_SHORT[c.platform]}
+                          · <span className="type-timecode">{c.video_count}</span>× {PLATFORM_SHORT[c.platform]}
                         </>
                       ) : null}
                       {" "}· applied {stamp(r.created_at)}

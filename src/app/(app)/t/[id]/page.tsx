@@ -58,7 +58,7 @@ export default async function ThreadPage({
         <Link href={backHref} className="type-small text-slate hover:text-graphite">
           ← Threads
         </Link>
-        <Chip tone={complete ? "solid" : "outline"}>
+        <Chip tone={complete ? "clear" : "neutral"}>
           {complete
             ? "Complete"
             : thread.status === "in_review"
@@ -124,7 +124,7 @@ export default async function ThreadPage({
             </summary>
             <div className="flex flex-col gap-3 border-t border-hairline p-4">
               <p className="type-small text-slate">
-                {thread.campaign.videoCount}× {PLATFORM_LABEL[thread.campaign.platform]}{" "}
+                <span className="type-timecode">{thread.campaign.videoCount}</span>× {PLATFORM_LABEL[thread.campaign.platform]}{" "}
                 · {duration(thread.campaign.durationMin, thread.campaign.durationMax)}{" "}
                 · due {shortDate(thread.campaign.deadline)}
               </p>
@@ -142,7 +142,7 @@ export default async function ThreadPage({
               here as the record.
             </p>
           ) : (
-            <div className="sticky bottom-0 -mx-4 border-t border-hairline bg-graphite/95 px-4 py-3 backdrop-blur sm:mx-0 sm:rounded-[4px] sm:border sm:px-3 sm:py-3">
+            <div className="sticky bottom-0 -mx-4 border-t border-hairline bg-bone/95 px-4 py-3 backdrop-blur sm:mx-0 sm:rounded-[4px] sm:border sm:bg-card sm:px-3 sm:py-3">
               <Composer
                 threadId={thread.id}
                 counterpartHandle={thread.counterpart.handle}

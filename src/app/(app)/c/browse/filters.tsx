@@ -78,7 +78,7 @@ export function Filters({
         <select
           name="sort"
           defaultValue={filters.sort}
-          className="h-9 w-full cursor-pointer rounded-[4px] border border-hairline bg-graphite px-2.5 text-[15px] text-graphite"
+          className="h-11 w-full cursor-pointer rounded-[4px] border border-hairline bg-card px-2.5 text-[15px] text-graphite"
         >
           {SORTS.map((s) => (
             <option key={s.value} value={s.value}>
@@ -104,7 +104,7 @@ export function Filters({
         <select
           name="min_budget"
           defaultValue={filters.minBudget ? String(filters.minBudget) : ""}
-          className="h-9 w-full cursor-pointer rounded-[4px] border border-hairline bg-graphite px-2.5 text-[15px] text-graphite"
+          className="h-11 w-full cursor-pointer rounded-[4px] border border-hairline bg-card px-2.5 text-[15px] text-graphite"
         >
           {BUDGETS.map((b) => (
             <option key={b.value} value={b.value}>
@@ -172,7 +172,7 @@ function Check({
         name={name}
         value={value}
         defaultChecked={defaultChecked}
-        className="mt-0.5 size-4 shrink-0 cursor-pointer appearance-none rounded-[4px] border border-hairline bg-graphite checked:border-graphite checked:bg-graphite"
+        className="mt-0.5 size-4 shrink-0 cursor-pointer appearance-none rounded-[4px] border border-hairline bg-card checked:border-graphite checked:bg-graphite"
       />
       <span className="flex flex-col">
         <span className="text-graphite">{label}</span>

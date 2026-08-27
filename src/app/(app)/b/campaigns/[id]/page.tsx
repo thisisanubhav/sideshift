@@ -109,7 +109,7 @@ export default async function BrandCampaignPage({
             <div className="flex items-center gap-3">
               <VerticalCount count={campaign.video_count} />
               <span className="type-micro text-slate">
-                {campaign.video_count}× {PLATFORM_LABEL[campaign.platform]} ·{" "}
+                <span className="type-timecode">{campaign.video_count}</span>× {PLATFORM_LABEL[campaign.platform]} ·{" "}
                 {duration(campaign.duration_min_seconds, campaign.duration_max_seconds)}
               </span>
             </div>
@@ -118,10 +118,10 @@ export default async function BrandCampaignPage({
           <Chip
             tone={
               campaign.status === "open"
-                ? "outline"
+                ? "neutral"
                 : campaign.status === "draft"
-                  ? "dashed"
-                  : "muted"
+                  ? "draft"
+                  : "over"
             }
           >
             {campaign.status === "open" ? "Live" : campaign.status === "draft" ? "Draft" : "Closed"}
@@ -164,7 +164,7 @@ export default async function BrandCampaignPage({
           </h2>
           {slotsLeft > 0 ? (
             <span className="type-small text-slate">
-              {slotsLeft} slot{slotsLeft === 1 ? "" : "s"} still open
+              <span className="type-timecode">{slotsLeft}</span> slot{slotsLeft === 1 ? "" : "s"} still open
             </span>
           ) : (
             <span className="type-small text-slate">All slots filled</span>

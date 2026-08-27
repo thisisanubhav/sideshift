@@ -33,7 +33,7 @@ export function ThreadList({ items }: { items: ThreadListItem[] }) {
             </div>
             <div className="flex shrink-0 items-center gap-3">
               <span className="type-timecode text-[18px]">{money(t.amount_cents)}</span>
-              <Chip tone={t.paymentStatus === "released" ? "solid" : "outline"}>
+              <Chip tone={t.paymentStatus === "released" ? "clear" : "neutral"}>
                 {PAYMENT_STATUS_LABEL[t.paymentStatus]}
               </Chip>
             </div>

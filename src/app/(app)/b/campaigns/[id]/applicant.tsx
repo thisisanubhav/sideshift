@@ -88,7 +88,7 @@ export function ApplicantCard({
           <span className="type-timecode text-[18px]">{money(a.rate_cents)}</span>
           <Chip
             tone={
-              a.status === "accepted" ? "solid" : a.status === "pending" ? "outline" : "muted"
+              a.status === "accepted" ? "clear" : a.status === "pending" ? "neutral" : "over"
             }
           >
             {APPLICATION_STATUS_LABEL[a.status]}
