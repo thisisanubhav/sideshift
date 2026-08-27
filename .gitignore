@@ -51,3 +51,7 @@ research/screenshots/
 
 # impeccable tool state, not part of the submission
 .impeccable/
+
+# Supabase CLI scratch — version cache and linked-project state.
+# Never committed: this directory holds the project ref and access tokens.
+supabase/.temp/
