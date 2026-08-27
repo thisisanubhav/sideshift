@@ -1,352 +1,208 @@
 # SideShift
 
-A rebuild of [sideshift.app](https://sideshift.app) — a marketplace where brands post
-paid short-form video briefs and creators apply, deliver and get paid, with the
-brief, the chat, the approval and the money in **one thread per creator**.
+SideShift is a focused marketplace for paid short-form video work. Brands publish
+campaigns. Creators apply with a pitch and rate. Once a creator is accepted, the
+brief, conversation, deliverable, approval, and payment state live in one shared
+thread.
 
-**Live:** https://sideshift-seven.vercel.app
+> The product idea is simple: make the next state impossible to misunderstand.
 
-## Sign in and look around
+**Live demo:** [sideshift-seven.vercel.app](https://sideshift-seven.vercel.app)
 
-Every seeded account uses the password `sideshift2026`.
+## Why it exists
 
-| Account | What it shows |
-|---|---|
-| `maya.builds@sideshift.demo` | Creator. Has an open thread with money escrowed, plus a declined application with its reason. |
-| `northbound@sideshift.demo` | Brand with a queue. Three applicants waiting — **one with about 40 minutes left on the clock**. Also the brand with too little history to claim a rate, so its cards read *"New brand · no response history"*. |
-| `gritathletic@sideshift.demo` | Brand with a bad record. Four applications left to expire, and the public rate says so — 43%, `3 of 7`, on every card it posts. |
-| `sunlit@sideshift.demo` | Brand on the other end of Maya's thread. Open it in a second browser to watch payment release live. |
+Creator marketplaces usually make three expensive things ambiguous:
 
-> **The countdowns are real clocks.** When I submitted this there were three live
-> response windows: 41 minutes, 9 hours and 44 hours. If you are reading this a
-> few days later, some will have genuinely expired — which is the product working,
-> and worth seeing once. `supabase/demo-reset.sql` puts three fresh windows back
-> and reopens the walkthrough thread.
+- whether a brand will answer an application;
+- why an application was declined;
+- whether a deliverable has actually been paid.
 
-Two further accounts, `@ambitious_coder` and `@hollowbrook`, were created by hand
-through the signup form during the build. Their logins worked and their screens
-were completely empty, which is the one state a demo cannot afford, so
-`supabase/seed-demo-accounts.sql` gives them campaigns, applications, threads and
-payments like everyone else. Their passwords are not in this repo; the seeded
-accounts above are the ones to sign in with.
+SideShift makes each state explicit. Applications have a 48-hour response window,
+declines require a reason, and both participants read the same payment record and
+timestamps from the same thread.
 
-## The five-minute path
+## Walk through the demo
 
-1. Sign in as `northbound`. The dashboard leads with **how many applications are
-   about to expire on you** and a countdown to the next one.
-2. Open the Pour-over campaign. Accept one applicant — the slot decrements, a
-   thread opens, and the money escrows in one transaction. Decline the other; you
-   cannot send it without picking a reason.
-3. Sign in as that creator in another browser. The decline reason is on their
-   applications page. No silence.
-4. Open `maya.builds` and `sunlit` side by side on the same thread. Submit a
-   deliverable as the creator, approve it as the brand, and watch **Released**
-   appear on the creator's screen without a refresh.
-5. Go back to `/c/browse`. The responsiveness rate on the card has moved to
-   reflect what you just did.
+All seeded accounts use the password `sideshift2026`.
 
----
+| Account | Role | Useful starting point |
+| --- | --- | --- |
+| `maya.builds@sideshift.demo` | Creator | An active thread, escrowed payment, and a declined application with its reason |
+| `northbound@sideshift.demo` | Brand | Applicants waiting in a live response queue |
+| `gritathletic@sideshift.demo` | Brand | Public responsiveness history that reflects missed windows |
+| `sunlit@sideshift.demo` | Brand | The brand side of Maya's walkthrough thread |
 
-## The three things I changed, and why
+### The five-minute path
 
-Public reviews of the real product cluster around three complaints: brands never
-reply, creators get dropped with no explanation, and nobody knows where the money
-is. They are one bug wearing three hats — **the platform lets state go ambiguous**.
-So the fixes are structural, not cosmetic.
+1. Sign in as `northbound` and open the applicants queue. The dashboard puts the
+   cost of an unanswered application first, including the next expiry countdown.
+2. Accept one applicant. The slot is consumed, a thread opens, and funds move to
+   escrow in the same database transaction.
+3. Decline another applicant. A reason is required and is shown verbatim to the
+   creator.
+4. Open `maya.builds` and `sunlit` in separate browser windows. Submit a
+   deliverable as the creator, then approve it as the brand.
+5. Return to the creator view and watch the payment move to **Released**. Revisit
+   `/c/browse` to see the brand's responsiveness rate update.
 
-### 1. Applications expire, and the brand pays for that publicly
+The countdowns are real. If a window has expired, that is the intended behavior:
+the application becomes expired, its slot is freed, and the brand's public rate
+reflects the missed response. Run `supabase/demo-reset.sql` to restore the seeded
+walkthrough state.
 
-Every application carries `expires_at`, set to 48 hours by a database trigger. The
-creator sees a live countdown in timecode. If the brand does nothing, the
-application expires on its own and the slot frees.
+## Product behavior
 
-The part that gives it teeth: the brand's own dashboard **leads** with
-*"2 applications expire on you in under 12 hours"* and the timecode to the next
-one. Ignoring people is no longer free or invisible.
+### Response windows
 
-Expiry is computed lazily — `expire_stale_applications()` runs on the reads that
-care — rather than standing up pg_cron. Identical observable behaviour, no
-infrastructure. The trade-off: an application that lapses while nobody is looking
-flips the moment someone looks.
+Every application receives a 48-hour `expires_at` timestamp. Expiry is evaluated
+lazily by `expire_stale_applications()` on reads that need current state. This keeps
+the behavior deterministic without a scheduler or background worker.
 
-### 2. A decline without a reason is impossible
+### Reasons are enforced in the database
 
-Not "the form requires it". The database refuses to store it:
+A decline cannot be stored without a reason. The brand chooses from a fixed set and
+may add a note. This is enforced by a Postgres constraint and transition function,
+not only by client-side validation.
 
-```sql
-constraint decline_needs_reason check (
-  (status = 'declined') = (decline_reason is not null)
-)
-```
+### One shared thread
 
-The brand picks from a fixed list and can add a note. The creator reads both,
-verbatim, on their applications page and on the campaign. There is no code path,
-client or otherwise, that produces a silent rejection.
+The `/t/[id]` route serves both roles. Messages, state changes, deliverables, and
+money events appear on one chronological Spine. `PaymentRail` is shared by both
+roles, so escrow, review, release, and timestamps cannot drift between views.
 
-### 3. One money object, one timeline, one component
+### Responsiveness is public
 
-`PaymentRail` is a single file imported by **both** roles, rendering one `payments`
-row. There is no brand variant and no creator variant, so "both sides see the same
-state and the same timestamp" is structural rather than a promise to keep in sync.
-Escrowed → in review → released, each with its own timestamp column, each written
-by the transition that caused it.
+Campaign cards show the share of applications a brand answered inside the window,
+along with the denominator. Brands with fewer than three decidable applications are
+shown as **New brand · no response history**, rather than being assigned a
+misleading percentage.
 
-`tests/thread.mjs` asserts that both rendered pages contain a byte-identical set
-of timestamps.
+Payments and view counts are demo state. No money moves and view counts are seeded;
+the UI labels seeded view counts wherever they appear.
 
-### The wedge: brand responsiveness on the public card
+## Design direction
 
-Computed from real applications in the database — what share this brand answered
-inside the window — and shown on every campaign card before a creator spends an
-hour writing a pitch. No competitor shows it, and it is what makes fix #1 bite.
+The interface borrows from a video control room: quiet plum-black surfaces, clear
+timecodes, vertical 9:16 markers, and two semantic accents.
 
-Two deliberate choices:
+| Token | Value | Meaning |
+| --- | --- | --- |
+| Pitch | `#17131C` | App background |
+| Raise | `#221C29` | Elevated surface |
+| Bone | `#EFEAF2` | Primary text and money |
+| Ash | `#8B84A0` | Supporting text |
+| Flare | `#FF5A3D` | Time and urgency only |
+| Iris | `#7C6BFF` | Identity and selection only |
 
-- **The percentage never appears without its denominator.** `41% answered in time ·
-  7 of 17`. A naked percentage on a sample of one is exactly the ambiguity this app
-  exists to remove.
-- **Below three decidable applications it makes no claim at all** — it says
-  *"New brand · no response history"*. Inventing 100% from n=1 would be a lie, and
-  0% would be worse.
-
-**"Replies fast only" is a real filter.**
-
----
-
-## What I cut and why
-
-| Cut | Why |
-|---|---|
-| Brand-side creator discovery and search | Out of scope in the brief. The application flow is the product; browse-and-recruit is a second marketplace. |
-| Bootcamp / training | Out of scope. In the real product it is a large paywalled content library, unrelated to the transaction. |
-| Leaderboards, tiers, streaks | Out of scope. The real product gamifies the creator side; it does nothing for state clarity. |
-| Real payment processing | Out of scope. Payment is display-state only. The state machine is real; no money moves. |
-| Real social analytics ingestion | Out of scope. View counts are seeded and **labelled "demo data"** everywhere they appear. |
-| Notifications | Out of scope. The countdown and the dashboard banner do the same job in-app. |
-| Admin panel, team seats | Out of scope. Single-user accounts on both sides. |
-| Messaging outside a campaign thread | Out of scope, and against the thesis. A separate inbox is the failure mode being fixed. |
-| **View-based payout bonuses** | Mentioned in the brief's product description but absent from its scope list. I treated it as cut rather than half-build it. Seeded view counts stay display-only. |
-| **A theme toggle** | One deliberate light theme — bone paper, white cards, tally colour as the only saturation. Two themes means every tally colour needs a second contrast proof, and the tally colours are the whole design. |
-| **Editing a published campaign** | You can publish a draft, but not revise a live brief. Doing it properly means versioning briefs that creators have already applied to, and doing it improperly is worse than not having it. |
-| **Creator profile editing** | Profiles are seeded and rendered but not editable in-app. Reading them is what the brand flow needs; editing them is a settings screen with no bearing on the thesis. |
-| **pg_cron for expiry** | Replaced with lazy expiry. Same behaviour, 45 minutes of setup saved. |
-| **shadcn/ui** | Installed nothing. Every primitive here is hand-built, because each one was going to be fully restyled anyway and the defaults are the look I was asked to avoid. Deviation from the brief's stack, stated here rather than hidden. |
-
----
-
-## Design
-
-**Video control room.** The vocabulary of a broadcast switcher, where a tally
-light tells the room what is live right now. Statuses are tally states, numbers
-are timecodes, and the interface stays quiet so the tally colours carry all the
-signal. That suits a product whose whole argument is that state is never
-ambiguous: the design makes state the most legible thing on every screen.
-
-| Token | Hex | Role |
-|---|---|---|
-| bone | `#E9E7E1` | page background |
-| card | `#FFFFFF` | surfaces |
-| graphite | `#16191C` | primary text, headers, primary buttons |
-| slate | `#6B7178` | secondary text, labels |
-| tally-live | `#FF4D2E` | active, in production, urgent |
-| tally-standby | `#E0A62B` | pending, awaiting response |
-| tally-clear | `#3F9E77` | approved, released, done |
-| hairline | `#D3D0C8` | borders |
-
-**Tally colours appear only on status indicators, countdowns, and one primary
-action per screen** — never as decorative fill, gradient or background. The
-stock Tailwind ramps are cleared to `initial` in `@theme`, so `bg-gray-800` and
-friends do not resolve at all and a stray one is a visible bug rather than
-silent drift.
-
-**Type:** Bricolage Grotesque for display (page titles and section headings
-only), Public Sans for body and labels, and **JetBrains Mono for every number in
-the app** — money, view counts, countdowns, dates, rates, slot counts, response
-rates, including numbers inside sentences. Scale 48 / 32 / 24 / 18 / 15 / 13 /
-11; body 15; labels 11 uppercase with wide tracking.
-
-**Geometry:** 4px radius everywhere, `rounded-full` only on avatars, 1px
-hairline borders, no drop shadows anywhere.
-
-**Signature element — the tally strip.** A 4px bar down the left edge of every
-card representing a relationship: an application, a thread, a campaign slot. For
-an application inside its response window the bar *is* the window — it drains
-from full to empty across the 48 hours, computed from the real `expires_at` and
-recomputed each second rather than animated on a loop, and switches from
-standby to live under six hours. Under `prefers-reduced-motion` it sits at its
-correct static fill. Everything around it stays quiet.
-
-**Colour has to earn its place.** The rule is easy to state and easy to break: a
-tally colour may only appear where it is reporting real state. It broke twice on
-the browse card, and both are worth reading because they look like design and are
-actually information bugs.
-
-The strip on every campaign card was amber, lit by "this campaign has slots
-left" — which every open campaign has. Fifteen cards, one colour, no signal: the
-loudest element on the card was decoration wearing a status colour. It now lights
-only for the two things a creator can act on, the last slot or a deadline inside
-24 hours, and is grey the rest of the time. Two cards red, thirteen grey.
-
-The delivery deadline turned red at ten days out, which spends the alarm colour
-on nothing and leaves none for a deadline that is genuinely close. Red is now
-under 2 days, amber under 5, grey above.
-
-The same rule caught the slot rail contradicting its own caption — a solid dot
-meant a slot *taken*, printed beside the words "4 of 5 slots left". Solid now
-means a slot still open, so the rail drains as the campaign fills, in the same
-direction and with the same meaning as the countdown strip above it.
-
-Responsive to 390px, visible keyboard focus, `prefers-reduced-motion` respected,
-CLS 0 on every screen.
+Archivo Expanded is reserved for display type, Instrument Sans carries interface
+copy, and JetBrains Mono handles money, counts, countdowns, and timestamps. The
+system uses one-pixel borders, restrained radii, visible keyboard focus, tabular
+figures, and reduced-motion fallbacks. Color never carries status by itself.
 
 ## Stack
 
-Next.js 16 (App Router) · TypeScript · Tailwind v4 · Supabase (Postgres, Auth,
-Storage) · Vercel.
+- Next.js 16 App Router
+- React 19 and TypeScript
+- Tailwind CSS v4
+- Supabase Auth, Postgres, Realtime, and private Storage
+- Vercel deployment
 
-### Architecture worth knowing
+The application uses Server Components by default. Mutations use Server Actions or
+`SECURITY DEFINER` Postgres transition functions. Status columns intentionally have
+no direct update policy, so a client cannot promote its own application or payment
+through a raw API request.
 
-**Status columns are unwritable through the API.** There is deliberately no
-`UPDATE` policy on `applications`, `deliverables` or `payments`. Every state
-transition is a `SECURITY DEFINER` Postgres function that authorises the caller
-itself — `accept_application` consumes a slot, opens the thread and escrows in one
-transaction. A creator holding a raw API token cannot promote their own
-application, and `tests/rls.mjs` proves it.
-
-**One route for the thread**, `/t/[id]`, for both roles. Two routes would make
-identical state a thing to keep in sync by hand.
-
-**Realtime on two tables only** — `messages` and `payments` — because those are the
-two the demo needs to move without a refresh. It calls `router.refresh()` rather
-than patching client state, so the spine has one rendering path.
-
----
-
-## Local setup
+## Local development
 
 ```bash
 git clone https://github.com/thisisanubhav/sideshift
 cd sideshift
 npm install
-cp .env.example .env.local     # fill in from your Supabase project
+cp .env.example .env.local
 npm run dev
 ```
 
-`.env.local` needs:
+Set these values in `.env.local`:
 
+```env
+NEXT_PUBLIC_SUPABASE_URL=https://<project-ref>.supabase.co
+NEXT_PUBLIC_SUPABASE_ANON_KEY=sb_publishable_...
 ```
-NEXT_PUBLIC_SUPABASE_URL=https://<ref>.supabase.co
-NEXT_PUBLIC_SUPABASE_ANON_KEY=<publishable key>
-```
 
-### Database
+Open [http://localhost:3000](http://localhost:3000).
 
-Migrations are in `supabase/migrations/` and apply in filename order:
+### Database setup
 
-| File | What |
-|---|---|
-| `0001_schema.sql` | Tables, enums, constraints, the 48h window trigger, signup trigger |
-| `0002_rls.sql` | Row-level security, helper functions, the private storage bucket |
-| `0003_transitions.sql` | State-transition functions, lazy expiry, the responsiveness view |
-| `0004_fix_null_authority_check.sql` | Privilege-escalation fix (see below) |
-| `0005_auto_confirm_signups.sql` | Demo-mode signup with no email round-trip |
-| `0006_public_marketplace_stats.sql` | `marketplace_stats()` — the landing figures, computed, readable without a session |
-| `0007_oauth_role_claim.sql` | Google sign-in. **Reverted by `0009`** |
-| `0008_unique_handle_for_oauth_signups.sql` | Handle de-duplication for OAuth. **Reverted by `0009`** |
-| `0009_remove_google_signin.sql` | Reverses `0007` and `0008` forward |
-| `0010_marketplace_stats_denominator.sql` | Adds `decidable_total`, so a 0% built from nothing can be told apart from a real 0% |
-
-`0007` and `0008` stay in the tree rather than being deleted. They were applied to
-the live database and are in its migration history, so removing the files would
-leave the repo describing a schema that never existed. `0009` reverses them
-forward, which is the only honest direction.
-
-Then `supabase/seed.sql` for the demo marketplace, and
-`supabase/seed-demo-accounts.sql`, which fills in two accounts that were created
-by hand through the signup form during the build — they had working logins and
-completely empty screens, which is the one thing a demo cannot have. Together:
-**10 brands, 24 creators, 15 open campaigns, 60 applications** with real history.
-
-**No manual dashboard steps.** Everything, including auth behaviour, is in the
-migrations.
-
-That last migration is worth explaining. Supabase ships with "Confirm email" on,
-which means signup returns a user but no session — and the two-browser
-walkthrough stalls on a link nobody clicks during a demo. The usual fix is a
-dashboard toggle, which is invisible to anyone cloning the repo and depends on
-who is logged in. Instead:
-
-> GoTrue decides whether to *issue a session at signup* from its own config, but
-> it decides whether to *permit a sign-in* by reading `email_confirmed_at` off the
-> row. A `BEFORE INSERT` trigger stamps that column, and the signup action signs
-> the user straight in.
-
-Same outcome as the toggle, reproducible from `git clone`, and visible in the
-repo rather than in someone's dashboard.
-
-**It is a demo-mode trade-off and it does mean email addresses are never
-verified.** A production deployment drops `0005` and leaves confirmation on.
-`tests/signup.mjs` proves the flow works end to end.
-
-### Tests
+Apply the SQL files in `supabase/migrations/` in filename order, then load the demo
+data from `supabase/seed.sql`. If you need the additional accounts created during
+the walkthrough, also run `supabase/seed-demo-accounts.sql`:
 
 ```bash
-npm run test:improvements  # 22 checks: the four product changes, visible on a rendered page
-npm run test:rls      # 9 row-level-security proofs, straight at PostgREST
-npm run test:signup   # 11 checks: fresh signup on both sides, no email round-trip
-npm run test:smoke    # 19 end-to-end checks against the live deploy
-npm run test:thread   # 26 checks driving the full thread lifecycle
+# From the Supabase dashboard SQL editor or the Supabase CLI
+supabase db push
+
+# Apply migrations and the default seed file
+supabase db reset
+
+# Optional: add the extra walkthrough accounts
+# supabase db query < supabase/seed-demo-accounts.sql
 ```
 
-These hit the real database with real user JWTs rather than mocking. `test:rls`
-is the one that matters: it makes the requests a hostile client would make,
-because hiding a button is not access control.
+The migration history includes the schema, RLS policies, transition functions,
+signup auto-confirmation for demo mode, public marketplace stats, and the final
+responsiveness denominator fix. Migrations `0007` and `0008` are retained because
+they were applied historically; `0009` reverses their Google sign-in behavior
+forward.
 
-**They mutate demo data.** `test:thread` drives the walkthrough thread all the
-way to approved-and-paid, and `test:improvements` needs a live response window
-to look at. Run `supabase/demo-reset.sql` before a run, or between runs, to put
-the marketplace back. There is also `tests/render.mjs` — a real-Chromium audit at
-390px and 1280px for sideways scroll and hydration errors — kept out of
-`package.json` because it needs a browser the others don't.
+For a production deployment, remove the demo auto-confirmation migration and keep
+email verification enabled.
 
----
+## Verification
 
-## Four bugs worth reading
+```bash
+npm run lint
+npx tsc --noEmit
+npm run test:rls
+npm run test:signup
+npm run test:smoke
+npm run test:thread
+npm run test:improvements
+```
 
-**A creator could approve their own deliverable and release their own payment.**
-The guard was `if v_owner is null or v_owner <> v_brand_id then raise`. For a
-creator, `v_brand_id` is NULL, `v_owner <> NULL` is NULL rather than true, so the
-OR is NULL and the branch never fires. Fixed in `0004` with an explicit null check
-and `is distinct from`. Caught only because `tests/thread.mjs` calls the RPC
-directly with a creator's JWT — the UI never offered the action, so clicking around
-would never have found it.
+The integration suites use real Supabase JWTs and exercise the state machine rather
+than mocking it. `test:thread` and `test:improvements` mutate demo data, so reset
+the database between runs:
 
-**Every seeded sign-in failed with "Database error querying schema."** Hand-inserting
-into `auth.users` left eight token columns NULL; GoTrue scans those into
-non-nullable Go strings and dies before checking the password. Fixed in
-`supabase/seed.sql`.
+```bash
+supabase db reset
+# or run supabase/demo-reset.sql in the SQL editor
+```
 
-**Every escrowed amount rendered as `$0`.** `payments.thread_id` carries a UNIQUE
-constraint, so PostgREST embeds the row as an **object**, not an array. The type
-said array, `t.payments?.[0]` was `undefined`, and the fallback printed `$0` — on
-the one number this whole product is about. TypeScript was no help: the type was
-hand-written, so it was confidently wrong rather than unknown.
+For visual checks, `tests/render.mjs` uses Chromium at 390px and 1280px to check
+sideways scrolling, hydration errors, and primary-action placement. It is kept out
+of `package.json` because it requires Playwright and a local Chromium install.
 
-**The landing stats bar rendered four empty boxes.** It looked like missing data
-and was not: `15`, `23`, `$6,630` and `75%` were all in the shipped HTML. The box
-was `bg-graphite` and the value had no colour of its own, so it inherited
-`text-graphite` from `body`. Black text on a black box. The labels survived only
-because they carried their own colour.
+## Project map
 
-Those last two are the argument for a habit rather than a fix: **nothing here was
-called done because it compiled.** Every screen was screenshotted and looked at.
-Neither bug throws, fails a type check, or fails a test that asserts on the DOM —
-`$0` is a valid string and black-on-black is valid CSS. Both are invisible to
-everything except an eye. `NOTES-BUGS.md` carries the full log.
+```text
+src/app/                 Routes, layouts, server actions, and page UI
+src/components/          Shared controls, navigation, rails, and thread UI
+src/lib/                 Auth, Supabase clients, queries, formatting, and types
+supabase/migrations/     Schema, RLS, state transitions, and database views
+supabase/seed.sql        Seed marketplace data
+tests/                   RLS, signup, smoke, thread, improvement, and render checks
+research/                Product and visual research notes
+```
 
-## Agent logs
+## Scope boundaries
 
-`.agent-logs/` holds the automatically captured prompt-and-response record plus a
-hand-written decision log per phase. `CAPTURE-TEST.md` documents the capture setup,
-including the fact that it was installed partway through the build rather than
-before it, and what that means for coverage.
+SideShift intentionally does not include creator discovery for brands, notifications,
+team seats, leaderboards, training content, analytics ingestion, real payment
+processing, view-based bonuses, editing published campaigns, or in-app profile
+editing. Those omissions keep the prototype centered on its core promise: one
+shared record, with no ambiguous next step.
+
+## License
+
+This is a take-home rebuild for demonstration and evaluation. No production payment
+processing or real creator analytics are connected.
