@@ -23,6 +23,15 @@ export type Applicant = {
   responded_at: string | null;
   decline_reason: DeclineReason | null;
   decline_note: string | null;
+  /**
+   * Milliseconds left in the response window, computed ONCE on the server.
+   *
+   * This card is a client component, so calling Date.now() in its render would
+   * evaluate on the server and again during hydration, seconds apart, and React
+   * would report a text mismatch on the countdown. The server owns the clock;
+   * the component only ticks it forward.
+   */
+  windowMs: number;
   creator: {
     handle: string;
     display_name: string;
@@ -97,10 +106,7 @@ export function ApplicantCard({
       <div className="flex flex-col gap-3 border-t border-line pt-3">
         {a.status === "pending" ? (
           <>
-            <Countdown
-              expiresAt={a.expires_at}
-              initialMs={new Date(a.expires_at).getTime() - Date.now()}
-            />
+            <Countdown expiresAt={a.expires_at} initialMs={a.windowMs} />
 
             <FormError>{accept.error || decline.error}</FormError>
 

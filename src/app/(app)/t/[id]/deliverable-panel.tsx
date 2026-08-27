@@ -55,7 +55,10 @@ function CreatorSide({ threadId, latest }: { threadId: string; latest: Latest })
     submitDeliverable,
     {},
   );
-  const [open, setOpen] = useState(!latest);
+  // Collapsed until asked for. Expanded by default it cost ~450px above the
+  // fold on a 390px screen, pushing the brief and the whole conversation off
+  // the first screenful for a form the creator only needs once per cut.
+  const [open, setOpen] = useState(false);
 
   const awaiting = latest?.status === "submitted";
 

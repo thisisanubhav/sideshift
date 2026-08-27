@@ -38,8 +38,8 @@ export default async function ApplicantQueue() {
       <div className="flex flex-col gap-2">
         <h1 className="type-display-xl">Waiting on you</h1>
         <p className="text-ash">
-          Sorted by how soon the window closes. Anything you let lapse expires on
-          its own and shows up in your public response rate.
+          Sorted by how soon the window closes. Anything you let lapse expires
+          on its own and shows up in your public response rate.
         </p>
       </div>
 
@@ -57,12 +57,19 @@ export default async function ApplicantQueue() {
         <div className="flex flex-col gap-5">
           {rows.map((a) => {
             const camp = a.campaigns as unknown as {
-              id: string; title: string; slots_total: number; slots_filled: number;
+              id: string;
+              title: string;
+              slots_total: number;
+              slots_filled: number;
             };
             const cr = a.creators as unknown as {
-              niche: string | null; city: string | null; follower_count: number;
-              avg_views: number; platforms: Applicant["creator"]["platforms"];
-              bio: string | null; profiles: { handle: string; display_name: string };
+              niche: string | null;
+              city: string | null;
+              follower_count: number;
+              avg_views: number;
+              platforms: Applicant["creator"]["platforms"];
+              bio: string | null;
+              profiles: { handle: string; display_name: string };
             };
 
             const applicant: Applicant = {
@@ -75,6 +82,7 @@ export default async function ApplicantQueue() {
               responded_at: a.responded_at,
               decline_reason: a.decline_reason,
               decline_note: a.decline_note,
+              windowMs: new Date(a.expires_at).getTime() - Date.now(),
               thread_id: null,
               creator: {
                 handle: cr.profiles.handle,

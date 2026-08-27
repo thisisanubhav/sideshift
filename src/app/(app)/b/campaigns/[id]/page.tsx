@@ -78,6 +78,7 @@ export default async function BrandCampaignPage({
       responded_at: a.responded_at,
       decline_reason: a.decline_reason,
       decline_note: a.decline_note,
+      windowMs: new Date(a.expires_at).getTime() - Date.now(),
       thread_id: threadFor.get(a.id) ?? null,
       creator: {
         handle: cr.profiles.handle,

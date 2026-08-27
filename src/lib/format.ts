@@ -41,7 +41,15 @@ export function timecode(ms: number) {
   return `${pad(h)}:${pad(m)}:${pad(s)}`;
 }
 
-/** Absolute, unambiguous, and identical for both sides of a thread. */
+/**
+ * Absolute, unambiguous, and identical for both sides of a thread.
+ *
+ * Pinned to UTC deliberately. Without it the server formats in the deploy's
+ * timezone and the browser formats in the viewer's, which (a) hydrates with a
+ * mismatch inside client components and (b) means a brand in London and a
+ * creator in São Paulo quote different times at each other for the same event.
+ * One clock, named.
+ */
 export function stamp(iso: string) {
   return new Date(iso).toLocaleString("en-GB", {
     day: "2-digit",
@@ -49,7 +57,8 @@ export function stamp(iso: string) {
     hour: "2-digit",
     minute: "2-digit",
     hour12: false,
-  });
+    timeZone: "UTC",
+  }) + " UTC";
 }
 
 /**

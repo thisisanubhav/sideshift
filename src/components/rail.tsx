@@ -123,11 +123,14 @@ export function VerticalCount({
         <span
           key={i}
           aria-hidden
+          // Raised off the card rather than sunk into it. At border-line-strong
+          // on bg-raise these were invisible on a real screen — the one piece of
+          // texture that says "vertical video" was doing no work at all.
           className={cn(
             "block w-[13px] rounded-[2px] border",
             active
-              ? "border-iris/60 bg-iris/25"
-              : "border-line-strong bg-raise-2",
+              ? "border-iris/70 bg-iris/30"
+              : "border-bone/30 bg-bone/[0.10]",
           )}
           style={{ height: 23 }}
         />
