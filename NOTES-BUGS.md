@@ -7,11 +7,10 @@ reproduced and root-caused, not guessed at.
 
 ## 1. Every thread row and roster row shows `$0` instead of the escrowed amount
 
-> **⚠️ VISIBLE ON THE RESTYLE PREVIEW.** This is the first thing a reviewer will
-> notice on `/b` and both thread lists. The brand dashboard roster currently
-> reads `@rowanlifts · Approved · $0 ESCROWED`, which contradicts itself on the
-> same row. Left unfixed deliberately: the restyle pass is visual-only and the
-> fix is in data fetching. It is a two-line change, described below.
+> **✅ FIXED** — on request, after the restyle steps were complete, in its own
+> commit. Verified: brand thread list now reads `$340 / $450`, creator list
+> `$450`, dashboard roster `$500 / $580 / $620 / $420`, and **zero `$0` remain**
+> on any of the three screens. Kept here as the record of what was wrong.
 
 **Severity: high.** It is wrong money, on the screens whose entire argument is
 that both sides always see the same number. It also silently defaults the
@@ -44,8 +43,8 @@ const payment = t.payments?.[0];   // undefined — it is not an array
 `undefined` then falls through to `?? 0` and `?? "escrowed"`, which is why the
 failure is silent and looks like real data rather than an error.
 
-**Fix (not applied here)**
-Type the embed as a single object and drop the index:
+**Fix (applied)**
+Typed the embed as a single object and dropped the index:
 
 ```ts
 payments: { amount_cents: number; status: PaymentStatus } | null;

@@ -16,7 +16,8 @@ type RosterRow = {
   id: string;
   campaigns: { title: string } | null;
   creators: { avg_views: number; profiles: { handle: string } | null } | null;
-  payments: { amount_cents: number; status: PaymentStatus }[] | null;
+  // to-ONE (UNIQUE thread_id); deliverables below is genuinely to-many.
+  payments: { amount_cents: number; status: PaymentStatus } | null;
   deliverables: { version: number; status: DeliverableStatus }[] | null;
 };
 import { ResponsivenessBadge, SlotRail, VerticalCount } from "@/components/rail";
@@ -83,7 +84,7 @@ export default async function BrandDashboard() {
     .order("created_at", { ascending: false });
 
   const crew = ((roster ?? []) as unknown as RosterRow[]).map((t) => {
-    const pay = t.payments?.[0];
+    const pay = t.payments;
     const latest = (t.deliverables ?? []).sort((a, b) => b.version - a.version)[0];
     return {
       id: t.id,
