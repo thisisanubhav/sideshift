@@ -10,6 +10,7 @@ import {
 import type { ApplicationStatus, DeclineReason, Platform } from "@/lib/types";
 import { Countdown } from "@/components/countdown";
 import { Button, Card, Chip, EmptyState } from "@/components/ui";
+import { WithdrawButton } from "./withdraw";
 
 export const metadata = { title: "Your applications — SideShift" };
 
@@ -123,11 +124,12 @@ export default async function CreatorApplications() {
                 </div>
 
                 {r.status === "pending" ? (
-                  <div className="border-t border-line pt-3">
+                  <div className="flex flex-wrap items-center justify-between gap-3 border-t border-line pt-3">
                     <Countdown
                       expiresAt={r.expires_at}
                       initialMs={new Date(r.expires_at).getTime() - Date.now()}
                     />
+                    <WithdrawButton applicationId={r.id} />
                   </div>
                 ) : null}
 

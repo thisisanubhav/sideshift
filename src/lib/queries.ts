@@ -1,9 +1,10 @@
 import { createClient } from "@/lib/supabase/server";
-import type { Platform } from "@/lib/types";
+import type { CampaignStatus, Platform } from "@/lib/types";
 
 export type CampaignCardData = {
   id: string;
   title: string;
+  status: CampaignStatus;
   brief: string;
   niche: string | null;
   platform: Platform;
@@ -42,7 +43,7 @@ type RawCampaign = Omit<CampaignCardData, "brand" | "answered_in_window" | "deci
 };
 
 const SELECT = `
-  id, title, brief, niche, platform, video_count,
+  id, title, status, brief, niche, platform, video_count,
   duration_min_seconds, duration_max_seconds, budget_cents_per_creator,
   slots_total, slots_filled, deadline, published_at, brand_id,
   brands!inner ( id, name, profiles!inner ( handle ) )

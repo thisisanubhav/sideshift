@@ -33,7 +33,13 @@ export default async function CampaignDetail({
     supabase.from("creators").select("base_rate_cents").eq("id", creator.creatorId).single(),
   ]);
 
+  // A campaign stops taking applications when its slots fill OR when the brand
+  // closes it. Deriving "closed" from slot counts alone would leave the apply
+  // form up on a campaign the brand has shut, and the only thing stopping the
+  // application would be the RLS insert policy rejecting it after the creator
+  // had already written a pitch.
   const full = campaign.slots_filled >= campaign.slots_total;
+  const closed = campaign.status !== "open" || full;
 
   return (
     <div className="flex flex-col gap-8">
@@ -58,6 +64,7 @@ export default async function CampaignDetail({
               {campaign.niche ? (
                 <Chip tone="identity">{campaign.niche}</Chip>
               ) : null}
+              {closed ? <Chip tone="muted">Closed</Chip> : null}
             </div>
             <ResponsivenessBadge
               answered={campaign.answered_in_window}
@@ -100,11 +107,15 @@ export default async function CampaignDetail({
           <Card className="flex flex-col gap-4 p-5">
             {application ? (
               <ApplicationState application={application} />
-            ) : full ? (
+            ) : closed ? (
               <div className="flex flex-col gap-2">
-                <p className="type-title">Every slot is filled</p>
+                <p className="type-title">
+                  {full ? "Every slot is filled" : "This campaign has closed"}
+                </p>
                 <p className="type-small text-ash">
-                  This campaign took its last creator. Browse what&apos;s still open.
+                  {full
+                    ? "This campaign took its last creator. Browse what's still open."
+                    : "The brand stopped taking applications. Nothing you write here would reach them."}
                 </p>
                 <Link href="/c/browse" className="pt-1">
                   <Button variant="secondary" className="w-full">

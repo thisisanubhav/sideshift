@@ -253,6 +253,13 @@ These hit the real database with real user JWTs rather than mocking. `test:rls`
 is the one that matters: it makes the requests a hostile client would make,
 because hiding a button is not access control.
 
+**They mutate demo data.** `test:thread` drives the walkthrough thread all the
+way to approved-and-paid, and `test:improvements` needs a live response window
+to look at. Run `supabase/demo-reset.sql` before a run, or between runs, to put
+the marketplace back. There is also `tests/render.mjs` — a real-Chromium audit at
+390px and 1280px for sideways scroll and hydration errors — kept out of
+`package.json` because it needs a browser the others don't.
+
 ---
 
 ## Two bugs found by testing, both worth reading
