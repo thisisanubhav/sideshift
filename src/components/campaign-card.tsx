@@ -32,11 +32,22 @@ export function CampaignCard({
         </div>
 
         <div className="flex min-w-0 flex-1 flex-col gap-1.5">
-          <h3 className="type-title text-balance group-hover:text-bone">{c.title}</h3>
-          <p className="type-small text-ash">
-            <span className="type-timecode text-bone">@{c.brand.handle}</span>
-            {c.niche ? <> · {c.niche}</> : null}
-          </p>
+          <h2 className="type-title text-balance group-hover:text-bone">{c.title}</h2>
+
+          {/* Identity line: who this is, and whether they answer. Read together,
+              at the same size, before the creator commits an hour to a pitch. */}
+          <div className="flex flex-wrap items-center gap-x-2 gap-y-1">
+            <span className="type-timecode text-[14px] text-bone">
+              @{c.brand.handle}
+            </span>
+            {c.niche ? <span className="text-[14px] text-ash">· {c.niche}</span> : null}
+            <span aria-hidden className="text-ash">·</span>
+            <ResponsivenessBadge
+              answered={c.answered_in_window}
+              decidable={c.decidable}
+            />
+          </div>
+
           <p className="type-small text-ash">
             {c.video_count}× {PLATFORM_SHORT[c.platform]} ·{" "}
             {duration(c.duration_min_seconds, c.duration_max_seconds)} · due{" "}
@@ -56,12 +67,8 @@ export function CampaignCard({
         </div>
       </div>
 
-      <div className="mt-4 flex flex-col gap-2 border-t border-line pt-3 sm:flex-row sm:items-center sm:justify-between">
+      <div className="mt-4 border-t border-line pt-3">
         <SlotRail filled={c.slots_filled} total={c.slots_total} />
-        <ResponsivenessBadge
-          answered={c.answered_in_window}
-          decidable={c.decidable}
-        />
       </div>
     </Link>
   );

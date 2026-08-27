@@ -143,7 +143,9 @@ function renderEvent(e: SpineEvent) {
       return (
         <div className="flex flex-col gap-1">
           <div className="flex flex-wrap items-baseline justify-between gap-2">
-            <span className={cn("type-micro", !e.approved && "text-flare")}>
+            {/* A change request is a state, not a clock. Shape carries it: the
+                node is hollow and the label is plain. */}
+            <span className="type-micro">
               {e.approved
                 ? `Deliverable v${e.version} approved`
                 : `Changes requested on v${e.version}`}

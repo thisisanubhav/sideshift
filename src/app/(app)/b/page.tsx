@@ -256,7 +256,7 @@ export default async function BrandDashboard() {
                           c.status === "open"
                             ? "outline"
                             : c.status === "draft"
-                              ? "identity"
+                              ? "dashed"
                               : "muted"
                         }
                       >

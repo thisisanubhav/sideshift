@@ -3,6 +3,7 @@ import { requireViewer } from "@/lib/auth";
 import { Wordmark } from "@/components/wordmark";
 import { signOut } from "@/app/(auth)/actions";
 import { Button } from "@/components/ui";
+import { AppNav } from "@/components/app-nav";
 
 const NAV = {
   brand: [
@@ -27,30 +28,26 @@ export default async function AppLayout({
 
   return (
     <div className="flex min-h-dvh flex-col">
+      <a
+        href="#main"
+        className="sr-only focus:not-sr-only focus:absolute focus:top-3 focus:left-3 focus:z-50 focus:rounded-[8px] focus:bg-bone focus:px-4 focus:py-2 focus:text-pitch"
+      >
+        Skip to content
+      </a>
       <header className="sticky top-0 z-30 border-b border-line bg-pitch/95 backdrop-blur">
         <div className="mx-auto flex w-full max-w-6xl items-center gap-4 px-4 py-3 sm:px-6">
           <Link href={`/${viewer.role === "brand" ? "b" : "c"}`} aria-label="SideShift home">
             <Wordmark />
           </Link>
 
-          <nav className="ml-2 hidden gap-1 sm:flex">
-            {nav.map((item) => (
-              <Link
-                key={item.href}
-                href={item.href}
-                className="rounded-[8px] px-3 py-1.5 text-[14px] font-medium text-ash transition-colors hover:bg-raise-2 hover:text-bone"
-              >
-                {item.label}
-              </Link>
-            ))}
-          </nav>
+          <AppNav items={nav} className="ml-2 hidden sm:flex" />
 
           <div className="ml-auto flex items-center gap-3">
             <span className="type-timecode hidden text-[13px] text-ash sm:inline">
               @{viewer.handle}
             </span>
             <form action={signOut}>
-              <Button variant="ghost" size="sm" type="submit">
+              <Button variant="ghost" size="sm" type="submit" className="h-11 px-3">
                 Sign out
               </Button>
             </form>
@@ -59,20 +56,17 @@ export default async function AppLayout({
 
         {/* Nav collapses to a scrollable strip rather than a hamburger: three
             destinations do not deserve a menu. */}
-        <nav className="flex gap-1 overflow-x-auto border-t border-line px-4 py-2 sm:hidden">
-          {nav.map((item) => (
-            <Link
-              key={item.href}
-              href={item.href}
-              className="whitespace-nowrap rounded-[8px] px-3 py-1.5 text-[14px] font-medium text-ash"
-            >
-              {item.label}
-            </Link>
-          ))}
-        </nav>
+        <AppNav
+          items={nav}
+          orientation="strip"
+          className="border-t border-line px-4 py-1 sm:hidden"
+        />
       </header>
 
-      <main className="mx-auto w-full max-w-6xl flex-1 px-4 py-8 sm:px-6">
+      <main
+        id="main"
+        className="mx-auto w-full max-w-6xl flex-1 px-4 py-8 sm:px-6"
+      >
         {children}
       </main>
     </div>

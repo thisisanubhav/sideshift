@@ -9,7 +9,7 @@ export function Wordmark({ className = "" }: { className?: string }) {
         aria-hidden
         className="flex h-5 w-[11.25px] items-end overflow-hidden rounded-[2px] bg-bone"
       >
-        <span className="h-2 w-full bg-flare" />
+        <span className="h-2 w-full bg-iris" />
       </span>
       <span className="type-display-l !text-[19px] tracking-[-0.02em]">
         SideShift

@@ -31,8 +31,25 @@ export function PaymentRail({
     { key: "released" as const, at: releasedAt },
   ];
 
+  const released = status === "released";
+
   return (
-    <div className="flex flex-col gap-4">
+    /**
+     * Release is the terminal moment of the whole product and the only reason a
+     * creator is here — and it used to render at exactly the same weight as the
+     * escrowed state before it. The voice rule forbids being cheerful about
+     * someone else's money, but *marked* and *cheerful* are different things.
+     *
+     * So it extends the grammar the system already has: the escrow chip fills
+     * as the money moves. Here that fill scales to the whole card. No new
+     * colour, no confetti — the surface simply inverts once it is paid.
+     */
+    <div
+      className={cn(
+        "flex flex-col gap-4",
+        released && "-m-5 rounded-[10px] bg-bone p-5 text-pitch",
+      )}
+    >
       <div className="flex flex-col gap-2.5">
         <span className="type-timecode text-[32px] leading-none font-semibold">
           {money(amountCents, { cents: true })}
@@ -41,8 +58,8 @@ export function PaymentRail({
           data-payment-status={status}
           className={cn(
             "type-micro w-fit rounded-full px-2.5 py-1",
-            status === "released"
-              ? "bg-bone text-pitch"
+            released
+              ? "border border-pitch bg-pitch text-bone"
               : "border border-bone/45 text-bone",
           )}
         >
@@ -54,15 +71,23 @@ export function PaymentRail({
         {steps.map((s) => (
           <div
             key={s.key}
-            className="flex items-baseline justify-between gap-3 border-t border-line py-2 first:border-t-0"
+            className={cn(
+              "flex items-baseline justify-between gap-3 border-t py-2 first:border-t-0",
+              released ? "border-pitch/15" : "border-line",
+            )}
           >
-            <dt className={cn("type-small", s.at ? "text-bone" : "text-ash")}>
+            <dt
+              className={cn(
+                "type-small",
+                released ? "text-pitch" : s.at ? "text-bone" : "text-ash",
+              )}
+            >
               {PAYMENT_STATUS_LABEL[s.key]}
             </dt>
             <dd
               className={cn(
                 "type-timecode text-[12px]",
-                s.at ? "text-ash" : "text-ash/40",
+                released ? "text-pitch/70" : s.at ? "text-ash" : "text-ash/40",
               )}
             >
               {s.at ? spineStamp(s.at) : "—"}
@@ -71,7 +96,7 @@ export function PaymentRail({
         ))}
       </dl>
 
-      <p className="type-small text-ash">
+      <p className={cn("type-small", released ? "text-pitch/80" : "text-ash")}>
         {status === "released"
           ? "Paid. Both sides are looking at the same timestamp."
           : status === "in_review"

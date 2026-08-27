@@ -11,10 +11,14 @@ type ButtonProps = React.ButtonHTMLAttributes<HTMLButtonElement> & {
   size?: "sm" | "md";
 };
 
+// NOT `transition-colors`: that list includes outline-color, so the focus ring
+// interpolated from the button's currentColor (dark, on a primary button) up to
+// iris over 150ms — measured at 1.10:1 for the first ~70ms after Tab lands.
+// The ring must be at full contrast the instant focus arrives.
 const BUTTON_BASE =
   "inline-flex items-center justify-center gap-2 rounded-[8px] font-semibold " +
-  "transition-colors disabled:cursor-not-allowed disabled:opacity-40 " +
-  "whitespace-nowrap select-none";
+  "transition-[background-color,border-color,color] duration-150 " +
+  "disabled:cursor-not-allowed disabled:opacity-40 whitespace-nowrap select-none";
 
 const BUTTON_VARIANT = {
   // Money and commitment. The highest-contrast thing on any screen.
@@ -22,7 +26,18 @@ const BUTTON_VARIANT = {
   secondary:
     "bg-raise-2 text-bone border border-line-strong hover:border-bone/40 hover:bg-raise-2/70",
   ghost: "text-ash hover:text-bone hover:bg-raise-2",
-  danger: "bg-transparent text-flare border border-flare/40 hover:bg-flare/10",
+  /**
+   * Deliberately NOT red.
+   *
+   * Two reasons. Flare is time and nothing else, and spending it on every
+   * decline button would dilute the one colour whose job is "this is running
+   * out". And more importantly: this product *wants* brands to decline rather
+   * than go silent. Painting the honest action in alarm-red discourages exactly
+   * the behaviour the whole design is built to encourage. It reads as weightier
+   * than secondary through the dashed edge, not through danger.
+   */
+  danger:
+    "bg-transparent text-bone border border-dashed border-bone/45 hover:border-bone/70 hover:bg-bone/5",
 } as const;
 
 const BUTTON_SIZE = {
@@ -70,11 +85,12 @@ export function Label({
   );
 }
 
+// Fields keep the global 2px iris ring rather than suppressing it: a 1px
+// border-colour change was the only focus signal, which is far too quiet.
 const FIELD_BASE =
   "w-full rounded-[8px] border border-line-strong bg-pitch px-3 text-bone " +
-  "placeholder:text-ash/60 transition-colors hover:border-bone/25 " +
-  "focus:border-iris focus:outline-none focus-visible:outline-none " +
-  "disabled:opacity-50";
+  "placeholder:text-ash/60 transition-[background-color,border-color,color] " +
+  "duration-150 hover:border-bone/25 focus:border-iris disabled:opacity-50";
 
 export function Input({
   className,
@@ -116,7 +132,7 @@ export function Chip({
   className,
   children,
 }: {
-  tone?: "outline" | "solid" | "muted" | "time" | "identity";
+  tone?: "outline" | "solid" | "muted" | "dashed" | "quiet" | "time" | "identity";
   className?: string;
   children: React.ReactNode;
 }) {
@@ -124,7 +140,13 @@ export function Chip({
     outline: "border border-bone/45 text-bone",
     solid: "bg-bone text-pitch border border-bone",
     muted: "border border-line-strong text-ash line-through decoration-ash/50",
+    /** Not live yet. Dashed edge = provisional, without spending a hue on it. */
+    dashed: "border border-dashed border-bone/45 text-bone",
+    /** A neutral taxonomy label. A niche is not an identity and not a status. */
+    quiet: "border border-line-strong text-ash",
+    /** Time, and nothing else. */
     time: "border border-flare/50 text-flare",
+    /** Identity and selection, and nothing else. */
     identity: "border border-iris/50 text-iris",
   } as const;
 
@@ -148,9 +170,11 @@ export function FormError({ children }: { children?: React.ReactNode }) {
   return (
     <p
       role="alert"
-      className="type-small flex gap-2 rounded-[8px] border border-flare/40 bg-flare/10 px-3 py-2 text-flare"
+      className="type-small flex gap-2 rounded-[8px] border border-bone/45 bg-bone/[0.06] px-3 py-2 text-bone"
     >
-      {children}
+      {/* Marked, not alarmed. Flare stays reserved for time. */}
+      <span aria-hidden className="font-semibold">!</span>
+      <span>{children}</span>
     </p>
   );
 }

@@ -120,7 +120,7 @@ export default async function BrandCampaignPage({
               campaign.status === "open"
                 ? "outline"
                 : campaign.status === "draft"
-                  ? "identity"
+                  ? "dashed"
                   : "muted"
             }
           >

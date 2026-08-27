@@ -62,14 +62,10 @@ export default async function CampaignDetail({
               <span className="text-ash">·</span>
               <span className="text-ash">{campaign.brand.name}</span>
               {campaign.niche ? (
-                <Chip tone="identity">{campaign.niche}</Chip>
+                <Chip tone="quiet">{campaign.niche}</Chip>
               ) : null}
               {closed ? <Chip tone="muted">Closed</Chip> : null}
             </div>
-            <ResponsivenessBadge
-              answered={campaign.answered_in_window}
-              decidable={campaign.decidable}
-            />
           </header>
 
           <section className="flex flex-col gap-3">
@@ -102,6 +98,20 @@ export default async function CampaignDetail({
               <span className="type-micro text-ash">Posted budget per creator</span>
             </div>
             <SlotRail filled={campaign.slots_filled} total={campaign.slots_total} />
+
+            {/* Read at the same moment as the budget and the slots, because
+                that is when the creator decides whether to spend the hour. */}
+            <div className="border-t border-line pt-3">
+              <ResponsivenessBadge
+                answered={campaign.answered_in_window}
+                decidable={campaign.decidable}
+              />
+              <p className="type-small pt-1.5 text-ash">
+                @{campaign.brand.handle} has 48 hours to answer you. If they
+                don&apos;t, your application expires on its own and it shows in
+                this rate.
+              </p>
+            </div>
           </Card>
 
           <Card className="flex flex-col gap-4 p-5">

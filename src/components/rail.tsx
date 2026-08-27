@@ -61,27 +61,41 @@ export function ResponsivenessBadge({
   answered,
   decidable,
   className,
+  size = "body",
 }: {
   answered: number | null | undefined;
   decidable: number | null | undefined;
   className?: string;
+  /**
+   * `body` is the default on purpose. This used to render at 13px in the
+   * bottom-right corner of the card — the least-scanned position on the least
+   * prominent line — which meant the one number a creator most needs before
+   * spending an hour on a pitch arrived after the decision was made. It now
+   * sits in the identity line, read at the same moment as the handle.
+   */
+  size?: "body" | "small";
 }) {
   const r = computeResponsiveness(answered, decidable);
+  const text = size === "body" ? "text-[14px]" : "type-small";
 
   if (r.kind === "new") {
     return (
-      <span className={cn("type-small inline-flex items-center gap-1.5 text-ash", className)}>
+      <span className={cn(text, "inline-flex items-center gap-1.5 text-ash", className)}>
         <span aria-hidden className="size-1.5 rounded-full bg-ash/60" />
         {r.label}
       </span>
     );
   }
 
+  // Flare here is still time: the metric is literally "answered in time", and a
+  // brand that misses the window is the same failure the countdown measures.
   const tone =
     r.tone === "good" ? "text-bone" : r.tone === "mixed" ? "text-ash" : "text-flare";
 
   return (
-    <span className={cn("type-small inline-flex items-center gap-1.5", tone, className)}>
+    <span
+      className={cn(text, "inline-flex flex-wrap items-center gap-x-1.5", tone, className)}
+    >
       <span
         aria-hidden
         className={cn(
@@ -89,11 +103,12 @@ export function ResponsivenessBadge({
           r.tone === "good" ? "bg-bone" : r.tone === "mixed" ? "bg-ash" : "bg-flare",
         )}
       />
-      <span className="type-timecode">{r.pct}%</span>
+      <span className="type-timecode font-semibold">{r.pct}%</span>
       <span>answered in time</span>
-      <span className="text-ash">·</span>
+      {/* The denominator is not optional. A percentage without it is exactly the
+          ambiguity this product exists to remove. */}
       <span className="text-ash">
-        {r.answered} of {r.decidable}
+        · {r.answered} of {r.decidable}
       </span>
     </span>
   );
