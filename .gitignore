@@ -42,3 +42,8 @@ next-env.d.ts
 
 # keep the example committed
 !.env.example
+.vercel
+
+# walkthrough screenshots: local research material, too heavy for the repo
+research/screenshots/
+.DS_Store
