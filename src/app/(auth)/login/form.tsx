@@ -3,13 +3,20 @@
 import { useActionState } from "react";
 import { signIn, type AuthState } from "../actions";
 import { Button, FormError, Input, Label } from "@/components/ui";
+import { AuthDivider, GoogleButton } from "@/components/google-button";
 
 export function SignInForm({ next }: { next: string }) {
   const [state, action, pending] = useActionState<AuthState, FormData>(signIn, {});
 
   return (
-    <form action={action} className="flex flex-col gap-5">
-      <input type="hidden" name="next" value={next} />
+    // Not nested: GoogleButton renders its own <form>, and a form inside a form
+    // is invalid HTML that browsers silently break.
+    <div className="flex flex-col gap-5">
+      <GoogleButton label="Sign in with Google" />
+      <AuthDivider />
+
+      <form action={action} className="flex flex-col gap-5">
+        <input type="hidden" name="next" value={next} />
 
       <div className="flex flex-col gap-1.5">
         <Label htmlFor="email">Email</Label>
@@ -32,6 +39,7 @@ export function SignInForm({ next }: { next: string }) {
       <Button type="submit" variant="primary" disabled={pending}>
         {pending ? "Signing in…" : "Sign in"}
       </Button>
-    </form>
+      </form>
+    </div>
   );
 }
