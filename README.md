@@ -242,6 +242,7 @@ verified.** A production deployment drops `0005` and leaves confirmation on.
 ### Tests
 
 ```bash
+npm run test:improvements  # 22 checks: the four product changes, visible on a rendered page
 npm run test:rls      # 9 row-level-security proofs, straight at PostgREST
 npm run test:signup   # 11 checks: fresh signup on both sides, no email round-trip
 npm run test:smoke    # 19 end-to-end checks against the live deploy

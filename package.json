@@ -10,7 +10,8 @@
     "test:rls": "node tests/rls.mjs",
     "test:smoke": "node tests/smoke.mjs",
     "test:thread": "node tests/thread.mjs",
-    "test:signup": "node tests/signup.mjs"
+    "test:signup": "node tests/signup.mjs",
+    "test:improvements": "node tests/improvements.mjs"
   },
   "dependencies": {
     "@supabase/ssr": "^0.12.5",
