@@ -7,11 +7,11 @@ export function Wordmark({ className = "" }: { className?: string }) {
     <span className={`inline-flex items-center gap-2 ${className}`}>
       <span
         aria-hidden
-        className="flex h-5 w-[11.25px] items-end overflow-hidden rounded-[2px] bg-bone"
+        className="flex h-5 w-[11.25px] items-end overflow-hidden rounded-[4px] bg-graphite"
       >
-        <span className="h-2 w-full bg-iris" />
+        <span className="h-2 w-full bg-graphite" />
       </span>
-      <span className="type-display-l !text-[19px] tracking-[-0.02em]">
+      <span className="type-display-l !text-[18px] tracking-[-0.02em]">
         SideShift
       </span>
     </span>

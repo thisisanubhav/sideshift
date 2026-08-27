@@ -23,16 +23,16 @@ export function ThreadList({ items }: { items: ThreadListItem[] }) {
     <div className="flex flex-col gap-3">
       {items.map((t) => (
         <Link key={t.id} href={`/t/${t.id}`}>
-          <Card className="flex flex-wrap items-center justify-between gap-3 p-4 transition-colors hover:border-bone/25 sm:p-5">
+          <Card className="flex flex-wrap items-center justify-between gap-3 p-4 transition-colors hover:border-graphite/40 sm:p-5">
             <div className="flex min-w-0 flex-col gap-1">
               <h3 className="type-title text-balance">{t.campaignTitle}</h3>
-              <p className="type-small text-ash">
-                <span className="type-timecode text-bone">@{t.counterpartHandle}</span>{" "}
+              <p className="type-small text-slate">
+                <span className="type-timecode text-graphite">@{t.counterpartHandle}</span>{" "}
                 · opened {stamp(t.created_at)}
               </p>
             </div>
             <div className="flex shrink-0 items-center gap-3">
-              <span className="type-timecode text-[20px]">{money(t.amount_cents)}</span>
+              <span className="type-timecode text-[18px]">{money(t.amount_cents)}</span>
               <Chip tone={t.paymentStatus === "released" ? "solid" : "outline"}>
                 {PAYMENT_STATUS_LABEL[t.paymentStatus]}
               </Chip>

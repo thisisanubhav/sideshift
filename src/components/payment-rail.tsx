@@ -47,7 +47,7 @@ export function PaymentRail({
     <div
       className={cn(
         "flex flex-col gap-4",
-        released && "-m-5 rounded-[10px] bg-bone p-5 text-pitch",
+        released && "-m-5 rounded-[4px] bg-graphite p-5 text-card",
       )}
     >
       <div className="flex flex-col gap-2.5">
@@ -57,10 +57,10 @@ export function PaymentRail({
         <span
           data-payment-status={status}
           className={cn(
-            "type-micro w-fit rounded-full px-2.5 py-1",
+            "type-micro w-fit rounded-[4px] px-2.5 py-1",
             released
-              ? "border border-pitch bg-pitch text-bone"
-              : "border border-bone/45 text-bone",
+              ? "border border-card bg-graphite text-graphite"
+              : "border border-graphite/45 text-graphite",
           )}
         >
           {PAYMENT_STATUS_LABEL[status]}
@@ -73,21 +73,21 @@ export function PaymentRail({
             key={s.key}
             className={cn(
               "flex items-baseline justify-between gap-3 border-t py-2 first:border-t-0",
-              released ? "border-pitch/15" : "border-line",
+              released ? "border-card/15" : "border-hairline",
             )}
           >
             <dt
               className={cn(
                 "type-small",
-                released ? "text-pitch" : s.at ? "text-bone" : "text-ash",
+                released ? "text-card" : s.at ? "text-graphite" : "text-slate",
               )}
             >
               {PAYMENT_STATUS_LABEL[s.key]}
             </dt>
             <dd
               className={cn(
-                "type-timecode text-[12px]",
-                released ? "text-pitch/70" : s.at ? "text-ash" : "text-ash/40",
+                "type-timecode text-[13px]",
+                released ? "text-card/70" : s.at ? "text-slate" : "text-slate/40",
               )}
             >
               {s.at ? spineStamp(s.at) : "—"}
@@ -96,7 +96,7 @@ export function PaymentRail({
         ))}
       </dl>
 
-      <p className={cn("type-small", released ? "text-pitch/80" : "text-ash")}>
+      <p className={cn("type-small", released ? "text-card/80" : "text-slate")}>
         {status === "released"
           ? "Paid. Both sides are looking at the same timestamp."
           : status === "in_review"

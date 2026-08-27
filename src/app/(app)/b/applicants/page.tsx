@@ -37,7 +37,7 @@ export default async function ApplicantQueue() {
     <div className="flex flex-col gap-7">
       <div className="flex flex-col gap-2">
         <h1 className="type-display-xl">Waiting on you</h1>
-        <p className="text-ash">
+        <p className="text-slate">
           Sorted by how soon the window closes. Anything you let lapse expires
           on its own and shows up in your public response rate.
         </p>
@@ -100,7 +100,7 @@ export default async function ApplicantQueue() {
               <div key={a.id} className="flex flex-col gap-2">
                 <Link
                   href={`/b/campaigns/${camp.id}`}
-                  className="type-micro w-fit text-ash hover:text-bone"
+                  className="type-micro w-fit text-slate hover:text-graphite"
                 >
                   {camp.title} ↗
                 </Link>

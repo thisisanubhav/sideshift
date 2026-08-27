@@ -50,10 +50,10 @@ export function AppNav({
             aria-current={active ? "page" : undefined}
             className={cn(
               // 44px min height: these were 33px and failed every touch guideline.
-              "inline-flex min-h-11 items-center rounded-[8px] px-3 text-[14px] font-medium whitespace-nowrap transition-[background-color,color,transform] duration-150 active:scale-[0.98]",
+              "inline-flex min-h-11 items-center rounded-[4px] px-3 text-[15px] font-medium whitespace-nowrap transition-[background-color,color,transform] duration-150 active:scale-[0.98]",
               active
-                ? "bg-iris/15 text-bone ring-1 ring-inset ring-iris/25"
-                : "text-ash hover:bg-raise-2 hover:text-bone",
+                ? "bg-graphite/15 text-graphite ring-1 ring-inset ring-graphite/25"
+                : "text-slate hover:bg-graphite hover:text-graphite",
             )}
           >
             {item.label}

@@ -25,7 +25,7 @@ export function NewCampaignForm() {
   return (
     <form action={action} className="flex flex-col gap-7">
       <section className="flex flex-col gap-5">
-        <h2 className="type-micro text-ash">The brief</h2>
+        <h2 className="type-micro text-slate">The brief</h2>
 
         <div className="flex flex-col gap-1.5">
           <Label htmlFor="title">Campaign title</Label>
@@ -36,7 +36,7 @@ export function NewCampaignForm() {
             maxLength={120}
             placeholder="Barrier repair routine, morning and night"
           />
-          <p className="type-small text-ash">
+          <p className="type-small text-slate">
             This is the line creators scan in the marketplace. Say the deliverable,
             not the campaign code.
           </p>
@@ -65,8 +65,8 @@ export function NewCampaignForm() {
         </div>
       </section>
 
-      <section className="flex flex-col gap-5 border-t border-line pt-7">
-        <h2 className="type-micro text-ash">Deliverable spec</h2>
+      <section className="flex flex-col gap-5 border-t border-hairline pt-7">
+        <h2 className="type-micro text-slate">Deliverable spec</h2>
 
         <div className="grid gap-4 sm:grid-cols-2">
           <div className="flex flex-col gap-1.5">
@@ -107,14 +107,14 @@ export function NewCampaignForm() {
         </div>
       </section>
 
-      <section className="flex flex-col gap-5 border-t border-line pt-7">
-        <h2 className="type-micro text-ash">Budget and slots</h2>
+      <section className="flex flex-col gap-5 border-t border-hairline pt-7">
+        <h2 className="type-micro text-slate">Budget and slots</h2>
 
         <div className="grid gap-4 sm:grid-cols-2">
           <div className="flex flex-col gap-1.5">
             <Label htmlFor="budget">Budget per creator</Label>
             <div className="flex items-center">
-              <span className="type-timecode flex h-10 items-center rounded-l-[8px] border border-r-0 border-line-strong bg-raise px-3 text-ash">
+              <span className="type-timecode flex h-10 items-center rounded-l-[4px] border border-r-0 border-hairline bg-card px-3 text-slate">
                 $
               </span>
               <Input
@@ -140,13 +140,13 @@ export function NewCampaignForm() {
         </div>
 
         {/* The total is stated before publishing, not discovered afterwards. */}
-        <div className="flex items-baseline justify-between rounded-[10px] border border-line-strong bg-raise-2 px-4 py-3.5">
-          <span className="type-micro text-ash">You&apos;ll commit up to</span>
+        <div className="flex items-baseline justify-between rounded-[4px] border border-hairline bg-graphite px-4 py-3.5">
+          <span className="type-micro text-slate">You&apos;ll commit up to</span>
           <span className="type-timecode text-[24px] font-semibold">
             {money(Math.max(0, committed) * 100)}
           </span>
         </div>
-        <p className="type-small -mt-2 text-ash">
+        <p className="type-small -mt-2 text-slate">
           Money is escrowed one creator at a time, as you accept them — not when
           you publish. Creators can ask for a different rate; what you accept is
           what gets escrowed.
@@ -163,7 +163,7 @@ export function NewCampaignForm() {
 
       <FormError>{state.error}</FormError>
 
-      <div className="flex flex-col gap-2.5 border-t border-line pt-6 sm:flex-row">
+      <div className="flex flex-col gap-2.5 border-t border-hairline pt-6 sm:flex-row">
         <Button
           type="submit" name="intent" value="publish"
           variant="primary" disabled={pending} className="sm:flex-1"

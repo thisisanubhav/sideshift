@@ -63,12 +63,12 @@ export function Filters({
         type="button"
         onClick={() => setOpen((v) => !v)}
         aria-expanded={open}
-        className="mb-4 flex items-center justify-between rounded-[8px] border border-line-strong bg-raise px-3.5 py-2.5 text-[14px] lg:hidden"
+        className="mb-4 flex items-center justify-between rounded-[4px] border border-hairline bg-card px-3.5 py-2.5 text-[15px] lg:hidden"
       >
-        <span className="type-micro text-ash">
+        <span className="type-micro text-slate">
           Filters{active ? ` · ${active}` : ""}
         </span>
-        <span className="type-small text-ash">{open ? "Hide" : "Show"}</span>
+        <span className="type-small text-slate">{open ? "Hide" : "Show"}</span>
       </button>
 
       <div
@@ -78,7 +78,7 @@ export function Filters({
         <select
           name="sort"
           defaultValue={filters.sort}
-          className="h-9 w-full cursor-pointer rounded-[8px] border border-line-strong bg-pitch px-2.5 text-[14px] text-bone"
+          className="h-9 w-full cursor-pointer rounded-[4px] border border-hairline bg-graphite px-2.5 text-[15px] text-graphite"
         >
           {SORTS.map((s) => (
             <option key={s.value} value={s.value}>
@@ -104,7 +104,7 @@ export function Filters({
         <select
           name="min_budget"
           defaultValue={filters.minBudget ? String(filters.minBudget) : ""}
-          className="h-9 w-full cursor-pointer rounded-[8px] border border-line-strong bg-pitch px-2.5 text-[14px] text-bone"
+          className="h-9 w-full cursor-pointer rounded-[4px] border border-hairline bg-graphite px-2.5 text-[15px] text-graphite"
         >
           {BUDGETS.map((b) => (
             <option key={b.value} value={b.value}>
@@ -146,7 +146,7 @@ export function Filters({
 function Group({ label, children }: { label: string; children: React.ReactNode }) {
   return (
     <fieldset className="flex flex-col gap-2.5">
-      <legend className="type-micro mb-2.5 text-ash">{label}</legend>
+      <legend className="type-micro mb-2.5 text-slate">{label}</legend>
       {children}
     </fieldset>
   );
@@ -166,17 +166,17 @@ function Check({
   defaultChecked?: boolean;
 }) {
   return (
-    <label className="group flex cursor-pointer items-start gap-2.5 text-[14px]">
+    <label className="group flex cursor-pointer items-start gap-2.5 text-[15px]">
       <input
         type="checkbox"
         name={name}
         value={value}
         defaultChecked={defaultChecked}
-        className="mt-0.5 size-4 shrink-0 cursor-pointer appearance-none rounded-[4px] border border-line-strong bg-pitch checked:border-iris checked:bg-iris"
+        className="mt-0.5 size-4 shrink-0 cursor-pointer appearance-none rounded-[4px] border border-hairline bg-graphite checked:border-graphite checked:bg-graphite"
       />
       <span className="flex flex-col">
-        <span className="text-bone">{label}</span>
-        {hint ? <span className="type-small text-ash">{hint}</span> : null}
+        <span className="text-graphite">{label}</span>
+        {hint ? <span className="type-small text-slate">{hint}</span> : null}
       </span>
     </label>
   );

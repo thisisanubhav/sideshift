@@ -55,7 +55,7 @@ export default async function ThreadPage({
       <LiveThread threadId={thread.id} />
 
       <div className="flex flex-wrap items-center justify-between gap-3">
-        <Link href={backHref} className="type-small text-ash hover:text-bone">
+        <Link href={backHref} className="type-small text-slate hover:text-graphite">
           ← Threads
         </Link>
         <Chip tone={complete ? "solid" : "outline"}>
@@ -69,9 +69,9 @@ export default async function ThreadPage({
 
       <header className="flex flex-col gap-1">
         <h1 className="type-display-l text-balance">{thread.campaign.title}</h1>
-        <p className="text-ash">
+        <p className="text-slate">
           with{" "}
-          <span className="type-timecode text-bone">
+          <span className="type-timecode text-graphite">
             @{thread.counterpart.handle}
           </span>{" "}
           · {thread.counterpart.name}
@@ -81,12 +81,12 @@ export default async function ThreadPage({
       {isCreator ? (
         <a
           href="#money"
-          className="flex items-center justify-between gap-3 rounded-[10px] border border-line bg-raise px-4 py-2.5 lg:hidden"
+          className="flex items-center justify-between gap-3 rounded-[4px] border border-hairline bg-card px-4 py-2.5 lg:hidden"
         >
           <span className="type-timecode text-[18px]">
             {money(thread.payment.amountCents)}
           </span>
-          <span className="type-micro text-ash">
+          <span className="type-micro text-slate">
             {PAYMENT_STATUS_LABEL[thread.payment.status]} · see detail
           </span>
         </a>
@@ -113,17 +113,17 @@ export default async function ThreadPage({
           {/* Open for the brand, who is checking work against a brief they wrote.
               Closed for the creator, who read it when they applied and is here
               for the conversation. Same rule at every width. */}
-          <details open={!isCreator} className="group rounded-[10px] border border-line bg-raise">
+          <details open={!isCreator} className="group rounded-[4px] border border-hairline bg-card">
             <summary className="flex cursor-pointer list-none items-center justify-between gap-3 p-4 [&::-webkit-details-marker]:hidden">
               <span className="flex items-center gap-3">
                 <VerticalCount count={thread.campaign.videoCount} />
-                <span className="type-micro text-ash">The brief</span>
+                <span className="type-micro text-slate">The brief</span>
               </span>
-              <span className="type-small text-ash group-open:hidden">Show</span>
-              <span className="type-small hidden text-ash group-open:inline">Hide</span>
+              <span className="type-small text-slate group-open:hidden">Show</span>
+              <span className="type-small hidden text-slate group-open:inline">Hide</span>
             </summary>
-            <div className="flex flex-col gap-3 border-t border-line p-4">
-              <p className="type-small text-ash">
+            <div className="flex flex-col gap-3 border-t border-hairline p-4">
+              <p className="type-small text-slate">
                 {thread.campaign.videoCount}× {PLATFORM_LABEL[thread.campaign.platform]}{" "}
                 · {duration(thread.campaign.durationMin, thread.campaign.durationMax)}{" "}
                 · due {shortDate(thread.campaign.deadline)}
@@ -137,12 +137,12 @@ export default async function ThreadPage({
           <Spine events={thread.events} />
 
           {complete ? (
-            <p className="type-small rounded-[10px] border border-line bg-raise px-4 py-3 text-ash">
+            <p className="type-small rounded-[4px] border border-hairline bg-card px-4 py-3 text-slate">
               This thread is complete and the payment has been released. It stays
               here as the record.
             </p>
           ) : (
-            <div className="sticky bottom-0 -mx-4 border-t border-line bg-pitch/95 px-4 py-3 backdrop-blur sm:mx-0 sm:rounded-[10px] sm:border sm:px-3 sm:py-3">
+            <div className="sticky bottom-0 -mx-4 border-t border-hairline bg-graphite/95 px-4 py-3 backdrop-blur sm:mx-0 sm:rounded-[4px] sm:border sm:px-3 sm:py-3">
               <Composer
                 threadId={thread.id}
                 counterpartHandle={thread.counterpart.handle}

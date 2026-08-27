@@ -1,24 +1,27 @@
 import type { Metadata, Viewport } from "next";
-import { Archivo, Instrument_Sans, JetBrains_Mono } from "next/font/google";
+import { Bricolage_Grotesque, Public_Sans, JetBrains_Mono } from "next/font/google";
 import "./globals.css";
 
-// Display: a wide grotesque that reads like a lower-third title card.
-const archivo = Archivo({
+// Display: page titles and section headings only.
+const bricolage = Bricolage_Grotesque({
   subsets: ["latin"],
-  axes: ["wdth"], // the width axis is the point: 118% for the display face
-  variable: "--font-archivo",
+  weight: ["600", "700", "800"],
+  variable: "--font-bricolage",
   display: "swap",
 });
 
-const instrument = Instrument_Sans({
+// Body: all prose, labels, buttons.
+const publicSans = Public_Sans({
   subsets: ["latin"],
-  variable: "--font-instrument",
+  weight: ["400", "500"],
+  variable: "--font-public-sans",
   display: "swap",
 });
 
+// Data: every number in the app. Non-negotiable, and it carries the identity.
 const jetbrains = JetBrains_Mono({
   subsets: ["latin"],
-  weight: ["400", "500", "600"],
+  weight: ["400", "500"],
   variable: "--font-jetbrains",
   display: "swap",
 });
@@ -30,7 +33,7 @@ export const metadata: Metadata = {
 };
 
 export const viewport: Viewport = {
-  themeColor: "#17131c",
+  themeColor: "#e9e7e1",
 };
 
 export default function RootLayout({
@@ -39,7 +42,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body
-        className={`${archivo.variable} ${instrument.variable} ${jetbrains.variable} antialiased`}
+        className={`${bricolage.variable} ${publicSans.variable} ${jetbrains.variable} antialiased`}
       >
         {children}
       </body>

@@ -45,7 +45,7 @@ export function Composer({
               e.currentTarget.form?.requestSubmit();
             }
           }}
-          className="min-h-10 flex-1 resize-none rounded-[8px] border border-line-strong bg-pitch px-3 py-2.5 leading-relaxed text-bone placeholder:text-ash/60 transition-colors hover:border-bone/25 focus:border-iris focus:outline-none"
+          className="min-h-10 flex-1 resize-none rounded-[4px] border border-hairline bg-graphite px-3 py-2.5 leading-relaxed text-graphite placeholder:text-slate/60 transition-colors hover:border-graphite/40 focus:border-graphite focus:outline-none"
         />
         <Button type="submit" variant="primary" disabled={pending}>
           {pending ? "Sending…" : "Send"}

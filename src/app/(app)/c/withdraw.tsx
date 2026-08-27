@@ -24,7 +24,7 @@ export function WithdrawButton({ applicationId }: { applicationId: string }) {
 
   return (
     <span className="flex flex-wrap items-center gap-2">
-      <span className="type-small text-ash">
+      <span className="type-small text-slate">
         Withdraw for good? You can&apos;t apply to this campaign again.
       </span>
       <Button

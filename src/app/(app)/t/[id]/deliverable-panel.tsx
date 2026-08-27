@@ -35,7 +35,7 @@ export function DeliverablePanel({
   if (complete) {
     return (
       <div className="flex flex-col gap-1.5">
-        <span className="type-micro text-ash">Deliverable</span>
+        <span className="type-micro text-slate">Deliverable</span>
         <p className="type-small">
           v{latest?.version} approved and paid. Nothing left to do.
         </p>
@@ -64,7 +64,7 @@ function CreatorSide({ threadId, latest }: { threadId: string; latest: Latest })
 
   return (
     <div className="flex flex-col gap-3">
-      <span className="type-micro text-ash">Your deliverable</span>
+      <span className="type-micro text-slate">Your deliverable</span>
 
       {latest ? (
         <p className="type-small">
@@ -73,7 +73,7 @@ function CreatorSide({ threadId, latest }: { threadId: string; latest: Latest })
       ) : null}
 
       {awaiting ? (
-        <p className="type-small text-ash">
+        <p className="type-small text-slate">
           Sent. The brand is reviewing it — you&apos;ll see the outcome on the
           thread the moment they act.
         </p>
@@ -93,7 +93,7 @@ function CreatorSide({ threadId, latest }: { threadId: string; latest: Latest })
               type="url"
               placeholder="https://drive.google.com/…"
             />
-            <p className="type-small text-ash">
+            <p className="type-small text-slate">
               A Drive, Frame.io or raw platform link. How most cuts actually
               arrive.
             </p>
@@ -106,9 +106,9 @@ function CreatorSide({ threadId, latest }: { threadId: string; latest: Latest })
               name="file"
               type="file"
               accept="video/mp4,video/quicktime,video/webm,image/jpeg,image/png,image/webp"
-              className="type-small w-full cursor-pointer rounded-[8px] border border-line-strong bg-pitch p-2 text-ash file:mr-3 file:cursor-pointer file:rounded-[6px] file:border-0 file:bg-raise-2 file:px-3 file:py-1.5 file:text-bone"
+              className="type-small w-full cursor-pointer rounded-[4px] border border-hairline bg-graphite p-2 text-slate file:mr-3 file:cursor-pointer file:rounded-[4px] file:border-0 file:bg-graphite file:px-3 file:py-1.5 file:text-graphite"
             />
-            <p className="type-small text-ash">Up to 25MB.</p>
+            <p className="type-small text-slate">Up to 25MB.</p>
           </div>
 
           <Textarea
@@ -163,8 +163,8 @@ function BrandSide({
   if (!latest) {
     return (
       <div className="flex flex-col gap-1.5">
-        <span className="type-micro text-ash">Deliverable</span>
-        <p className="type-small text-ash">
+        <span className="type-micro text-slate">Deliverable</span>
+        <p className="type-small text-slate">
           Nothing submitted yet. The money stays escrowed until it is.
         </p>
       </div>
@@ -174,11 +174,11 @@ function BrandSide({
   if (latest.status !== "submitted") {
     return (
       <div className="flex flex-col gap-1.5">
-        <span className="type-micro text-ash">Deliverable</span>
+        <span className="type-micro text-slate">Deliverable</span>
         <p className="type-small">
           v{latest.version} · {DELIVERABLE_STATUS_LABEL[latest.status]}
         </p>
-        <p className="type-small text-ash">
+        <p className="type-small text-slate">
           Waiting on the creator&apos;s next cut.
         </p>
       </div>
@@ -187,14 +187,14 @@ function BrandSide({
 
   return (
     <div className="flex flex-col gap-3">
-      <span className="type-micro text-ash">Review v{latest.version}</span>
+      <span className="type-micro text-slate">Review v{latest.version}</span>
 
       {latest.fileUrl || latest.deliveryUrl ? (
         <a
           href={latest.fileUrl ?? latest.deliveryUrl!}
           target="_blank"
           rel="noreferrer"
-          className="type-small w-fit text-bone underline underline-offset-4"
+          className="type-small w-fit text-graphite underline underline-offset-4"
         >
           {latest.fileUrl ? "Open the uploaded file" : "Open the delivery link"}
         </a>

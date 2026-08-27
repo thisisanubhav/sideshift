@@ -16,17 +16,17 @@ type ButtonProps = React.ButtonHTMLAttributes<HTMLButtonElement> & {
 // iris over 150ms — measured at 1.10:1 for the first ~70ms after Tab lands.
 // The ring must be at full contrast the instant focus arrives.
 const BUTTON_BASE =
-  "inline-flex items-center justify-center gap-2 rounded-[8px] font-semibold " +
+  "inline-flex items-center justify-center gap-2 rounded-[4px] font-semibold " +
   "transition-[background-color,border-color,color,transform] duration-150 " +
   "active:scale-[0.98] " +
   "disabled:cursor-not-allowed disabled:opacity-40 whitespace-nowrap select-none";
 
 const BUTTON_VARIANT = {
   // Money and commitment. The highest-contrast thing on any screen.
-  primary: "bg-bone text-pitch hover:bg-white",
+  primary: "bg-graphite text-card hover:bg-white",
   secondary:
-    "bg-raise-2 text-bone border border-line-strong hover:border-bone/40 hover:bg-raise-2/70",
-  ghost: "text-ash hover:text-bone hover:bg-raise-2",
+    "bg-graphite text-graphite border border-hairline hover:border-graphite/50 hover:bg-graphite/70",
+  ghost: "text-slate hover:text-graphite hover:bg-graphite",
   /**
    * Deliberately NOT red.
    *
@@ -38,12 +38,12 @@ const BUTTON_VARIANT = {
    * than secondary through the dashed edge, not through danger.
    */
   danger:
-    "bg-transparent text-bone border border-dashed border-bone/45 hover:border-bone/70 hover:bg-bone/5",
+    "bg-transparent text-graphite border border-dashed border-graphite/45 hover:border-graphite hover:bg-bone",
 } as const;
 
 const BUTTON_SIZE = {
   sm: "h-8 px-3 text-[13px]",
-  md: "h-10 px-4 text-[14px]",
+  md: "h-10 px-4 text-[15px]",
 } as const;
 
 export function Button({
@@ -69,7 +69,7 @@ export function Card({
   return (
     <div
       className={cn(
-        "rounded-[10px] border border-line bg-raise",
+        "rounded-[4px] border border-hairline bg-card",
         className,
       )}
       {...props}
@@ -82,16 +82,16 @@ export function Label({
   ...props
 }: React.LabelHTMLAttributes<HTMLLabelElement>) {
   return (
-    <label className={cn("type-micro block text-ash", className)} {...props} />
+    <label className={cn("type-micro block text-slate", className)} {...props} />
   );
 }
 
 // Fields keep the global 2px iris ring rather than suppressing it: a 1px
 // border-colour change was the only focus signal, which is far too quiet.
 const FIELD_BASE =
-  "w-full rounded-[8px] border border-line-strong bg-pitch px-3 text-bone " +
-  "placeholder:text-ash/60 transition-[background-color,border-color,color] " +
-  "duration-150 hover:border-bone/35 focus:border-iris disabled:cursor-not-allowed disabled:opacity-50";
+  "w-full rounded-[4px] border border-hairline bg-graphite px-3 text-graphite " +
+  "placeholder:text-slate/60 transition-[background-color,border-color,color] " +
+  "duration-150 hover:border-bone/35 focus:border-graphite disabled:cursor-not-allowed disabled:opacity-50";
 
 export function Input({
   className,
@@ -138,23 +138,23 @@ export function Chip({
   children: React.ReactNode;
 }) {
   const tones = {
-    outline: "border border-bone/45 text-bone",
-    solid: "bg-bone text-pitch border border-bone",
-    muted: "border border-line-strong text-ash line-through decoration-ash/50",
+    outline: "border border-graphite/45 text-graphite",
+    solid: "bg-graphite text-card border border-bone",
+    muted: "border border-hairline text-slate line-through decoration-ash/50",
     /** Not live yet. Dashed edge = provisional, without spending a hue on it. */
-    dashed: "border border-dashed border-bone/45 text-bone",
+    dashed: "border border-dashed border-graphite/45 text-graphite",
     /** A neutral taxonomy label. A niche is not an identity and not a status. */
-    quiet: "border border-line-strong text-ash",
+    quiet: "border border-hairline text-slate",
     /** Time, and nothing else. */
-    time: "border border-flare/50 text-flare",
+    time: "border border-tally-live/50 text-tally-live",
     /** Identity and selection, and nothing else. */
-    identity: "border border-iris/50 text-iris",
+    identity: "border border-graphite/50 text-graphite",
   } as const;
 
   return (
     <span
       className={cn(
-        "type-micro inline-flex items-center gap-1.5 rounded-full px-2.5 py-1",
+        "type-micro inline-flex items-center gap-1.5 rounded-[4px] px-2.5 py-1",
         tones[tone],
         className,
       )}
@@ -171,7 +171,7 @@ export function FormError({ children }: { children?: React.ReactNode }) {
   return (
     <p
       role="alert"
-      className="type-small flex gap-2 rounded-[8px] border border-bone/45 bg-bone/[0.06] px-3 py-2 text-bone"
+      className="type-small flex gap-2 rounded-[4px] border border-graphite/45 bg-bone px-3 py-2 text-graphite"
     >
       {/* Marked, not alarmed. Flare stays reserved for time. */}
       <span aria-hidden className="font-semibold">!</span>
@@ -191,9 +191,9 @@ export function EmptyState({
   action?: React.ReactNode;
 }) {
   return (
-    <div className="flex flex-col items-center gap-3 rounded-[10px] border border-dashed border-line-strong px-6 py-14 text-center">
+    <div className="flex flex-col items-center gap-3 rounded-[4px] border border-dashed border-hairline px-6 py-14 text-center">
       <p className="type-title max-w-sm text-balance">{title}</p>
-      <p className="type-small max-w-md text-balance text-ash">{body}</p>
+      <p className="type-small max-w-md text-balance text-slate">{body}</p>
       {action ? <div className="pt-2">{action}</div> : null}
     </div>
   );
