@@ -3,7 +3,9 @@
 import { useActionState, useState } from "react";
 import Link from "next/link";
 import { acceptApplication, declineApplication, type DecisionState } from "../../actions";
-import { Button, Chip, FormError, Select, Textarea } from "@/components/ui";
+import { Button, Chip, FormError, Select, Textarea, type TallyTone } from "@/components/ui";
+import { TallyCard, TallyCountdownStrip, TallyStrip } from "@/components/tally";
+import { Toast } from "@/components/toast";
 import { Countdown } from "@/components/countdown";
 import { money, views, followers, stamp } from "@/lib/format";
 import {
@@ -69,14 +71,19 @@ export function ApplicantCard({
   const decided = a.status !== "pending";
 
   return (
-    <div className="flex flex-col gap-4 rounded-[10px] border border-line bg-raise p-4 sm:p-5">
+    <TallyCard className="flex flex-col gap-4 p-4 sm:p-5">
+      {a.status === "pending" ? (
+        <TallyCountdownStrip expiresAt={a.expires_at} initialMs={a.windowMs} />
+      ) : (
+        <TallyStrip tone={APPLICANT_TONE[a.status]} />
+      )}
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div className="flex min-w-0 flex-col gap-1">
           <div className="flex flex-wrap items-baseline gap-2">
-            <span className="type-timecode text-[15px] text-bone">@{c.handle}</span>
-            <span className="type-small text-ash">{c.display_name}</span>
+            <span className="type-timecode text-[15px] text-graphite">@{c.handle}</span>
+            <span className="type-small text-slate">{c.display_name}</span>
           </div>
-          <p className="type-small text-ash">
+          <p className="type-small text-slate">
             {[c.niche, c.city].filter(Boolean).join(" · ")}
             {c.platforms.length
               ? ` · ${c.platforms.map((p) => PLATFORM_SHORT[p]).join(", ")}`
@@ -85,10 +92,10 @@ export function ApplicantCard({
         </div>
 
         <div className="flex shrink-0 items-center gap-3">
-          <span className="type-timecode text-[20px]">{money(a.rate_cents)}</span>
+          <span className="type-timecode text-[18px]">{money(a.rate_cents)}</span>
           <Chip
             tone={
-              a.status === "accepted" ? "solid" : a.status === "pending" ? "outline" : "muted"
+              a.status === "accepted" ? "clear" : a.status === "pending" ? "neutral" : "over"
             }
           >
             {APPLICATION_STATUS_LABEL[a.status]}
@@ -102,13 +109,15 @@ export function ApplicantCard({
       </div>
 
       <p className="whitespace-pre-wrap text-[15px] leading-relaxed">{a.pitch}</p>
-      {c.bio ? <p className="type-small text-ash">{c.bio}</p> : null}
+      {c.bio ? <p className="type-small text-slate">{c.bio}</p> : null}
 
-      <div className="flex flex-col gap-3 border-t border-line pt-3">
+      <Toast message={accept.toast ?? decline.toast} />
+
+      <div className="flex flex-col gap-3 border-t border-hairline pt-3">
         {accept.threadId ? (
-          <div className="flex flex-wrap items-center justify-between gap-3 rounded-[8px] border border-bone/30 bg-raise-2 p-3.5">
+          <div className="flex flex-wrap items-center justify-between gap-3 rounded-[4px] border border-graphite/30 bg-graphite p-3.5">
             <p className="type-small">
-              Accepted. <span className="type-timecode text-bone">{money(a.rate_cents)}</span>{" "}
+              Accepted. <span className="type-timecode text-graphite">{money(a.rate_cents)}</span>{" "}
               is escrowed for @{c.handle}.
             </p>
             <Link href={`/t/${accept.threadId}`}>
@@ -130,10 +139,10 @@ export function ApplicantCard({
                  least the friction the free, re-approachable decline already
                  had. The button keeps its name through the confirm — an action
                  does not get renamed halfway. */
-              <div className="flex flex-col gap-3 rounded-[8px] border border-bone/30 bg-raise-2 p-3.5">
+              <div className="flex flex-col gap-3 rounded-[4px] border border-graphite/30 bg-graphite p-3.5">
                 <p className="type-small">
                   Escrow{" "}
-                  <span className="type-timecode text-bone">
+                  <span className="type-timecode text-graphite">
                     {money(a.rate_cents)}
                   </span>{" "}
                   to @{c.handle} and open a thread. This can&apos;t be undone,
@@ -172,8 +181,8 @@ export function ApplicantCard({
                     ? "No slots left"
                     : `Accept and escrow ${money(a.rate_cents)}`}
                 </Button>
-                <Button variant="danger" onClick={() => setDeclining(true)}>
-                  Decline
+                <Button variant="secondary" onClick={() => setDeclining(true)}>
+                  Decline with reason
                 </Button>
               </div>
             ) : (
@@ -184,7 +193,7 @@ export function ApplicantCard({
                 <input type="hidden" name="campaign_id" value={campaignId} />
 
                 <div className="flex flex-col gap-1.5">
-                  <label htmlFor={`reason-${a.id}`} className="type-micro text-ash">
+                  <label htmlFor={`reason-${a.id}`} className="type-micro text-slate">
                     Why are you declining? @{c.handle} will see this
                   </label>
                   <Select id={`reason-${a.id}`} name="reason" required defaultValue="">
@@ -209,11 +218,11 @@ export function ApplicantCard({
                 <div className="flex flex-col gap-2.5 sm:flex-row">
                   <Button
                     type="submit"
-                    variant="danger"
+                    variant="secondary"
                     className="sm:flex-1"
                     disabled={declinePending}
                   >
-                    {declinePending ? "Sending decline…" : "Send decline with reason"}
+                    {declinePending ? "Declining…" : "Decline with reason"}
                   </Button>
                   <Button
                     type="button"
@@ -230,7 +239,7 @@ export function ApplicantCard({
 
         {a.status === "accepted" && a.thread_id ? (
           <div className="flex flex-wrap items-center justify-between gap-3">
-            <p className="type-small text-ash">
+            <p className="type-small text-slate">
               Accepted {a.responded_at ? stamp(a.responded_at) : ""} ·{" "}
               {money(a.rate_cents)} escrowed
             </p>
@@ -244,30 +253,38 @@ export function ApplicantCard({
 
         {a.status === "declined" && a.decline_reason ? (
           <div className="flex flex-col gap-1">
-            <span className="type-micro text-ash">Reason sent to @{c.handle}</span>
+            <span className="type-micro text-slate">Reason sent to @{c.handle}</span>
             <p className="type-small">{DECLINE_REASON_LABEL[a.decline_reason]}</p>
             {a.decline_note ? (
-              <p className="type-small text-ash">“{a.decline_note}”</p>
+              <p className="type-small text-slate">“{a.decline_note}”</p>
             ) : null}
           </div>
         ) : null}
 
         {a.status === "expired" ? (
-          <p className="type-small text-flare">
+          <p className="type-small text-tally-live">
             You let this window lapse without answering. It counts against your
             response rate, which creators can see.
           </p>
         ) : null}
 
         {decided && a.status === "withdrawn" ? (
-          <p className="type-small text-ash">
+          <p className="type-small text-slate">
             @{c.handle} withdrew this application.
           </p>
         ) : null}
       </div>
-    </div>
+    </TallyCard>
   );
 }
+
+const APPLICANT_TONE: Record<ApplicationStatus, TallyTone> = {
+  pending: "standby",
+  accepted: "clear",
+  declined: "over",
+  expired: "over",
+  withdrawn: "over",
+};
 
 function Metric({
   label,
@@ -280,9 +297,9 @@ function Metric({
 }) {
   return (
     <span className="flex items-baseline gap-1.5">
-      <span className="type-micro text-ash">{label}</span>
+      <span className="type-micro text-slate">{label}</span>
       <span className="type-timecode text-[15px]">{value}</span>
-      {demo ? <span className="type-micro text-ash/60">demo data</span> : null}
+      {demo ? <span className="type-micro text-slate/60">demo data</span> : null}
     </span>
   );
 }

@@ -17,14 +17,14 @@ export function WithdrawButton({ applicationId }: { applicationId: string }) {
   if (!confirming) {
     return (
       <Button variant="ghost" size="sm" onClick={() => setConfirming(true)}>
-        Withdraw
+        Withdraw application
       </Button>
     );
   }
 
   return (
     <span className="flex flex-wrap items-center gap-2">
-      <span className="type-small text-ash">
+      <span className="type-small text-slate">
         Withdraw for good? You can&apos;t apply to this campaign again.
       </span>
       <Button
@@ -39,7 +39,7 @@ export function WithdrawButton({ applicationId }: { applicationId: string }) {
           })
         }
       >
-        {pending ? "Withdrawing…" : "Yes, withdraw"}
+        {pending ? "Withdrawing…" : "Withdraw application"}
       </Button>
       <Button variant="ghost" size="sm" onClick={() => setConfirming(false)}>
         Keep it

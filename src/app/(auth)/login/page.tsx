@@ -19,14 +19,14 @@ export default async function LoginPage({
     <div className="flex flex-col gap-7">
       <div className="flex flex-col gap-2">
         <h1 className="type-display-xl">Sign in</h1>
-        <p className="text-ash">Pick up where your threads left off.</p>
+        <p className="text-slate">Pick up where your threads left off.</p>
       </div>
 
       <SignInForm next={next ?? ""} />
 
-      <p className="type-small text-ash">
+      <p className="type-small text-slate">
         New here?{" "}
-        <Link href="/signup" className="text-bone underline underline-offset-4">
+        <Link href="/signup" className="text-graphite underline underline-offset-4">
           Create an account
         </Link>
       </p>

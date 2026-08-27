@@ -5,45 +5,38 @@ export function cn(...parts: (string | false | null | undefined)[]) {
 }
 
 // ---------------------------------------------------------------------------
+// Button
+//
+// Three styles. Primary is solid graphite — the one committing action on a
+// screen. Secondary is a hairline outline on white. Destructive is reserved for
+// actions that genuinely destroy something (withdrawing an application);
+// declining is NOT destructive — it is the honest outcome this product wants
+// brands to choose, so it uses secondary.
+// ---------------------------------------------------------------------------
 
 type ButtonProps = React.ButtonHTMLAttributes<HTMLButtonElement> & {
   variant?: "primary" | "secondary" | "ghost" | "danger";
   size?: "sm" | "md";
 };
 
-// NOT `transition-colors`: that list includes outline-color, so the focus ring
-// interpolated from the button's currentColor (dark, on a primary button) up to
-// iris over 150ms — measured at 1.10:1 for the first ~70ms after Tab lands.
-// The ring must be at full contrast the instant focus arrives.
+// Not `transition-colors`: that list includes outline-color, so the focus ring
+// would interpolate up from the button's own colour instead of being at full
+// contrast the instant focus lands.
 const BUTTON_BASE =
-  "inline-flex items-center justify-center gap-2 rounded-[8px] font-semibold " +
-  "transition-[background-color,border-color,color,transform] duration-150 " +
-  "active:scale-[0.98] " +
+  "inline-flex items-center justify-center gap-2 rounded-[4px] font-medium " +
+  "transition-[background-color,border-color,color] duration-150 " +
   "disabled:cursor-not-allowed disabled:opacity-40 whitespace-nowrap select-none";
 
 const BUTTON_VARIANT = {
-  // Money and commitment. The highest-contrast thing on any screen.
-  primary: "bg-bone text-pitch hover:bg-white",
-  secondary:
-    "bg-raise-2 text-bone border border-line-strong hover:border-bone/40 hover:bg-raise-2/70",
-  ghost: "text-ash hover:text-bone hover:bg-raise-2",
-  /**
-   * Deliberately NOT red.
-   *
-   * Two reasons. Flare is time and nothing else, and spending it on every
-   * decline button would dilute the one colour whose job is "this is running
-   * out". And more importantly: this product *wants* brands to decline rather
-   * than go silent. Painting the honest action in alarm-red discourages exactly
-   * the behaviour the whole design is built to encourage. It reads as weightier
-   * than secondary through the dashed edge, not through danger.
-   */
-  danger:
-    "bg-transparent text-bone border border-dashed border-bone/45 hover:border-bone/70 hover:bg-bone/5",
+  primary: "bg-graphite text-card hover:bg-graphite/90",
+  secondary: "bg-card text-graphite border border-hairline hover:border-graphite/60",
+  ghost: "bg-transparent text-slate hover:bg-card hover:text-graphite",
+  danger: "bg-card text-tally-live border border-tally-live/40 hover:border-tally-live",
 } as const;
 
 const BUTTON_SIZE = {
-  sm: "h-8 px-3 text-[13px]",
-  md: "h-10 px-4 text-[14px]",
+  sm: "h-9 px-3 text-[13px]",
+  md: "h-11 px-4 text-[15px]",
 } as const;
 
 export function Button({
@@ -62,16 +55,14 @@ export function Button({
 
 // ---------------------------------------------------------------------------
 
+/** White surface, one hairline, 4px. No shadow anywhere in the app. */
 export function Card({
   className,
   ...props
 }: React.HTMLAttributes<HTMLDivElement>) {
   return (
     <div
-      className={cn(
-        "rounded-[10px] border border-line bg-raise",
-        className,
-      )}
+      className={cn("rounded-[4px] border border-hairline bg-card", className)}
       {...props}
     />
   );
@@ -81,23 +72,21 @@ export function Label({
   className,
   ...props
 }: React.LabelHTMLAttributes<HTMLLabelElement>) {
-  return (
-    <label className={cn("type-micro block text-ash", className)} {...props} />
-  );
+  return <label className={cn("type-micro block text-slate", className)} {...props} />;
 }
 
-// Fields keep the global 2px iris ring rather than suppressing it: a 1px
-// border-colour change was the only focus signal, which is far too quiet.
+// Hairline border on white. The global :focus-visible supplies the 2px graphite
+// ring, so fields never suppress their own focus state.
 const FIELD_BASE =
-  "w-full rounded-[8px] border border-line-strong bg-pitch px-3 text-bone " +
-  "placeholder:text-ash/60 transition-[background-color,border-color,color] " +
-  "duration-150 hover:border-bone/35 focus:border-iris disabled:cursor-not-allowed disabled:opacity-50";
+  "w-full rounded-[4px] border border-hairline bg-card px-3 text-graphite " +
+  "placeholder:text-slate/70 transition-[border-color] duration-150 " +
+  "hover:border-slate/60 focus:border-graphite disabled:opacity-50";
 
 export function Input({
   className,
   ...props
 }: React.InputHTMLAttributes<HTMLInputElement>) {
-  return <input className={cn(FIELD_BASE, "h-10", className)} {...props} />;
+  return <input className={cn(FIELD_BASE, "h-11", className)} {...props} />;
 }
 
 export function Textarea({
@@ -105,7 +94,10 @@ export function Textarea({
   ...props
 }: React.TextareaHTMLAttributes<HTMLTextAreaElement>) {
   return (
-    <textarea className={cn(FIELD_BASE, "min-h-24 py-2.5 leading-relaxed", className)} {...props} />
+    <textarea
+      className={cn(FIELD_BASE, "min-h-24 py-2.5 leading-relaxed", className)}
+      {...props}
+    />
   );
 }
 
@@ -115,52 +107,81 @@ export function Select({
 }: React.SelectHTMLAttributes<HTMLSelectElement>) {
   return (
     <select
-      className={cn(FIELD_BASE, "h-10 appearance-none pr-8 cursor-pointer", className)}
+      className={cn(FIELD_BASE, "h-11 cursor-pointer appearance-none pr-8", className)}
       {...props}
     />
   );
 }
 
-/**
- * Status differentiates by shape and fill, not by hue — which is how a palette
- * of six colours covers nine statuses without a legend.
- *   outline  = still open, still moving
- *   solid    = terminal and good
- *   muted    = terminal and over
- */
+// ---------------------------------------------------------------------------
+// Badge — a tally state.
+//
+// A broadcast tally tells the room what is live right now. Colour here is
+// carrying real state, which is the only thing tally colours are permitted to
+// do. neutral / draft / over carry no state colour at all, because they are not
+// tally states — they are the absence of one.
+// ---------------------------------------------------------------------------
+
+export type TallyTone =
+  | "neutral" // nothing to report
+  | "live" // in production, urgent, running out
+  | "standby" // pending, awaiting a response
+  | "clear" // approved, released, done
+  | "draft" // not published yet
+  | "over"; // expired, declined, withdrawn
+
+const TONES: Record<TallyTone, { chip: string; dot: string }> = {
+  neutral: { chip: "border-hairline text-graphite", dot: "bg-slate" },
+  live: { chip: "border-tally-live/45 text-tally-live", dot: "bg-tally-live" },
+  standby: { chip: "border-tally-standby/50 text-tally-standby", dot: "bg-tally-standby" },
+  clear: { chip: "border-tally-clear/45 text-tally-clear", dot: "bg-tally-clear" },
+  draft: { chip: "border-dashed border-hairline text-slate", dot: "bg-slate/50" },
+  over: {
+    chip: "border-hairline text-slate line-through decoration-slate/50",
+    dot: "bg-slate/40",
+  },
+};
+
 export function Chip({
-  tone = "outline",
+  tone = "neutral",
+  dot = false,
   className,
   children,
 }: {
-  tone?: "outline" | "solid" | "muted" | "dashed" | "quiet" | "time" | "identity";
+  tone?: TallyTone;
+  /** Show the tally light itself, where the chip sits away from other context. */
+  dot?: boolean;
   className?: string;
   children: React.ReactNode;
 }) {
-  const tones = {
-    outline: "border border-bone/45 text-bone",
-    solid: "bg-bone text-pitch border border-bone",
-    muted: "border border-line-strong text-ash line-through decoration-ash/50",
-    /** Not live yet. Dashed edge = provisional, without spending a hue on it. */
-    dashed: "border border-dashed border-bone/45 text-bone",
-    /** A neutral taxonomy label. A niche is not an identity and not a status. */
-    quiet: "border border-line-strong text-ash",
-    /** Time, and nothing else. */
-    time: "border border-flare/50 text-flare",
-    /** Identity and selection, and nothing else. */
-    identity: "border border-iris/50 text-iris",
-  } as const;
-
+  const t = TONES[tone];
   return (
     <span
       className={cn(
-        "type-micro inline-flex items-center gap-1.5 rounded-full px-2.5 py-1",
-        tones[tone],
+        "type-micro inline-flex items-center gap-1.5 rounded-[4px] border bg-card px-2 py-1",
+        t.chip,
         className,
       )}
     >
+      {dot ? <span aria-hidden className={cn("size-1.5 rounded-[4px]", t.dot)} /> : null}
       {children}
     </span>
+  );
+}
+
+/** The bare tally light, for rows where a full chip would be too loud. */
+export function TallyDot({
+  tone = "neutral",
+  className,
+}: {
+  tone?: TallyTone;
+  className?: string;
+}) {
+  return (
+    <span
+      aria-hidden
+      className={cn("block size-2 shrink-0 rounded-[4px]", TONES[tone].dot, className)}
+    />
   );
 }
 
@@ -171,10 +192,11 @@ export function FormError({ children }: { children?: React.ReactNode }) {
   return (
     <p
       role="alert"
-      className="type-small flex gap-2 rounded-[8px] border border-bone/45 bg-bone/[0.06] px-3 py-2 text-bone"
+      className="type-small flex gap-2 rounded-[4px] border border-tally-live/40 bg-card px-3 py-2 text-graphite"
     >
-      {/* Marked, not alarmed. Flare stays reserved for time. */}
-      <span aria-hidden className="font-semibold">!</span>
+      <span aria-hidden className="text-tally-live">
+        !
+      </span>
       <span>{children}</span>
     </p>
   );
@@ -191,9 +213,9 @@ export function EmptyState({
   action?: React.ReactNode;
 }) {
   return (
-    <div className="flex flex-col items-center gap-3 rounded-[10px] border border-dashed border-line-strong px-6 py-14 text-center">
+    <div className="flex flex-col items-center gap-3 rounded-[4px] border border-dashed border-hairline bg-card px-6 py-14 text-center">
       <p className="type-title max-w-sm text-balance">{title}</p>
-      <p className="type-small max-w-md text-balance text-ash">{body}</p>
+      <p className="type-small max-w-md text-balance text-slate">{body}</p>
       {action ? <div className="pt-2">{action}</div> : null}
     </div>
   );

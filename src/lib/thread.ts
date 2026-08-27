@@ -32,7 +32,38 @@ export type SpineEvent =
   | { kind: "review"; at: string; version: number; approved: boolean; note: string | null }
   | { kind: "released"; at: string; amountCents: number };
 
+/**
+ * THE single source of truth for "what is happening right now".
+ *
+ * The thread previously answered that question three times from three columns
+ * — threads.status, payments.status and deliverables.status — which meant the
+ * header could say one thing while the payment rail said another. On a screen
+ * whose entire argument is that state is never ambiguous, that was the worst
+ * possible bug. Every status indicator on the thread now derives from this.
+ */
+export type ThreadState =
+  | "awaiting_delivery"
+  | "in_review"
+  | "changes_requested"
+  | "complete";
+
+export const THREAD_STATE_LABEL: Record<ThreadState, string> = {
+  awaiting_delivery: "Awaiting delivery",
+  in_review: "In review",
+  changes_requested: "Changes requested",
+  complete: "Complete",
+};
+
+/** Which payment step the state puts us on. Derived, never stored twice. */
+export const THREAD_STATE_STEP: Record<ThreadState, PaymentStatus> = {
+  awaiting_delivery: "escrowed",
+  in_review: "in_review",
+  changes_requested: "escrowed",
+  complete: "released",
+};
+
 export type ThreadView = {
+  state: ThreadState;
   id: string;
   status: ThreadStatus;
   createdAt: string;
@@ -181,7 +212,17 @@ export async function getThread(
 
   const last = (deliverables ?? []).at(-1);
 
+  // One derivation, in one place, in a deliberate order.
+  const state: ThreadState = payment?.status === "released"
+    ? "complete"
+    : last?.status === "submitted"
+      ? "in_review"
+      : last?.status === "changes_requested"
+        ? "changes_requested"
+        : "awaiting_delivery";
+
   return {
+    state,
     id: thread.id,
     status: thread.status,
     createdAt: thread.created_at,

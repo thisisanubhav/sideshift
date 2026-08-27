@@ -16,10 +16,12 @@ type RosterRow = {
   id: string;
   campaigns: { title: string } | null;
   creators: { avg_views: number; profiles: { handle: string } | null } | null;
-  payments: { amount_cents: number; status: PaymentStatus }[] | null;
+  // to-ONE (UNIQUE thread_id); deliverables below is genuinely to-many.
+  payments: { amount_cents: number; status: PaymentStatus } | null;
   deliverables: { version: number; status: DeliverableStatus }[] | null;
 };
 import { ResponsivenessBadge, SlotRail, VerticalCount } from "@/components/rail";
+import { TallyStrip } from "@/components/tally";
 import { Button, Card, Chip, EmptyState } from "@/components/ui";
 
 export const metadata = { title: "Your campaigns — SideShift" };
@@ -82,7 +84,7 @@ export default async function BrandDashboard() {
     .order("created_at", { ascending: false });
 
   const crew = ((roster ?? []) as unknown as RosterRow[]).map((t) => {
-    const pay = t.payments?.[0];
+    const pay = t.payments;
     const latest = (t.deliverables ?? []).sort((a, b) => b.version - a.version)[0];
     return {
       id: t.id,
@@ -128,20 +130,21 @@ export default async function BrandDashboard() {
       {soon.length > 0 && nextToLapse ? (
         <Link
           href="/b/applicants"
-          className="flex flex-wrap items-center justify-between gap-3 rounded-[10px] border border-flare/45 bg-flare/10 px-4 py-3.5 transition-colors hover:border-flare/70"
+          className="relative flex flex-wrap items-center justify-between gap-3 overflow-hidden rounded-[4px] border border-hairline bg-card py-3.5 pr-4 pl-5 transition-[border-color] hover:border-tally-live"
         >
-          <p className="text-flare">
-            <span className="type-timecode font-semibold">{soon.length}</span>{" "}
+          <span aria-hidden className="absolute inset-y-0 left-0 w-1 bg-tally-live" />
+          <p className="text-graphite">
+            <span className="type-timecode text-tally-live">{soon.length}</span>{" "}
             {soon.length === 1 ? "application expires" : "applications expire"} on
             you in under 12 hours
           </p>
-          <span className="type-timecode text-flare">
+          <span className="type-timecode text-tally-live">
             next in {timecode(new Date(nextToLapse.expires_at).getTime() - Date.now())}
           </span>
         </Link>
       ) : null}
 
-      <dl className="grid grid-cols-2 gap-px overflow-hidden rounded-[10px] border border-line bg-line sm:grid-cols-4">
+      <dl className="grid grid-cols-2 gap-px overflow-hidden rounded-[4px] border border-hairline bg-hairline sm:grid-cols-4">
         <Stat label="Open campaigns" value={String(open.length)} />
         <Stat
           label="Slots filled"
@@ -154,18 +157,18 @@ export default async function BrandDashboard() {
       {crew.length > 0 ? (
         <section className="flex flex-col gap-3">
           <div className="flex flex-wrap items-baseline justify-between gap-2">
-            <h2 className="type-micro text-ash">Your creators</h2>
-            <span className="type-micro text-ash/60">
+            <h2 className="type-micro text-slate">Your creators</h2>
+            <span className="type-micro text-slate/60">
               view counts are seeded demo data
             </span>
           </div>
 
-          <div className="overflow-x-auto rounded-[10px] border border-line">
+          <div className="overflow-x-auto rounded-[4px] border border-hairline">
             <table className="w-full min-w-[560px] border-collapse text-left">
               <thead>
-                <tr className="border-b border-line bg-raise">
+                <tr className="border-b border-hairline bg-bone">
                   {["Creator", "Campaign", "Avg views", "Work", "Payment"].map((h) => (
-                    <th key={h} className="type-micro px-4 py-2.5 font-semibold text-ash">
+                    <th key={h} className="type-micro px-4 py-2.5 font-semibold text-slate">
                       {h}
                     </th>
                   ))}
@@ -173,28 +176,28 @@ export default async function BrandDashboard() {
               </thead>
               <tbody>
                 {crew.map((c) => (
-                  <tr key={c.id} className="border-b border-line last:border-b-0">
+                  <tr key={c.id} className="border-b border-hairline last:border-b-0">
                     <td className="px-4 py-3">
                       <Link
                         href={`/t/${c.id}`}
-                        className="type-timecode text-[14px] text-bone underline-offset-4 hover:underline"
+                        className="type-timecode inline-flex min-h-11 items-center text-[15px] text-graphite underline-offset-4 hover:underline"
                       >
                         @{c.handle}
                       </Link>
                     </td>
-                    <td className="type-small max-w-[220px] truncate px-4 py-3 text-ash">
+                    <td className="type-small max-w-[220px] truncate px-4 py-3 text-slate">
                       {c.campaign}
                     </td>
-                    <td className="type-timecode px-4 py-3 text-[14px] text-ash">
+                    <td className="type-timecode px-4 py-3 text-[15px] text-slate">
                       {views(c.avgViews)}
                     </td>
                     <td className="type-small px-4 py-3">{c.work}</td>
                     <td className="px-4 py-3">
                       <span className="flex items-baseline gap-2">
-                        <span className="type-timecode text-[14px]">
+                        <span className="type-timecode text-[15px]">
                           {money(c.amount)}
                         </span>
-                        <Chip tone={c.payStatus === "released" ? "solid" : "outline"}>
+                        <Chip tone={c.payStatus === "released" ? "clear" : "neutral"}>
                           {PAYMENT_STATUS_LABEL[c.payStatus]}
                         </Chip>
                       </span>
@@ -209,7 +212,7 @@ export default async function BrandDashboard() {
 
       <div className="flex flex-col gap-3">
         <div className="flex items-center justify-between">
-          <h2 className="type-micro text-ash">Campaigns</h2>
+          <h2 className="type-micro text-slate">Campaigns</h2>
           <ResponsivenessBadge
             answered={rate?.answered_in_window}
             decidable={rate?.decidable}
@@ -234,30 +237,41 @@ export default async function BrandDashboard() {
                 <Link
                   key={c.id}
                   href={`/b/campaigns/${c.id}`}
-                  className="group flex flex-col gap-4 rounded-[10px] border border-line bg-raise p-4 transition-colors hover:border-bone/25 sm:p-5"
+                  className="group relative flex flex-col gap-4 overflow-hidden rounded-[4px] border border-hairline bg-card p-4 pl-5 transition-[border-color] hover:border-graphite/50 sm:p-5 sm:pl-5"
                 >
+                  <TallyStrip
+                    tone={
+                      c.status === "draft"
+                        ? "draft"
+                        : c.status === "closed"
+                          ? "over"
+                          : waiting > 0
+                            ? "live"
+                            : "standby"
+                    }
+                  />
                   <div className="flex flex-wrap items-start justify-between gap-3">
                     <div className="flex min-w-0 gap-4">
                       <VerticalCount count={c.video_count} />
                       <div className="flex min-w-0 flex-col gap-1">
                         <h3 className="type-title text-balance">{c.title}</h3>
-                        <p className="type-small text-ash">
-                          {c.video_count}× {PLATFORM_SHORT[c.platform]} · due{" "}
+                        <p className="type-small text-slate">
+                          <span className="type-timecode">{c.video_count}</span>× {PLATFORM_SHORT[c.platform]} · due{" "}
                           {shortDate(c.deadline)}
                         </p>
                       </div>
                     </div>
                     <div className="flex shrink-0 items-center gap-3">
-                      <span className="type-timecode text-[20px]">
+                      <span className="type-timecode text-[18px]">
                         {money(c.budget_cents_per_creator)}
                       </span>
                       <Chip
                         tone={
                           c.status === "open"
-                            ? "outline"
+                            ? "neutral"
                             : c.status === "draft"
-                              ? "dashed"
-                              : "muted"
+                              ? "draft"
+                              : "over"
                         }
                       >
                         {c.status === "open" ? "Live" : c.status === "draft" ? "Draft" : "Closed"}
@@ -265,15 +279,15 @@ export default async function BrandDashboard() {
                     </div>
                   </div>
 
-                  <div className="flex flex-wrap items-center justify-between gap-3 border-t border-line pt-3">
+                  <div className="flex flex-wrap items-center justify-between gap-3 border-t border-hairline pt-3">
                     <SlotRail filled={c.slots_filled} total={c.slots_total} />
                     {waiting > 0 ? (
-                      <span className="type-small text-flare">
+                      <span className="type-small text-tally-live">
                         <span className="type-timecode">{waiting}</span> waiting on
                         you
                       </span>
                     ) : (
-                      <span className="type-small text-ash">Nothing waiting</span>
+                      <span className="type-small text-slate">Nothing waiting</span>
                     )}
                   </div>
                 </Link>
@@ -283,7 +297,7 @@ export default async function BrandDashboard() {
         )}
 
         {drafts.length > 0 ? (
-          <p className="type-small text-ash">
+          <p className="type-small text-slate">
             {drafts.length} draft{drafts.length === 1 ? "" : "s"} not visible to
             creators yet.
           </p>
@@ -295,10 +309,10 @@ export default async function BrandDashboard() {
 
 function Stat({ label, value, hint }: { label: string; value: string; hint?: string }) {
   return (
-    <div className="flex flex-col gap-1 bg-raise p-4">
-      <dt className="type-micro text-ash">{label}</dt>
-      <dd className="type-timecode text-[22px] leading-tight">{value}</dd>
-      {hint ? <p className="type-small text-ash">{hint}</p> : null}
+    <div className="flex flex-col gap-1.5 bg-card p-4">
+      <dt className="type-micro text-slate">{label}</dt>
+      <dd className="type-timecode text-[32px] leading-none">{value}</dd>
+      {hint ? <p className="type-small text-slate">{hint}</p> : null}
     </div>
   );
 }

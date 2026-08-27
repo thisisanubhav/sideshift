@@ -54,7 +54,7 @@ export default async function BrowsePage({
       <div className="flex min-w-0 flex-1 flex-col gap-5">
         <div className="flex items-end justify-between gap-4">
           <h1 className="type-display-xl">Open campaigns</h1>
-          <span className="type-timecode pb-1 text-[22px] text-ash">
+          <span className="type-timecode pb-1 text-[24px] text-slate">
             {campaigns.length}
           </span>
         </div>

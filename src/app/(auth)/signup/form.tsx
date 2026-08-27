@@ -29,7 +29,7 @@ export function SignUpForm() {
       <input type="hidden" name="role" value={role} />
 
       <fieldset className="flex flex-col gap-2.5">
-        <legend className="type-micro mb-2.5 text-ash">Which side are you on</legend>
+        <legend className="type-micro mb-2.5 text-slate">Which side are you on</legend>
         <div className="grid gap-2.5 sm:grid-cols-2">
           {ROLES.map((r) => {
             const selected = role === r.value;
@@ -40,10 +40,10 @@ export function SignUpForm() {
                 aria-pressed={selected}
                 onClick={() => setRole(r.value)}
                 className={cn(
-                  "flex flex-col gap-3 rounded-[10px] border p-4 text-left transition-colors",
+                  "flex flex-col gap-3 rounded-[4px] border p-4 text-left transition-colors",
                   selected
-                    ? "border-iris bg-iris/10"
-                    : "border-line-strong bg-raise hover:border-bone/30",
+                    ? "border-graphite bg-graphite/10"
+                    : "border-hairline bg-card hover:border-graphite/30",
                 )}
               >
                 {/* 9:16 bars — the native unit of the product, used as texture. */}
@@ -53,15 +53,15 @@ export function SignUpForm() {
                       key={i}
                       style={{ height: `${h * 100}%` }}
                       className={cn(
-                        "w-[9px] rounded-[2px]",
-                        selected ? "bg-iris" : "bg-ash/35",
+                        "w-[9px] rounded-[4px]",
+                        selected ? "bg-graphite" : "bg-slate/35",
                       )}
                     />
                   ))}
                 </span>
                 <span className="flex flex-col gap-1">
                   <span className="font-semibold">{r.title}</span>
-                  <span className="type-small text-ash">{r.body}</span>
+                  <span className="type-small text-slate">{r.body}</span>
                 </span>
               </button>
             );
@@ -86,7 +86,7 @@ export function SignUpForm() {
         <div className="flex flex-col gap-1.5">
           <Label htmlFor="handle">Handle</Label>
           <div className="flex items-center gap-0">
-            <span className="type-timecode flex h-10 items-center rounded-l-[8px] border border-r-0 border-line-strong bg-raise px-3 text-ash">
+            <span className="type-timecode flex h-10 items-center rounded-l-[4px] border border-r-0 border-hairline bg-card px-3 text-slate">
               @
             </span>
             <Input
@@ -99,7 +99,7 @@ export function SignUpForm() {
               placeholder={role === "brand" ? "sunlit" : "maya.builds"}
             />
           </div>
-          <p className="type-small text-ash">
+          <p className="type-small text-slate">
             This is how you appear on every campaign and every thread.
           </p>
         </div>
@@ -119,13 +119,13 @@ export function SignUpForm() {
             minLength={8}
             autoComplete="new-password"
           />
-          <p className="type-small text-ash">At least 8 characters.</p>
+          <p className="type-small text-slate">At least <span className="type-timecode">8</span> characters.</p>
         </div>
       </div>
 
       <FormError>{state.error}</FormError>
       {state.notice ? (
-        <p className="type-small rounded-[8px] border border-line-strong bg-raise px-3 py-2 text-ash">
+        <p className="type-small rounded-[4px] border border-hairline bg-card px-3 py-2 text-slate">
           {state.notice}
         </p>
       ) : null}

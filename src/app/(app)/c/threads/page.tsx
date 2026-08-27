@@ -14,7 +14,7 @@ export default async function CreatorThreads() {
     <div className="flex flex-col gap-7">
       <div className="flex flex-col gap-2">
         <h1 className="type-display-xl">Threads</h1>
-        <p className="text-ash">
+        <p className="text-slate">
           Every campaign you were accepted to. Brief, chat, your cut, and where
           the money is.
         </p>

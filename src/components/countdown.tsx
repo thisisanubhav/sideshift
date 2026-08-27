@@ -43,7 +43,7 @@ export function Countdown({
   return (
     <span className={cn("inline-flex items-baseline gap-2", className)}>
       {showLabel ? (
-        <span className="type-micro text-ash">
+        <span className="type-micro text-slate">
           {expired ? "Window closed" : "Brand must reply in"}
         </span>
       ) : null}
@@ -58,7 +58,7 @@ export function Countdown({
         aria-hidden
         className={cn(
           "type-timecode tabular-nums",
-          expired ? "text-ash line-through" : urgent ? "text-flare" : "text-bone",
+          expired ? "text-slate line-through" : urgent ? "text-tally-live" : "text-graphite",
           urgent && "motion-safe:animate-pulse",
         )}
       >

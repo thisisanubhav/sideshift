@@ -28,23 +28,29 @@ export function SlotRail({
             {i > 0 ? (
               <span
                 aria-hidden
-                className={cn("h-px w-3.5", i <= filled ? "bg-bone/50" : "bg-line-strong")}
+                className={cn("h-px w-3.5", i <= filled ? "bg-graphite/40" : "bg-hairline")}
               />
             ) : null}
             <span
               aria-hidden
               className={cn(
-                "block size-2 rounded-full",
-                i < filled ? "bg-bone" : "border border-line-strong bg-transparent",
+                "block size-2 rounded-[4px]",
+                i < filled ? "bg-graphite" : "border border-hairline bg-transparent",
               )}
             />
           </span>
         ))}
       </div>
-      <span className="type-small text-ash">
-        {left === 0
-          ? "All slots filled"
-          : `${left} of ${total} slot${total === 1 ? "" : "s"} left`}
+      <span className="type-small text-slate">
+        {left === 0 ? (
+          "All slots filled"
+        ) : (
+          <>
+            <span className="type-timecode">{left}</span> of{" "}
+            <span className="type-timecode">{total}</span> slot
+            {total === 1 ? "" : "s"} left
+          </>
+        )}
       </span>
     </div>
   );
@@ -76,12 +82,12 @@ export function ResponsivenessBadge({
   size?: "body" | "small";
 }) {
   const r = computeResponsiveness(answered, decidable);
-  const text = size === "body" ? "text-[14px]" : "type-small";
+  const text = size === "body" ? "text-[15px]" : "type-small";
 
   if (r.kind === "new") {
     return (
-      <span className={cn(text, "inline-flex items-center gap-1.5 text-ash", className)}>
-        <span aria-hidden className="size-1.5 rounded-full bg-ash/60" />
+      <span className={cn(text, "inline-flex items-center gap-1.5 text-slate", className)}>
+        <span aria-hidden className="size-1.5 rounded-[4px] bg-slate/60" />
         {r.label}
       </span>
     );
@@ -90,7 +96,7 @@ export function ResponsivenessBadge({
   // Flare here is still time: the metric is literally "answered in time", and a
   // brand that misses the window is the same failure the countdown measures.
   const tone =
-    r.tone === "good" ? "text-bone" : r.tone === "mixed" ? "text-ash" : "text-flare";
+    r.tone === "good" ? "text-graphite" : r.tone === "mixed" ? "text-slate" : "text-tally-live";
 
   return (
     <span
@@ -99,16 +105,17 @@ export function ResponsivenessBadge({
       <span
         aria-hidden
         className={cn(
-          "size-1.5 rounded-full",
-          r.tone === "good" ? "bg-bone" : r.tone === "mixed" ? "bg-ash" : "bg-flare",
+          "size-1.5 rounded-[4px]",
+          r.tone === "good" ? "bg-graphite" : r.tone === "mixed" ? "bg-slate" : "bg-tally-live",
         )}
       />
       <span className="type-timecode font-semibold">{r.pct}%</span>
       <span>answered in time</span>
       {/* The denominator is not optional. A percentage without it is exactly the
           ambiguity this product exists to remove. */}
-      <span className="text-ash">
-        · {r.answered} of {r.decidable}
+      <span className="text-slate">
+        · <span className="type-timecode">{r.answered}</span> of{" "}
+        <span className="type-timecode">{r.decidable}</span>
       </span>
     </span>
   );
@@ -138,20 +145,20 @@ export function VerticalCount({
         <span
           key={i}
           aria-hidden
-          // Raised off the card rather than sunk into it. At border-line-strong
-          // on bg-raise these were invisible on a real screen — the one piece of
+          // Raised off the card rather than sunk into it. At border-hairline
+          // on bg-card these were invisible on a real screen — the one piece of
           // texture that says "vertical video" was doing no work at all.
           className={cn(
-            "block w-[13px] rounded-[2px] border",
+            "block w-[13px] rounded-[4px] border",
             active
-              ? "border-iris/70 bg-iris/30"
-              : "border-bone/30 bg-bone/[0.10]",
+              ? "border-graphite bg-graphite/15"
+              : "border-slate/45 bg-bone",
           )}
           style={{ height: 23 }}
         />
       ))}
       {count > shown ? (
-        <span className="type-timecode pl-0.5 text-[11px] text-ash">+{count - shown}</span>
+        <span className="type-timecode pl-0.5 text-[11px] text-slate">+{count - shown}</span>
       ) : null}
     </span>
   );

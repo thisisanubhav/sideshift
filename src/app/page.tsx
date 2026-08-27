@@ -30,12 +30,12 @@ export default async function Home() {
     <div className="flex min-h-dvh flex-col">
       <a
         href="#main"
-        className="sr-only focus:not-sr-only focus:absolute focus:top-3 focus:left-3 focus:z-50 focus:rounded-[8px] focus:bg-bone focus:px-4 focus:py-2 focus:text-pitch"
+        className="sr-only focus:not-sr-only focus:absolute focus:top-3 focus:left-3 focus:z-50 focus:rounded-[4px] focus:bg-graphite focus:px-4 focus:py-2 focus:text-card"
       >
         Skip to content
       </a>
 
-      <header className="flex items-center justify-between border-b border-line px-5 py-3 sm:px-8">
+      <header className="flex items-center justify-between border-b border-hairline px-5 py-3 sm:px-8">
         <Wordmark />
         <nav aria-label="Account" className="flex items-center gap-2">
           <Link href="/login">
@@ -53,7 +53,7 @@ export default async function Home() {
             <h1 className="type-display-xl text-balance">
               One thread per creator. Brief, chat, approval, payment.
             </h1>
-            <p className="max-w-[62ch] text-lg leading-relaxed text-ash">
+            <p className="max-w-[62ch] text-lg leading-relaxed text-slate">
               Brands post paid short-form video briefs. Creators apply with a rate.
               Everything after that happens on a single timeline that both sides
               read the same way — no Slack, no email, no wondering.
@@ -68,14 +68,14 @@ export default async function Home() {
             </div>
 
             {s ? (
-              <dl className="mt-3 grid grid-cols-2 gap-px overflow-hidden rounded-[10px] border border-line bg-line sm:grid-cols-4">
+              <dl className="mt-3 grid grid-cols-2 gap-px overflow-hidden rounded-[4px] border border-hairline bg-hairline sm:grid-cols-4">
                 <Stat label="Open briefs" value={String(s.open_campaigns)} />
                 <Stat label="Creators" value={String(s.creators)} />
                 <Stat label="Escrowed now" value={money(s.escrowed_cents)} />
                 <Stat label="Answered in time" value={`${s.answered_pct}%`} />
               </dl>
             ) : null}
-            <p className="type-small text-ash">
+            <p className="type-small text-slate">
               Live figures from this marketplace, not a brochure.
             </p>
           </div>
@@ -90,14 +90,14 @@ export default async function Home() {
             A marketplace that makes the next step obvious.
           </h2>
 
-          <div className="grid gap-0 overflow-hidden rounded-[10px] border border-line lg:grid-cols-3 lg:divide-x lg:divide-line">
+          <div className="grid gap-0 overflow-hidden rounded-[4px] border border-hairline lg:grid-cols-3 lg:divide-x lg:divide-hairline">
             <Promise
               title="Every application gets an answer"
               body="A 48-hour window, counted down in front of both of you. Let it lapse and the application expires on its own, the slot frees, and it shows in your public rate."
               demo={
                 <div className="flex items-baseline gap-2">
-                  <span className="type-micro text-ash">Brand must reply in</span>
-                  <span className="type-timecode text-flare">
+                  <span className="type-micro text-slate">Brand must reply in</span>
+                  <span className="type-timecode text-tally-live">
                     {timecode(41 * 60 * 1000 + 52 * 1000)}
                   </span>
                 </div>
@@ -109,7 +109,7 @@ export default async function Home() {
               body="Declines pick from a fixed list and the creator reads it verbatim. The database refuses to store a decline without one — it isn't a form rule you can skip."
               demo={
                 <div className="flex flex-col gap-1.5">
-                  <span className="type-micro text-ash">Why it was declined</span>
+                  <span className="type-micro text-slate">Why it was declined</span>
                   <span className="type-small">Rate above our budget</span>
                 </div>
               }
@@ -120,9 +120,9 @@ export default async function Home() {
               body="Escrowed, in review, released — one record, one set of timestamps, rendered by one component for the brand and the creator. Not two views kept in sync by hand."
               demo={
                 <div className="flex items-center gap-2">
-                  <Chip tone="outline">Escrowed</Chip>
-                  <span aria-hidden className="text-ash">→</span>
-                  <Chip tone="solid">Released</Chip>
+                  <Chip tone="neutral">Escrowed</Chip>
+                  <span aria-hidden className="text-slate">→</span>
+                  <Chip tone="clear">Released</Chip>
                 </div>
               }
             />
@@ -130,41 +130,41 @@ export default async function Home() {
         </section>
 
         {/* The wedge gets its own moment, because it is the argument. */}
-        <section className="mt-16 grid gap-7 rounded-[10px] border border-line bg-raise p-6 sm:mt-20 sm:p-8 lg:grid-cols-[minmax(0,1fr)_auto] lg:items-end">
+        <section className="mt-16 grid gap-7 rounded-[4px] border border-hairline bg-card p-6 sm:mt-20 sm:p-8 lg:grid-cols-[minmax(0,1fr)_auto] lg:items-end">
           <div className="flex flex-col gap-4">
             <h2 className="type-display-l max-w-2xl text-balance">
               Before you spend an hour on a pitch, see whether this brand answers.
             </h2>
-            <p className="max-w-2xl text-ash">
+            <p className="max-w-2xl text-slate">
               Every campaign card carries the share of applications that brand
               answered inside the window — computed from real applications, never
               shown without its denominator, and never guessed at from one data
               point. No competitor shows it.
             </p>
           </div>
-          <div className="flex flex-col gap-3 border-t border-line pt-5 lg:min-w-[238px] lg:border-t-0 lg:border-l lg:pl-7 lg:pt-0">
-            <span className="inline-flex items-center gap-1.5 text-[14px]">
-              <span aria-hidden className="size-1.5 rounded-full bg-bone" />
+          <div className="flex flex-col gap-3 border-t border-hairline pt-5 lg:min-w-[238px] lg:border-t-0 lg:border-l lg:pl-7 lg:pt-0">
+            <span className="inline-flex items-center gap-1.5 text-[15px]">
+              <span aria-hidden className="size-1.5 rounded-[4px] bg-graphite" />
               <span className="type-timecode font-semibold">92%</span>
               <span>answered in time</span>
-              <span className="text-ash">· 24 of 26</span>
+              <span className="text-slate">· 24 of 26</span>
             </span>
-            <span className="inline-flex items-center gap-1.5 text-[14px] text-flare">
-              <span aria-hidden className="size-1.5 rounded-full bg-flare" />
+            <span className="inline-flex items-center gap-1.5 text-[15px] text-tally-live">
+              <span aria-hidden className="size-1.5 rounded-[4px] bg-tally-live" />
               <span className="type-timecode font-semibold">43%</span>
               <span>answered in time</span>
-              <span className="text-ash">· 3 of 7</span>
+              <span className="text-slate">· 3 of 7</span>
             </span>
-            <span className="inline-flex items-center gap-1.5 text-[14px] text-ash">
-              <span aria-hidden className="size-1.5 rounded-full bg-ash/60" />
+            <span className="inline-flex items-center gap-1.5 text-[15px] text-slate">
+              <span aria-hidden className="size-1.5 rounded-[4px] bg-slate/60" />
               New brand · no response history
             </span>
           </div>
         </section>
       </main>
 
-      <footer className="border-t border-line px-5 py-6 sm:px-8">
-        <p className="type-small text-ash">
+      <footer className="border-t border-hairline px-5 py-6 sm:px-8">
+        <p className="type-small text-slate">
           A rebuild of sideshift.app, built as a take-home. Payments are display
           state only — no money moves. View counts in the app are seeded and
           labelled as demo data.
@@ -176,9 +176,9 @@ export default async function Home() {
 
 function Stat({ label, value }: { label: string; value: string }) {
   return (
-    <div className="flex flex-col gap-1 bg-pitch p-3.5">
-      <dt className="type-micro text-ash">{label}</dt>
-      <dd className="type-timecode text-[20px] leading-tight">{value}</dd>
+    <div className="flex flex-col gap-1 bg-graphite p-3.5">
+      <dt className="type-micro text-slate">{label}</dt>
+      <dd className="type-timecode text-[18px] leading-tight">{value}</dd>
     </div>
   );
 }
@@ -193,13 +193,13 @@ function Promise({
   demo: React.ReactNode;
 }) {
   return (
-    <div className="flex flex-col gap-4 border-b border-line bg-raise p-5 last:border-b-0 lg:border-b-0 lg:not-last:border-r lg:not-last:border-line">
-      <div className="rounded-[8px] border border-line-strong bg-pitch p-3.5">
+    <div className="flex flex-col gap-4 border-b border-hairline bg-card p-5 last:border-b-0 lg:border-b-0 lg:not-last:border-r lg:not-last:border-hairline">
+      <div className="rounded-[4px] border border-hairline bg-graphite p-3.5">
         {demo}
       </div>
       <div className="flex flex-col gap-2">
         <h3 className="type-title text-balance">{title}</h3>
-        <p className="type-small text-ash">{body}</p>
+        <p className="type-small text-slate">{body}</p>
       </div>
     </div>
   );

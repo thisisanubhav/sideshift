@@ -36,9 +36,9 @@ export function ApplyForm({
 
   if (state.ok) {
     return (
-      <div className="flex flex-col gap-2 rounded-[10px] border border-bone/30 bg-raise-2 p-5">
+      <div className="flex flex-col gap-2 rounded-[4px] border border-graphite/30 bg-graphite p-5">
         <p className="type-title">Application sent</p>
-        <p className="type-small text-ash">
+        <p className="type-small text-slate">
           The clock starts now. This brand has 48 hours to accept or decline —
           if they let it lapse, the application expires and the slot frees up.
           Track it on your applications page.
@@ -64,7 +64,7 @@ export function ApplyForm({
           onChange={(e) => setPitch(e.target.value)}
           placeholder="What you'd film, where you'd film it, and why this brief fits what you already make."
         />
-        <p className="type-small flex items-baseline justify-between gap-3 text-ash">
+        <p className="type-small flex items-baseline justify-between gap-3 text-slate">
           <span>Say what you&apos;d actually shoot. Brands skim these.</span>
           <span className="type-timecode shrink-0">{pitch.length}/1200</span>
         </p>
@@ -73,7 +73,7 @@ export function ApplyForm({
       <div className="flex flex-col gap-1.5">
         <Label htmlFor="rate">Your rate for this campaign</Label>
         <div className="flex items-center">
-          <span className="type-timecode flex h-10 items-center rounded-l-[8px] border border-r-0 border-line-strong bg-raise px-3 text-ash">
+          <span className="type-timecode flex h-10 items-center rounded-l-[4px] border border-r-0 border-hairline bg-card px-3 text-slate">
             $
           </span>
           <Input
@@ -89,7 +89,7 @@ export function ApplyForm({
           />
         </div>
 
-        <p className="type-small text-ash">
+        <p className="type-small text-slate">
           The brand posted {money(budgetCents)} per creator. What you name here is
           what gets escrowed if they accept.
         </p>
@@ -97,7 +97,7 @@ export function ApplyForm({
         {/* Asking above budget is allowed and sometimes right — but the creator
             should know they're doing it, and what it costs. */}
         {over > 0 ? (
-          <p className="type-small text-bone">
+          <p className="type-small text-graphite">
             {/* Marked, not alarmed - and not Flare: a rate is not a clock. */}
             {money(over * 100)} above the posted budget. Brands can decline for
             this — and if they do, they have to tell you.
@@ -108,7 +108,7 @@ export function ApplyForm({
           <button
             type="button"
             onClick={() => setRate(usual)}
-            className="type-small w-fit text-bone underline underline-offset-4 hover:text-ash"
+            className="type-small inline-flex min-h-11 w-fit items-center text-graphite underline underline-offset-4 hover:text-slate"
           >
             Your usual rate is {money(baseRateCents)} — ask for that instead
           </button>
@@ -117,8 +117,8 @@ export function ApplyForm({
 
       <FormError>{state.error}</FormError>
 
-      <p className="type-small rounded-[8px] border border-line-strong bg-pitch px-3 py-2 text-ash">
-        Once you send this, the brand has <span className="text-bone">48 hours</span>{" "}
+      <p className="type-small rounded-[4px] border border-hairline bg-bone px-3 py-2 text-slate">
+        Once you send this, the brand has <span className="type-timecode text-graphite">48 hours</span>{" "}
         to accept or decline. If they let it lapse it expires on its own, the slot
         frees up, and it counts against their public response rate.
       </p>

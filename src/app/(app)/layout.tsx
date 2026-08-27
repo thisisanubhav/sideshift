@@ -30,20 +30,24 @@ export default async function AppLayout({
     <div className="flex min-h-dvh flex-col">
       <a
         href="#main"
-        className="sr-only focus:not-sr-only focus:absolute focus:top-3 focus:left-3 focus:z-50 focus:rounded-[8px] focus:bg-bone focus:px-4 focus:py-2 focus:text-pitch"
+        className="sr-only focus:not-sr-only focus:absolute focus:top-3 focus:left-3 focus:z-50 focus:rounded-[4px] focus:bg-graphite focus:px-4 focus:py-2 focus:text-card"
       >
         Skip to content
       </a>
-      <header className="sticky top-0 z-30 border-b border-line bg-pitch">
+      <header className="sticky top-0 z-30 border-b border-hairline bg-bone/95 backdrop-blur">
         <div className="mx-auto flex w-full max-w-6xl items-center gap-4 px-4 py-3 sm:px-6">
-          <Link href={`/${viewer.role === "brand" ? "b" : "c"}`} aria-label="SideShift home">
+          <Link
+            href={`/${viewer.role === "brand" ? "b" : "c"}`}
+            aria-label="SideShift home"
+            className="inline-flex min-h-11 items-center"
+          >
             <Wordmark />
           </Link>
 
           <AppNav items={nav} className="ml-2 hidden sm:flex" />
 
           <div className="ml-auto flex items-center gap-3">
-            <span className="type-timecode hidden text-[13px] text-ash sm:inline">
+            <span className="type-timecode hidden text-[13px] text-slate sm:inline">
               @{viewer.handle}
             </span>
             <form action={signOut}>
@@ -59,7 +63,7 @@ export default async function AppLayout({
         <AppNav
           items={nav}
           orientation="strip"
-          className="border-t border-line px-4 py-1 sm:hidden"
+          className="border-t border-hairline px-4 py-1 sm:hidden"
         />
       </header>
 

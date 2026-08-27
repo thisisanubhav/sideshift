@@ -13,16 +13,16 @@ export default async function SignUpPage() {
     <div className="flex flex-col gap-7">
       <div className="flex flex-col gap-2">
         <h1 className="type-display-xl">Join SideShift</h1>
-        <p className="text-ash">
+        <p className="text-slate">
           Brief, chat, approval and payment for every creator — in one thread.
         </p>
       </div>
 
       <SignUpForm />
 
-      <p className="type-small text-ash">
+      <p className="type-small text-slate">
         Already have an account?{" "}
-        <Link href="/login" className="text-bone underline underline-offset-4">
+        <Link href="/login" className="text-graphite underline underline-offset-4">
           Sign in
         </Link>
       </p>

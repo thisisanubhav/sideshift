@@ -9,7 +9,8 @@ import {
 } from "@/lib/types";
 import type { ApplicationStatus, DeclineReason, Platform } from "@/lib/types";
 import { Countdown } from "@/components/countdown";
-import { Button, Card, Chip, EmptyState } from "@/components/ui";
+import { Button, Chip, EmptyState } from "@/components/ui";
+import { TallyCard, TallyCountdownStrip, TallyStrip } from "@/components/tally";
 import { WithdrawButton } from "./withdraw";
 
 export const metadata = { title: "Your applications — SideShift" };
@@ -33,11 +34,11 @@ type Row = {
 };
 
 const CHIP_TONE = {
-  pending: "outline",
-  accepted: "solid",
-  declined: "muted",
-  expired: "muted",
-  withdrawn: "muted",
+  pending: "standby",
+  accepted: "clear",
+  declined: "over",
+  expired: "over",
+  withdrawn: "over",
 } as const;
 
 export default async function CreatorApplications() {
@@ -71,8 +72,8 @@ export default async function CreatorApplications() {
       <div className="flex flex-wrap items-end justify-between gap-4">
         <h1 className="type-display-xl">Your applications</h1>
         {waiting > 0 ? (
-          <p className="type-small pb-1 text-ash">
-            <span className="type-timecode text-bone">{waiting}</span> awaiting a
+          <p className="type-small pb-1 text-slate">
+            <span className="type-timecode text-graphite">{waiting}</span> awaiting a
             reply
           </p>
         ) : null}
@@ -94,27 +95,35 @@ export default async function CreatorApplications() {
             const c = r.campaigns;
             const threadId = threadFor.get(r.id);
             return (
-              <Card key={r.id} className="flex flex-col gap-4 p-4 sm:p-5">
+              <TallyCard key={r.id} className="flex flex-col gap-4 p-4 sm:p-5">
+                {r.status === "pending" ? (
+                  <TallyCountdownStrip
+                    expiresAt={r.expires_at}
+                    initialMs={new Date(r.expires_at).getTime() - Date.now()}
+                  />
+                ) : (
+                  <TallyStrip tone={CHIP_TONE[r.status]} />
+                )}
                 <div className="flex flex-wrap items-start justify-between gap-3">
                   <div className="flex min-w-0 flex-col gap-1">
                     <h2 className="type-title text-balance">
                       {c?.title ?? "Campaign removed"}
                     </h2>
-                    <p className="type-small text-ash">
-                      <span className="type-timecode text-bone">
+                    <p className="type-small text-slate">
+                      <span className="type-timecode text-graphite">
                         @{c?.brands?.profiles?.handle ?? "unknown"}
                       </span>
                       {c ? (
                         <>
                           {" "}
-                          · {c.video_count}× {PLATFORM_SHORT[c.platform]}
+                          · <span className="type-timecode">{c.video_count}</span>× {PLATFORM_SHORT[c.platform]}
                         </>
                       ) : null}
                       {" "}· applied {stamp(r.created_at)}
                     </p>
                   </div>
                   <div className="flex shrink-0 items-center gap-3">
-                    <span className="type-timecode text-[20px]">
+                    <span className="type-timecode text-[18px]">
                       {money(r.rate_cents)}
                     </span>
                     <Chip tone={CHIP_TONE[r.status]}>
@@ -124,7 +133,7 @@ export default async function CreatorApplications() {
                 </div>
 
                 {r.status === "pending" ? (
-                  <div className="flex flex-wrap items-center justify-between gap-3 border-t border-line pt-3">
+                  <div className="flex flex-wrap items-center justify-between gap-3 border-t border-hairline pt-3">
                     <Countdown
                       expiresAt={r.expires_at}
                       initialMs={new Date(r.expires_at).getTime() - Date.now()}
@@ -134,8 +143,8 @@ export default async function CreatorApplications() {
                 ) : null}
 
                 {r.status === "accepted" && threadId ? (
-                  <div className="flex flex-wrap items-center justify-between gap-3 border-t border-line pt-3">
-                    <p className="type-small text-ash">
+                  <div className="flex flex-wrap items-center justify-between gap-3 border-t border-hairline pt-3">
+                    <p className="type-small text-slate">
                       Accepted {r.responded_at ? stamp(r.responded_at) : ""} ·{" "}
                       {money(r.rate_cents)} escrowed
                     </p>
@@ -149,24 +158,24 @@ export default async function CreatorApplications() {
 
                 {/* The decline reason is the product. It is never hidden. */}
                 {r.status === "declined" && r.decline_reason ? (
-                  <div className="flex flex-col gap-1.5 border-t border-line pt-3">
-                    <span className="type-micro text-ash">Why it was declined</span>
+                  <div className="flex flex-col gap-1.5 border-t border-hairline pt-3">
+                    <span className="type-micro text-slate">Why it was declined</span>
                     <p className="type-small">
                       {DECLINE_REASON_LABEL[r.decline_reason]}
                     </p>
                     {r.decline_note ? (
-                      <p className="type-small text-ash">“{r.decline_note}”</p>
+                      <p className="type-small text-slate">“{r.decline_note}”</p>
                     ) : null}
                   </div>
                 ) : null}
 
                 {r.status === "expired" ? (
-                  <p className="type-small border-t border-line pt-3 text-ash">
+                  <p className="type-small border-t border-hairline pt-3 text-slate">
                     The brand let the 48-hour window lapse without answering. The
                     slot was freed. This does not count against you.
                   </p>
                 ) : null}
-              </Card>
+              </TallyCard>
             );
           })}
         </div>

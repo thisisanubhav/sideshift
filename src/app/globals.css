@@ -1,53 +1,75 @@
 @import "tailwindcss";
 
 /* ---------------------------------------------------------------------------
-   SideShift design tokens.
+   SideShift — video control room.
 
-   Six named values. Colour is semantic, never decorative:
-     Flare is time and nothing else. Iris is identity and nothing else.
-     Money has no hue at all — it gets contrast instead, and the escrow chip
-     fills as the money moves.
+   The vocabulary of a broadcast switcher: a tally light tells everyone what is
+   live right now. Statuses are tally states, numbers are timecodes, and the
+   interface stays quiet so the tally colours carry all the signal.
 
-   No gradients, no glows, no drop shadows. One 1px border does the work.
+   Tally colours appear ONLY on status indicators, countdowns, and one primary
+   action per screen. Never as decorative fill, never as a gradient, never as a
+   page or card background.
    --------------------------------------------------------------------------- */
 
 @theme {
-  --color-pitch: #17131c;
-  --color-raise: #221c29;
-  --color-raise-2: #2b2434;
-  --color-bone: #efeaf2;
-  --color-ash: #8b84a0;
-  --color-flare: #ff5a3d;
-  --color-iris: #7c6bff;
+  /* Stock Tailwind ramps are cleared FIRST, before the palette is declared.
+     Order matters: `--color-slate-*: initial` wipes the whole `slate`
+     namespace including a bare `--color-slate`, so declaring the palette
+     afterwards is what keeps `text-slate` alive. Clearing these means
+     `bg-gray-800` and friends stop resolving at all, so a stray one is a
+     visible bug rather than silent drift back to shadcn grey. */
+  --color-slate-*: initial;
+  --color-gray-*: initial;
+  --color-zinc-*: initial;
+  --color-neutral-*: initial;
+  --color-stone-*: initial;
+  --color-blue-*: initial;
+  --color-indigo-*: initial;
+  --color-violet-*: initial;
+  --color-purple-*: initial;
+  --color-red-*: initial;
+  --color-amber-*: initial;
+  --color-green-*: initial;
+  --color-emerald-*: initial;
 
-  --color-line: rgba(239, 234, 242, 0.08);
-  --color-line-strong: rgba(239, 234, 242, 0.16);
+  /* Palette — nothing outside this set. */
+  --color-bone: #e9e7e1; /* page background */
+  --color-card: #ffffff; /* surfaces */
+  --color-graphite: #16191c; /* primary text, headers, primary buttons */
+  --color-slate: #6b7178; /* secondary text, labels */
+  --color-tally-live: #ff4d2e; /* active, in production, urgent */
+  --color-tally-standby: #e0a62b; /* pending, awaiting response */
+  --color-tally-clear: #3f9e77; /* approved, released, done */
+  --color-hairline: #d3d0c8; /* borders */
 
-  --font-display: var(--font-archivo), "Arial Black", system-ui, sans-serif;
-  --font-sans: var(--font-instrument), system-ui, sans-serif;
+  --font-display: var(--font-bricolage), Georgia, serif;
+  --font-sans: var(--font-public-sans), system-ui, sans-serif;
   --font-mono: var(--font-jetbrains), ui-monospace, monospace;
 
-  --radius-card: 10px;
-  --radius-control: 8px;
+  /* 4px everywhere. rounded-full is for avatars only. */
+  --radius-card: 4px;
+  --radius-control: 4px;
+
 }
 
 @layer base {
   :root {
-    color-scheme: dark;
-    --header-height: 6.5rem;
+    color-scheme: light;
+    --header-height: 4rem;
     scroll-padding-top: calc(var(--header-height) + 1rem);
   }
 
   html {
-    background: var(--color-pitch);
+    background: var(--color-bone);
   }
 
   body {
-    background: var(--color-pitch);
-    color: var(--color-bone);
+    background: var(--color-bone);
+    color: var(--color-graphite);
     font-family: var(--font-sans);
     font-size: 15px;
-    line-height: 1.5;
+    line-height: 1.55;
     -webkit-font-smoothing: antialiased;
     text-rendering: optimizeLegibility;
   }
@@ -59,37 +81,18 @@
   input,
   textarea,
   select {
-    caret-color: var(--color-iris);
-  }
-
-  * {
-    scrollbar-color: var(--color-raise-2) var(--color-pitch);
-  }
-
-  *::-webkit-scrollbar {
-    width: 10px;
-    height: 10px;
-  }
-
-  *::-webkit-scrollbar-track {
-    background: var(--color-pitch);
-  }
-
-  *::-webkit-scrollbar-thumb {
-    border: 3px solid var(--color-pitch);
-    border-radius: 999px;
-    background: var(--color-raise-2);
+    caret-color: var(--color-graphite);
   }
 
   /* Visible keyboard focus everywhere, and only for keyboard users. */
   :focus-visible {
-    outline: 2px solid var(--color-iris);
+    outline: 2px solid var(--color-graphite);
     outline-offset: 2px;
-    border-radius: 4px;
+    border-radius: 2px;
   }
 
   ::selection {
-    background: var(--color-iris);
+    background: var(--color-graphite);
     color: var(--color-bone);
   }
 
@@ -106,54 +109,61 @@
 }
 
 @layer components {
-  /* Display face is rationed: page H1s and the one or two numbers that matter.
-     Three instances per screen, maximum. */
+  /* -------------------------------------------------------------------------
+     Type scale: 48 / 32 / 24 / 18 / 15 / 13 / 11. Body is 15.
+     Display face is Bricolage Grotesque, page titles and section headings only.
+     ------------------------------------------------------------------------- */
+
   .type-display-xl {
     font-family: var(--font-display);
     font-weight: 700;
-    font-stretch: 118%;
-    font-size: clamp(2rem, 1.4rem + 2.4vw, 3.5rem);
-    line-height: 0.95;
+    font-size: clamp(2rem, 1.5rem + 1.8vw, 3rem); /* → 48 */
+    line-height: 1.02;
     letter-spacing: -0.03em;
   }
 
   .type-display-l {
     font-family: var(--font-display);
     font-weight: 700;
-    font-stretch: 118%;
-    font-size: clamp(1.5rem, 1.2rem + 1.2vw, 2.25rem);
-    line-height: 1;
+    font-size: clamp(1.5rem, 1.25rem + 1vw, 2rem); /* → 32 */
+    line-height: 1.08;
     letter-spacing: -0.025em;
   }
 
   .type-title {
-    font-size: 1.375rem;
-    line-height: 1.25;
+    font-family: var(--font-display);
     font-weight: 600;
-    letter-spacing: -0.01em;
+    font-size: 1.5rem; /* 24 */
+    line-height: 1.2;
+    letter-spacing: -0.02em;
   }
 
-  .type-small {
-    font-size: 0.8125rem;
+  .type-18 {
+    font-size: 1.125rem;
     line-height: 1.45;
   }
 
-  /* The all-caps label that names every region of the app. */
-  .type-micro {
-    font-size: 0.6875rem;
-    line-height: 1.3;
-    font-weight: 600;
-    text-transform: uppercase;
-    letter-spacing: 0.08em;
+  .type-small {
+    font-size: 0.8125rem; /* 13 */
+    line-height: 1.5;
   }
 
-  /* Every money value, view count, countdown and timestamp. Tabular so a
-     ticking countdown never shifts the layout by a pixel. */
+  /* 11px, uppercase, wide tracking, Public Sans 500. Every label in the app. */
+  .type-micro {
+    font-family: var(--font-sans);
+    font-size: 0.6875rem; /* 11 */
+    font-weight: 500;
+    line-height: 1.3;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+  }
+
+  /* EVERY number in the app: money, views, countdowns, dates, rates, slots,
+     response rates. Tabular so a ticking countdown never shifts the layout. */
   .type-timecode {
     font-family: var(--font-mono);
     font-weight: 500;
     font-variant-numeric: tabular-nums;
     letter-spacing: -0.01em;
   }
-
 }

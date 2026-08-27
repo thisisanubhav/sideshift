@@ -87,26 +87,47 @@ released*; *response window*.
 
 ## Brand Commitments
 
-Name **SideShift**. The wordmark carries a 9:16 rectangle as the counter of the S —
-the only place a logo mark appears.
+Name **SideShift**. The wordmark carries a 9:16 rectangle as the counter of the
+S, with a single tally light inside it — the only mark in the app.
 
-Voice: plain, specific, and never cheerful about someone else's money. Buttons name
-their consequence ("Approve and release $450", never "Submit") and an action keeps
-its name through the whole flow. Empty states are invitations to act. Errors say what
-went wrong and how to fix it.
+Voice: plain, specific, and never cheerful about someone else's money. Buttons
+name their consequence ("Approve and release $450", never "Submit") and keep
+that name through the flow, so the button that says "Release payment" produces
+the confirmation "Payment released". Empty states are invitations to act. Errors
+say what went wrong and how to fix it.
 
-Established visual system (incumbent authority, documented in the README):
-six semantic tokens on a warm plum-black ground; **Flare `#FF5A3D` is time and
-nothing else; Iris `#7C6BFF` is identity and nothing else; money carries no hue at
-all** and takes the highest contrast instead. Status differentiates by shape and fill,
-not colour, which is how six colours cover nine statuses without a legend.
-Archivo Expanded for display (rationed to three instances per screen), Instrument
-Sans for body, JetBrains Mono with tabular figures for every money value, view count,
-countdown and timestamp. No gradients, no glows, no shadows — one 1px border.
+**Visual system — video control room.** The vocabulary of a broadcast switcher,
+where a tally light tells the room what is live right now. Statuses are tally
+states, numbers are timecodes, and the interface stays quiet so the tally
+colours carry all the signal.
 
-Signature element: **the Spine** — one vertical timeline per thread carrying
-messages, state changes and money events in a single chronological order, each node
-stamped with a UTC timecode to the second.
+| Token | Hex | Role |
+|---|---|---|
+| bone | `#E9E7E1` | page background |
+| card | `#FFFFFF` | surfaces |
+| graphite | `#16191C` | primary text, headers, primary buttons |
+| slate | `#6B7178` | secondary text, labels |
+| tally-live | `#FF4D2E` | active, in production, urgent |
+| tally-standby | `#E0A62B` | pending, awaiting response |
+| tally-clear | `#3F9E77` | approved, released, done |
+| hairline | `#D3D0C8` | borders |
+
+Tally colours appear **only** on status indicators, countdowns, and one primary
+action per screen — never as decorative fill, gradient, or background.
+
+Type: **Bricolage Grotesque** for display (page titles and section headings
+only), **Public Sans** for body and labels, **JetBrains Mono** for every number
+in the app — money, view counts, countdowns, dates, rates, slot counts, response
+rates. Scale 48 / 32 / 24 / 18 / 15 / 13 / 11; body 15; labels 11 uppercase.
+
+Geometry: 4px radius everywhere, `rounded-full` only on avatars, 1px hairline
+borders, and **no drop shadows anywhere**.
+
+Signature element: **the tally strip** — a 4px bar down the left edge of every
+card that represents a relationship. For an application inside its response
+window the bar *is* the window: it drains from full to empty as the 48 hours
+close, computed from the real `expires_at`, and switches from standby to live
+under six hours.
 
 ## Evidence on Hand
 

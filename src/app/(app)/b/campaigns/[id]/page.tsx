@@ -99,7 +99,7 @@ export default async function BrandCampaignPage({
 
   return (
     <div className="flex flex-col gap-8">
-      <Link href="/b" className="type-small w-fit text-ash hover:text-bone">
+      <Link href="/b" className="type-small inline-flex min-h-11 w-fit items-center text-slate hover:text-graphite">
         ← Your campaigns
       </Link>
 
@@ -108,8 +108,8 @@ export default async function BrandCampaignPage({
           <div className="flex min-w-0 flex-col gap-3">
             <div className="flex items-center gap-3">
               <VerticalCount count={campaign.video_count} />
-              <span className="type-micro text-ash">
-                {campaign.video_count}× {PLATFORM_LABEL[campaign.platform]} ·{" "}
+              <span className="type-micro text-slate">
+                <span className="type-timecode">{campaign.video_count}</span>× {PLATFORM_LABEL[campaign.platform]} ·{" "}
                 {duration(campaign.duration_min_seconds, campaign.duration_max_seconds)}
               </span>
             </div>
@@ -118,10 +118,10 @@ export default async function BrandCampaignPage({
           <Chip
             tone={
               campaign.status === "open"
-                ? "outline"
+                ? "neutral"
                 : campaign.status === "draft"
-                  ? "dashed"
-                  : "muted"
+                  ? "draft"
+                  : "over"
             }
           >
             {campaign.status === "open" ? "Live" : campaign.status === "draft" ? "Draft" : "Closed"}
@@ -129,12 +129,12 @@ export default async function BrandCampaignPage({
         </div>
 
         <div className="flex flex-wrap items-center gap-x-6 gap-y-2">
-          <span className="type-timecode text-[22px]">
+          <span className="type-timecode text-[24px]">
             {money(campaign.budget_cents_per_creator)}
-            <span className="type-micro pl-1.5 text-ash">per creator</span>
+            <span className="type-micro pl-1.5 text-slate">per creator</span>
           </span>
           <SlotRail filled={campaign.slots_filled} total={campaign.slots_total} />
-          <span className="type-small text-ash">due {shortDate(campaign.deadline)}</span>
+          <span className="type-small text-slate">due {shortDate(campaign.deadline)}</span>
         </div>
 
         {campaign.status === "draft" ? (
@@ -143,7 +143,7 @@ export default async function BrandCampaignPage({
             <Button type="submit" variant="primary">
               Publish to the marketplace
             </Button>
-            <span className="type-small text-ash">
+            <span className="type-small text-slate">
               Creators can&apos;t see this yet.
             </span>
           </form>
@@ -151,7 +151,7 @@ export default async function BrandCampaignPage({
       </header>
 
       <Card className="flex flex-col gap-2 p-5">
-        <h2 className="type-micro text-ash">The brief</h2>
+        <h2 className="type-micro text-slate">The brief</h2>
         <p className="whitespace-pre-wrap text-[15px] leading-relaxed">
           {campaign.brief}
         </p>
@@ -159,15 +159,15 @@ export default async function BrandCampaignPage({
 
       <section className="flex flex-col gap-3">
         <div className="flex items-center justify-between">
-          <h2 className="type-micro text-ash">
+          <h2 className="type-micro text-slate">
             Waiting on you{waiting.length ? ` · ${waiting.length}` : ""}
           </h2>
           {slotsLeft > 0 ? (
-            <span className="type-small text-ash">
-              {slotsLeft} slot{slotsLeft === 1 ? "" : "s"} still open
+            <span className="type-small text-slate">
+              <span className="type-timecode">{slotsLeft}</span> slot{slotsLeft === 1 ? "" : "s"} still open
             </span>
           ) : (
-            <span className="type-small text-ash">All slots filled</span>
+            <span className="type-small text-slate">All slots filled</span>
           )}
         </div>
 
@@ -200,7 +200,7 @@ export default async function BrandCampaignPage({
 
       {settled.length > 0 ? (
         <section className="flex flex-col gap-3">
-          <h2 className="type-micro text-ash">Decided · {settled.length}</h2>
+          <h2 className="type-micro text-slate">Decided · {settled.length}</h2>
           <div className="flex flex-col gap-3">
             {settled.map((a) => (
               <ApplicantCard

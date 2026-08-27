@@ -14,7 +14,7 @@ export default async function BrandThreads() {
     <div className="flex flex-col gap-7">
       <div className="flex flex-col gap-2">
         <h1 className="type-display-xl">Threads</h1>
-        <p className="text-ash">
+        <p className="text-slate">
           One per accepted creator. The brief, the chat, the cut and the money
           all live in here.
         </p>

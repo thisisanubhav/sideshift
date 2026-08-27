@@ -9,7 +9,9 @@ type Row = {
   campaigns: { title: string } | null;
   brands: { profiles: { handle: string } | null } | null;
   creators: { profiles: { handle: string } | null } | null;
-  payments: { amount_cents: number; status: PaymentStatus }[] | null;
+  // to-ONE: payments.thread_id carries a UNIQUE constraint, so PostgREST
+  // embeds this as an object. Typing it as an array silently produced $0.
+  payments: { amount_cents: number; status: PaymentStatus } | null;
 };
 
 /**
@@ -33,7 +35,7 @@ export async function listThreads(
     .order("created_at", { ascending: false });
 
   return ((data ?? []) as unknown as Row[]).map((t) => {
-    const payment = t.payments?.[0];
+    const payment = t.payments;
     const counterpart =
       showSide === "brand"
         ? t.creators?.profiles?.handle
