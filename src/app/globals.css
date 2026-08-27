@@ -1,0 +1,126 @@
+@import "tailwindcss";
+
+/* ---------------------------------------------------------------------------
+   SideShift design tokens.
+
+   Six named values. Colour is semantic, never decorative:
+     Flare is time and nothing else. Iris is identity and nothing else.
+     Money has no hue at all — it gets contrast instead, and the escrow chip
+     fills as the money moves.
+
+   No gradients, no glows, no drop shadows. One 1px border does the work.
+   --------------------------------------------------------------------------- */
+
+@theme {
+  --color-pitch: #17131c;
+  --color-raise: #221c29;
+  --color-raise-2: #2b2434;
+  --color-bone: #efeaf2;
+  --color-ash: #8b84a0;
+  --color-flare: #ff5a3d;
+  --color-iris: #7c6bff;
+
+  --color-line: rgba(239, 234, 242, 0.08);
+  --color-line-strong: rgba(239, 234, 242, 0.16);
+
+  --font-display: var(--font-archivo), "Arial Black", system-ui, sans-serif;
+  --font-sans: var(--font-instrument), system-ui, sans-serif;
+  --font-mono: var(--font-jetbrains), ui-monospace, monospace;
+
+  --radius-card: 10px;
+  --radius-control: 8px;
+}
+
+@layer base {
+  :root {
+    color-scheme: dark;
+  }
+
+  html {
+    background: var(--color-pitch);
+  }
+
+  body {
+    background: var(--color-pitch);
+    color: var(--color-bone);
+    font-family: var(--font-sans);
+    font-size: 15px;
+    line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* Visible keyboard focus everywhere, and only for keyboard users. */
+  :focus-visible {
+    outline: 2px solid var(--color-iris);
+    outline-offset: 2px;
+    border-radius: 4px;
+  }
+
+  ::selection {
+    background: var(--color-iris);
+    color: var(--color-bone);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+      scroll-behavior: auto !important;
+    }
+  }
+}
+
+@layer components {
+  /* Display face is rationed: page H1s and the one or two numbers that matter.
+     Three instances per screen, maximum. */
+  .type-display-xl {
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-stretch: 118%;
+    font-size: clamp(2rem, 1.4rem + 2.4vw, 3.5rem);
+    line-height: 0.95;
+    letter-spacing: -0.03em;
+  }
+
+  .type-display-l {
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-stretch: 118%;
+    font-size: clamp(1.5rem, 1.2rem + 1.2vw, 2.25rem);
+    line-height: 1;
+    letter-spacing: -0.025em;
+  }
+
+  .type-title {
+    font-size: 1.375rem;
+    line-height: 1.25;
+    font-weight: 600;
+    letter-spacing: -0.01em;
+  }
+
+  .type-small {
+    font-size: 0.8125rem;
+    line-height: 1.45;
+  }
+
+  /* The all-caps label that names every region of the app. */
+  .type-micro {
+    font-size: 0.6875rem;
+    line-height: 1.3;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+  }
+
+  /* Every money value, view count, countdown and timestamp. Tabular so a
+     ticking countdown never shifts the layout by a pixel. */
+  .type-timecode {
+    font-family: var(--font-mono);
+    font-weight: 500;
+    font-variant-numeric: tabular-nums;
+    letter-spacing: -0.01em;
+  }
+}
