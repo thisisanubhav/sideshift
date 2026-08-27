@@ -4,7 +4,7 @@ import { revalidatePath } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
 import { requireViewer } from "@/lib/auth";
 
-export type ThreadState = { error?: string };
+export type ThreadState = { error?: string; toast?: string };
 
 export async function sendMessage(
   _prev: ThreadState,
@@ -77,7 +77,7 @@ export async function submitDeliverable(
   if (error) return { error: error.message };
 
   revalidatePath(`/t/${threadId}`);
-  return {};
+  return { toast: "Sent for review" };
 }
 
 export async function approveDeliverable(
@@ -100,7 +100,8 @@ export async function approveDeliverable(
 
   revalidatePath(`/t/${threadId}`);
   revalidatePath("/b");
-  return {};
+  // Same words as the button that caused it.
+  return { toast: "Payment released" };
 }
 
 export async function requestChanges(
@@ -126,5 +127,5 @@ export async function requestChanges(
   if (error) return { error: error.message };
 
   revalidatePath(`/t/${threadId}`);
-  return {};
+  return { toast: "Changes requested" };
 }

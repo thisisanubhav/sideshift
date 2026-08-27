@@ -7,6 +7,12 @@ reproduced and root-caused, not guessed at.
 
 ## 1. Every thread row and roster row shows `$0` instead of the escrowed amount
 
+> **⚠️ VISIBLE ON THE RESTYLE PREVIEW.** This is the first thing a reviewer will
+> notice on `/b` and both thread lists. The brand dashboard roster currently
+> reads `@rowanlifts · Approved · $0 ESCROWED`, which contradicts itself on the
+> same row. Left unfixed deliberately: the restyle pass is visual-only and the
+> fix is in data fetching. It is a two-line change, described below.
+
 **Severity: high.** It is wrong money, on the screens whose entire argument is
 that both sides always see the same number. It also silently defaults the
 payment *status* to `escrowed`, so a released payment would display as escrowed

@@ -17,7 +17,7 @@ export function WithdrawButton({ applicationId }: { applicationId: string }) {
   if (!confirming) {
     return (
       <Button variant="ghost" size="sm" onClick={() => setConfirming(true)}>
-        Withdraw
+        Withdraw application
       </Button>
     );
   }
@@ -39,7 +39,7 @@ export function WithdrawButton({ applicationId }: { applicationId: string }) {
           })
         }
       >
-        {pending ? "Withdrawing…" : "Yes, withdraw"}
+        {pending ? "Withdrawing…" : "Withdraw application"}
       </Button>
       <Button variant="ghost" size="sm" onClick={() => setConfirming(false)}>
         Keep it

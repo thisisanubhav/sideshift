@@ -8,6 +8,7 @@ import {
   type ThreadState,
 } from "../actions";
 import { Button, FormError, Input, Label, Textarea } from "@/components/ui";
+import { Toast } from "@/components/toast";
 import { money } from "@/lib/format";
 import { DELIVERABLE_STATUS_LABEL, type DeliverableStatus } from "@/lib/types";
 
@@ -79,7 +80,7 @@ function CreatorSide({ threadId, latest }: { threadId: string; latest: Latest })
         </p>
       ) : !open ? (
         <Button variant="secondary" onClick={() => setOpen(true)}>
-          Submit v{(latest?.version ?? 0) + 1}
+          Send v{(latest?.version ?? 0) + 1} for review
         </Button>
       ) : (
         <form action={action} className="flex flex-col gap-3.5">
@@ -119,6 +120,7 @@ function CreatorSide({ threadId, latest }: { threadId: string; latest: Latest })
           />
 
           <FormError>{state.error}</FormError>
+          <Toast message={state.toast} />
 
           <div className="flex flex-col gap-2 sm:flex-row">
             <Button
@@ -127,7 +129,7 @@ function CreatorSide({ threadId, latest }: { threadId: string; latest: Latest })
               disabled={pending}
               className="sm:flex-1"
             >
-              {pending ? "Submitting…" : "Submit for review"}
+              {pending ? "Sending…" : "Send for review"}
             </Button>
             {latest ? (
               <Button type="button" variant="ghost" onClick={() => setOpen(false)}>
@@ -201,10 +203,12 @@ function BrandSide({
       ) : null}
 
       <FormError>{approve.error || changes.error}</FormError>
+      <Toast message={approve.toast ?? changes.toast} />
 
       {!asking ? (
         <div className="flex flex-col gap-2">
-          {/* The button says exactly what happens. It is not "Submit". */}
+          {/* Every button names its consequence, and keeps that name through the
+              flow: this one produces the toast "Payment released". */}
           <form action={approveAction}>
             <input type="hidden" name="thread_id" value={threadId} />
             <input type="hidden" name="deliverable_id" value={latest.id} />

@@ -48,7 +48,7 @@ export function Composer({
           className="min-h-11 flex-1 resize-none rounded-[4px] border border-hairline bg-card px-3 py-2.5 leading-relaxed text-graphite placeholder:text-slate/70 transition-[border-color] duration-150 hover:border-slate/60 focus:border-graphite"
         />
         <Button type="submit" variant="primary" disabled={pending}>
-          {pending ? "Sending…" : "Send"}
+          {pending ? "Sending…" : "Send message"}
         </Button>
       </div>
       <FormError>{state.error}</FormError>

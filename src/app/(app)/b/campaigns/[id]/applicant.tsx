@@ -5,6 +5,7 @@ import Link from "next/link";
 import { acceptApplication, declineApplication, type DecisionState } from "../../actions";
 import { Button, Chip, FormError, Select, Textarea, type TallyTone } from "@/components/ui";
 import { TallyCard, TallyCountdownStrip, TallyStrip } from "@/components/tally";
+import { Toast } from "@/components/toast";
 import { Countdown } from "@/components/countdown";
 import { money, views, followers, stamp } from "@/lib/format";
 import {
@@ -110,6 +111,8 @@ export function ApplicantCard({
       <p className="whitespace-pre-wrap text-[15px] leading-relaxed">{a.pitch}</p>
       {c.bio ? <p className="type-small text-slate">{c.bio}</p> : null}
 
+      <Toast message={accept.toast ?? decline.toast} />
+
       <div className="flex flex-col gap-3 border-t border-hairline pt-3">
         {accept.threadId ? (
           <div className="flex flex-wrap items-center justify-between gap-3 rounded-[4px] border border-graphite/30 bg-graphite p-3.5">
@@ -179,7 +182,7 @@ export function ApplicantCard({
                     : `Accept and escrow ${money(a.rate_cents)}`}
                 </Button>
                 <Button variant="secondary" onClick={() => setDeclining(true)}>
-                  Decline
+                  Decline with reason
                 </Button>
               </div>
             ) : (
@@ -219,7 +222,7 @@ export function ApplicantCard({
                     className="sm:flex-1"
                     disabled={declinePending}
                   >
-                    {declinePending ? "Sending decline…" : "Send decline with reason"}
+                    {declinePending ? "Declining…" : "Decline with reason"}
                   </Button>
                   <Button
                     type="button"

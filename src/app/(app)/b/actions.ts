@@ -98,7 +98,12 @@ export async function publishCampaign(formData: FormData) {
 // authority in the database — the UI is not the enforcement point.
 // ---------------------------------------------------------------------------
 
-export type DecisionState = { error?: string; threadId?: string; declined?: boolean };
+export type DecisionState = {
+  error?: string;
+  threadId?: string;
+  declined?: boolean;
+  toast?: string;
+};
 
 export async function acceptApplication(
   _prev: DecisionState,
@@ -120,7 +125,10 @@ export async function acceptApplication(
 
   // Hand the new thread back so the card can confirm in place. Money just moved;
   // the card silently vanishing from the queue is not acknowledgement.
-  return { threadId: typeof data === "string" ? data : undefined };
+  return {
+    threadId: typeof data === "string" ? data : undefined,
+    toast: "Accepted, and the money is escrowed",
+  };
 }
 
 export async function declineApplication(
@@ -148,5 +156,5 @@ export async function declineApplication(
   revalidatePath(`/b/campaigns/${campaignId}`);
   revalidatePath("/b/applicants");
   revalidatePath("/b");
-  return { declined: true };
+  return { declined: true, toast: "Declined, and the creator was told why" };
 }
