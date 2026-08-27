@@ -26,7 +26,7 @@ export function CampaignCard({
   return (
     <Link
       href={href}
-      className="group block rounded-[4px] border border-hairline bg-card p-4 transition-[border-color,background-color,transform] duration-150 hover:border-graphite/30 hover:bg-graphite/45 active:scale-[0.995] sm:p-5"
+      className="group relative block overflow-hidden rounded-[4px] border border-hairline bg-card p-4 pl-5 transition-[border-color] duration-150 hover:border-graphite/50 sm:p-5 sm:pl-5"
     >
       {/* A campaign with no slots left is over; one still taking creators is
           standing by. The tally says which before the card is read. */}

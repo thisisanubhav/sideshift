@@ -114,7 +114,7 @@ export function NewCampaignForm() {
           <div className="flex flex-col gap-1.5">
             <Label htmlFor="budget">Budget per creator</Label>
             <div className="flex items-center">
-              <span className="type-timecode flex h-10 items-center rounded-l-[4px] border border-r-0 border-hairline bg-card px-3 text-slate">
+              <span className="type-timecode flex h-10 items-center rounded-l-[4px] border border-r-0 border-hairline bg-bone px-3 text-slate">
                 $
               </span>
               <Input
@@ -140,9 +140,10 @@ export function NewCampaignForm() {
         </div>
 
         {/* The total is stated before publishing, not discovered afterwards. */}
-        <div className="flex items-baseline justify-between rounded-[4px] border border-hairline bg-graphite px-4 py-3.5">
+        <div className="relative flex items-baseline justify-between overflow-hidden rounded-[4px] border border-hairline bg-card py-3.5 pr-4 pl-5">
+          <span aria-hidden className="absolute inset-y-0 left-0 w-1 bg-tally-standby" />
           <span className="type-micro text-slate">You&apos;ll commit up to</span>
-          <span className="type-timecode text-[24px] font-semibold">
+          <span className="type-timecode text-[24px]">
             {money(Math.max(0, committed) * 100)}
           </span>
         </div>

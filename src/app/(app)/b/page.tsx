@@ -20,6 +20,7 @@ type RosterRow = {
   deliverables: { version: number; status: DeliverableStatus }[] | null;
 };
 import { ResponsivenessBadge, SlotRail, VerticalCount } from "@/components/rail";
+import { TallyStrip } from "@/components/tally";
 import { Button, Card, Chip, EmptyState } from "@/components/ui";
 
 export const metadata = { title: "Your campaigns — SideShift" };
@@ -128,10 +129,11 @@ export default async function BrandDashboard() {
       {soon.length > 0 && nextToLapse ? (
         <Link
           href="/b/applicants"
-          className="flex flex-wrap items-center justify-between gap-3 rounded-[4px] border border-tally-live/45 bg-tally-live/10 px-4 py-3.5 transition-colors hover:border-tally-live/70"
+          className="relative flex flex-wrap items-center justify-between gap-3 overflow-hidden rounded-[4px] border border-hairline bg-card py-3.5 pr-4 pl-5 transition-[border-color] hover:border-tally-live"
         >
-          <p className="text-tally-live">
-            <span className="type-timecode font-semibold">{soon.length}</span>{" "}
+          <span aria-hidden className="absolute inset-y-0 left-0 w-1 bg-tally-live" />
+          <p className="text-graphite">
+            <span className="type-timecode text-tally-live">{soon.length}</span>{" "}
             {soon.length === 1 ? "application expires" : "applications expire"} on
             you in under 12 hours
           </p>
@@ -163,7 +165,7 @@ export default async function BrandDashboard() {
           <div className="overflow-x-auto rounded-[4px] border border-hairline">
             <table className="w-full min-w-[560px] border-collapse text-left">
               <thead>
-                <tr className="border-b border-hairline bg-card">
+                <tr className="border-b border-hairline bg-bone">
                   {["Creator", "Campaign", "Avg views", "Work", "Payment"].map((h) => (
                     <th key={h} className="type-micro px-4 py-2.5 font-semibold text-slate">
                       {h}
@@ -234,8 +236,19 @@ export default async function BrandDashboard() {
                 <Link
                   key={c.id}
                   href={`/b/campaigns/${c.id}`}
-                  className="group flex flex-col gap-4 rounded-[4px] border border-hairline bg-card p-4 transition-colors hover:border-graphite/40 sm:p-5"
+                  className="group relative flex flex-col gap-4 overflow-hidden rounded-[4px] border border-hairline bg-card p-4 pl-5 transition-[border-color] hover:border-graphite/50 sm:p-5 sm:pl-5"
                 >
+                  <TallyStrip
+                    tone={
+                      c.status === "draft"
+                        ? "draft"
+                        : c.status === "closed"
+                          ? "over"
+                          : waiting > 0
+                            ? "live"
+                            : "standby"
+                    }
+                  />
                   <div className="flex flex-wrap items-start justify-between gap-3">
                     <div className="flex min-w-0 gap-4">
                       <VerticalCount count={c.video_count} />
@@ -295,9 +308,9 @@ export default async function BrandDashboard() {
 
 function Stat({ label, value, hint }: { label: string; value: string; hint?: string }) {
   return (
-    <div className="flex flex-col gap-1 bg-card p-4">
+    <div className="flex flex-col gap-1.5 bg-card p-4">
       <dt className="type-micro text-slate">{label}</dt>
-      <dd className="type-timecode text-[24px] leading-tight">{value}</dd>
+      <dd className="type-timecode text-[32px] leading-none">{value}</dd>
       {hint ? <p className="type-small text-slate">{hint}</p> : null}
     </div>
   );

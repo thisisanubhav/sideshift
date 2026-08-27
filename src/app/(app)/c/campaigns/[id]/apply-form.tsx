@@ -117,7 +117,7 @@ export function ApplyForm({
 
       <FormError>{state.error}</FormError>
 
-      <p className="type-small rounded-[4px] border border-hairline bg-graphite px-3 py-2 text-slate">
+      <p className="type-small rounded-[4px] border border-hairline bg-bone px-3 py-2 text-slate">
         Once you send this, the brand has <span className="type-timecode text-graphite">48 hours</span>{" "}
         to accept or decline. If they let it lapse it expires on its own, the slot
         frees up, and it counts against their public response rate.

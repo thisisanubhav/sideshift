@@ -92,24 +92,59 @@ export default async function CampaignDetail({
         <aside className="flex flex-col gap-5 lg:sticky lg:top-24 lg:self-start">
           <Card className="flex flex-col gap-4 p-5">
             <div className="flex flex-col gap-0.5">
-              <span className="type-timecode text-[32px] leading-none font-semibold">
+              <span className="type-timecode text-[32px] leading-none">
                 {money(campaign.budget_cents_per_creator)}
               </span>
               <span className="type-micro text-slate">Posted budget per creator</span>
             </div>
-            <SlotRail filled={campaign.slots_filled} total={campaign.slots_total} />
 
-            {/* Read at the same moment as the budget and the slots, because
-                that is when the creator decides whether to spend the hour. */}
-            <div className="border-t border-hairline pt-3">
-              <ResponsivenessBadge
-                answered={campaign.answered_in_window}
-                decidable={campaign.decidable}
-              />
-              <p className="type-small pt-1.5 text-slate">
-                @{campaign.brand.handle} has 48 hours to answer you. If they
-                don&apos;t, your application expires on its own and it shows in
-                this rate.
+            {/* The second most important number on the page, and treated like
+                it: same mono, one size down from the budget, with the sample
+                size it is computed from. A creator decides here. */}
+            <div className="flex flex-col gap-1 border-t border-hairline pt-4">
+              <span className="type-micro text-slate">Answered in time</span>
+              {campaign.decidable >= 3 ? (
+                <>
+                  <span
+                    className={
+                      "type-timecode text-[24px] leading-none " +
+                      (campaign.answered_in_window / campaign.decidable >= 0.8
+                        ? "text-tally-clear"
+                        : campaign.answered_in_window / campaign.decidable >= 0.5
+                          ? "text-graphite"
+                          : "text-tally-live")
+                    }
+                  >
+                    {Math.round(
+                      (campaign.answered_in_window / campaign.decidable) * 100,
+                    )}
+                    %
+                  </span>
+                  <span className="type-small text-slate">
+                    from{" "}
+                    <span className="type-timecode">{campaign.decidable}</span>{" "}
+                    applications this brand could have answered
+                  </span>
+                </>
+              ) : (
+                <>
+                  <span className="type-timecode text-[24px] leading-none text-slate">
+                    —
+                  </span>
+                  <span className="type-small text-slate">
+                    New brand. Too few answered applications to claim a rate yet.
+                  </span>
+                </>
+              )}
+            </div>
+
+            <div className="border-t border-hairline pt-4">
+              <SlotRail filled={campaign.slots_filled} total={campaign.slots_total} />
+              <p className="type-small pt-2 text-slate">
+                @{campaign.brand.handle} has{" "}
+                <span className="type-timecode">48 hours</span> to answer you. If
+                they don&apos;t, your application expires on its own and it shows
+                in this rate.
               </p>
             </div>
           </Card>
