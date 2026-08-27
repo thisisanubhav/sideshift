@@ -38,6 +38,7 @@ export function PaymentRail({
           {money(amountCents, { cents: true })}
         </span>
         <span
+          data-payment-status={status}
           className={cn(
             "type-micro w-fit rounded-full px-2.5 py-1",
             status === "released"
