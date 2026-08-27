@@ -13,8 +13,8 @@ Every seeded account uses the password `sideshift2026`.
 | Account | What it shows |
 |---|---|
 | `maya.builds@sideshift.demo` | Creator. Has an open thread with money escrowed, plus a declined application with its reason. |
-| `northbound@sideshift.demo` | Brand with a queue. Two applicants waiting — **one with about 40 minutes left on the clock**. |
-| `gritathletic@sideshift.demo` | Brand with a bad record. Four applications left to expire, and the public rate says so. |
+| `northbound@sideshift.demo` | Brand with a queue. Three applicants waiting — **one with about 40 minutes left on the clock**. Also the brand with too little history to claim a rate, so its cards read *"New brand · no response history"*. |
+| `gritathletic@sideshift.demo` | Brand with a bad record. Four applications left to expire, and the public rate says so — 43%, `3 of 7`, on every card it posts. |
 | `sunlit@sideshift.demo` | Brand on the other end of Maya's thread. Open it in a second browser to watch payment release live. |
 
 > **The countdowns are real clocks.** When I submitted this there were three live
@@ -22,6 +22,13 @@ Every seeded account uses the password `sideshift2026`.
 > few days later, some will have genuinely expired — which is the product working,
 > and worth seeing once. `supabase/demo-reset.sql` puts three fresh windows back
 > and reopens the walkthrough thread.
+
+Two further accounts, `@ambitious_coder` and `@hollowbrook`, were created by hand
+through the signup form during the build. Their logins worked and their screens
+were completely empty, which is the one state a demo cannot afford, so
+`supabase/seed-demo-accounts.sql` gives them campaigns, applications, threads and
+payments like everyone else. Their passwords are not in this repo; the seeded
+accounts above are the ones to sign in with.
 
 ## The five-minute path
 
@@ -119,7 +126,7 @@ Two deliberate choices:
 | Admin panel, team seats | Out of scope. Single-user accounts on both sides. |
 | Messaging outside a campaign thread | Out of scope, and against the thesis. A separate inbox is the failure mode being fixed. |
 | **View-based payout bonuses** | Mentioned in the brief's product description but absent from its scope list. I treated it as cut rather than half-build it. Seeded view counts stay display-only. |
-| **Light mode** | One deliberate dark theme. A toggle is an hour I would rather spend on the thread. |
+| **A theme toggle** | One deliberate light theme — bone paper, white cards, tally colour as the only saturation. Two themes means every tally colour needs a second contrast proof, and the tally colours are the whole design. |
 | **Editing a published campaign** | You can publish a draft, but not revise a live brief. Doing it properly means versioning briefs that creators have already applied to, and doing it improperly is worse than not having it. |
 | **Creator profile editing** | Profiles are seeded and rendered but not editable in-app. Reading them is what the brand flow needs; editing them is a settings screen with no bearing on the thesis. |
 | **pg_cron for expiry** | Replaced with lazy expiry. Same behaviour, 45 minutes of setup saved. |
@@ -168,6 +175,26 @@ from full to empty across the 48 hours, computed from the real `expires_at` and
 recomputed each second rather than animated on a loop, and switches from
 standby to live under six hours. Under `prefers-reduced-motion` it sits at its
 correct static fill. Everything around it stays quiet.
+
+**Colour has to earn its place.** The rule is easy to state and easy to break: a
+tally colour may only appear where it is reporting real state. It broke twice on
+the browse card, and both are worth reading because they look like design and are
+actually information bugs.
+
+The strip on every campaign card was amber, lit by "this campaign has slots
+left" — which every open campaign has. Fifteen cards, one colour, no signal: the
+loudest element on the card was decoration wearing a status colour. It now lights
+only for the two things a creator can act on, the last slot or a deadline inside
+24 hours, and is grey the rest of the time. Two cards red, thirteen grey.
+
+The delivery deadline turned red at ten days out, which spends the alarm colour
+on nothing and leaves none for a deadline that is genuinely close. Red is now
+under 2 days, amber under 5, grey above.
+
+The same rule caught the slot rail contradicting its own caption — a solid dot
+meant a slot *taken*, printed beside the words "4 of 5 slots left". Solid now
+means a slot still open, so the rail drains as the campaign fills, in the same
+direction and with the same meaning as the countdown strip above it.
 
 Responsive to 390px, visible keyboard focus, `prefers-reduced-motion` respected,
 CLS 0 on every screen.
@@ -223,9 +250,22 @@ Migrations are in `supabase/migrations/` and apply in filename order:
 | `0003_transitions.sql` | State-transition functions, lazy expiry, the responsiveness view |
 | `0004_fix_null_authority_check.sql` | Privilege-escalation fix (see below) |
 | `0005_auto_confirm_signups.sql` | Demo-mode signup with no email round-trip |
+| `0006_public_marketplace_stats.sql` | `marketplace_stats()` — the landing figures, computed, readable without a session |
+| `0007_oauth_role_claim.sql` | Google sign-in. **Reverted by `0009`** |
+| `0008_unique_handle_for_oauth_signups.sql` | Handle de-duplication for OAuth. **Reverted by `0009`** |
+| `0009_remove_google_signin.sql` | Reverses `0007` and `0008` forward |
+| `0010_marketplace_stats_denominator.sql` | Adds `decidable_total`, so a 0% built from nothing can be told apart from a real 0% |
 
-Then `supabase/seed.sql` for the demo marketplace: 8 brands, 22 creators, 12 open
-campaigns, 39 applications with real history.
+`0007` and `0008` stay in the tree rather than being deleted. They were applied to
+the live database and are in its migration history, so removing the files would
+leave the repo describing a schema that never existed. `0009` reverses them
+forward, which is the only honest direction.
+
+Then `supabase/seed.sql` for the demo marketplace, and
+`supabase/seed-demo-accounts.sql`, which fills in two accounts that were created
+by hand through the signup form during the build — they had working logins and
+completely empty screens, which is the one thing a demo cannot have. Together:
+**10 brands, 24 creators, 15 open campaigns, 60 applications** with real history.
 
 **No manual dashboard steps.** Everything, including auth behaviour, is in the
 migrations.
@@ -255,7 +295,7 @@ npm run test:improvements  # 22 checks: the four product changes, visible on a r
 npm run test:rls      # 9 row-level-security proofs, straight at PostgREST
 npm run test:signup   # 11 checks: fresh signup on both sides, no email round-trip
 npm run test:smoke    # 19 end-to-end checks against the live deploy
-npm run test:thread   # 25 checks driving the full thread lifecycle
+npm run test:thread   # 26 checks driving the full thread lifecycle
 ```
 
 These hit the real database with real user JWTs rather than mocking. `test:rls`
@@ -271,7 +311,7 @@ the marketplace back. There is also `tests/render.mjs` — a real-Chromium audit
 
 ---
 
-## Two bugs found by testing, both worth reading
+## Four bugs worth reading
 
 **A creator could approve their own deliverable and release their own payment.**
 The guard was `if v_owner is null or v_owner <> v_brand_id then raise`. For a
@@ -285,6 +325,24 @@ would never have found it.
 into `auth.users` left eight token columns NULL; GoTrue scans those into
 non-nullable Go strings and dies before checking the password. Fixed in
 `supabase/seed.sql`.
+
+**Every escrowed amount rendered as `$0`.** `payments.thread_id` carries a UNIQUE
+constraint, so PostgREST embeds the row as an **object**, not an array. The type
+said array, `t.payments?.[0]` was `undefined`, and the fallback printed `$0` — on
+the one number this whole product is about. TypeScript was no help: the type was
+hand-written, so it was confidently wrong rather than unknown.
+
+**The landing stats bar rendered four empty boxes.** It looked like missing data
+and was not: `15`, `23`, `$6,630` and `75%` were all in the shipped HTML. The box
+was `bg-graphite` and the value had no colour of its own, so it inherited
+`text-graphite` from `body`. Black text on a black box. The labels survived only
+because they carried their own colour.
+
+Those last two are the argument for a habit rather than a fix: **nothing here was
+called done because it compiled.** Every screen was screenshotted and looked at.
+Neither bug throws, fails a type check, or fails a test that asserts on the DOM —
+`$0` is a valid string and black-on-black is valid CSS. Both are invisible to
+everything except an eye. `NOTES-BUGS.md` carries the full log.
 
 ## Agent logs
 
