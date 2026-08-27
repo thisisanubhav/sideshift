@@ -1,8 +1,24 @@
 import Link from "next/link";
 import { requireBrand } from "@/lib/auth";
 import { createClient } from "@/lib/supabase/server";
-import { money, shortDate, timecode } from "@/lib/format";
-import { PLATFORM_SHORT, type CampaignStatus, type Platform } from "@/lib/types";
+import { money, shortDate, timecode, views } from "@/lib/format";
+import {
+  DELIVERABLE_STATUS_LABEL,
+  PAYMENT_STATUS_LABEL,
+  PLATFORM_SHORT,
+  type CampaignStatus,
+  type DeliverableStatus,
+  type PaymentStatus,
+  type Platform,
+} from "@/lib/types";
+
+type RosterRow = {
+  id: string;
+  campaigns: { title: string } | null;
+  creators: { avg_views: number; profiles: { handle: string } | null } | null;
+  payments: { amount_cents: number; status: PaymentStatus }[] | null;
+  deliverables: { version: number; status: DeliverableStatus }[] | null;
+};
 import { ResponsivenessBadge, SlotRail, VerticalCount } from "@/components/rail";
 import { Button, Card, Chip, EmptyState } from "@/components/ui";
 
@@ -52,6 +68,34 @@ export default async function BrandDashboard() {
         .eq("brand_id", brand.brandId)
         .maybeSingle(),
     ]);
+
+  const { data: roster } = await supabase
+    .from("threads")
+    .select(
+      `id, status,
+       campaigns ( title ),
+       creators ( avg_views, profiles ( handle ) ),
+       payments ( amount_cents, status ),
+       deliverables ( version, status )`,
+    )
+    .eq("brand_id", brand.brandId)
+    .order("created_at", { ascending: false });
+
+  const crew = ((roster ?? []) as unknown as RosterRow[]).map((t) => {
+    const pay = t.payments?.[0];
+    const latest = (t.deliverables ?? []).sort((a, b) => b.version - a.version)[0];
+    return {
+      id: t.id,
+      handle: t.creators?.profiles?.handle ?? "unknown",
+      campaign: t.campaigns?.title ?? "—",
+      avgViews: t.creators?.avg_views ?? 0,
+      amount: pay?.amount_cents ?? 0,
+      payStatus: pay?.status ?? ("escrowed" as PaymentStatus),
+      work: latest
+        ? DELIVERABLE_STATUS_LABEL[latest.status]
+        : "Not submitted yet",
+    };
+  });
 
   const rows = (campaigns ?? []) as CampaignRow[];
   const open = rows.filter((c) => c.status === "open");
@@ -106,6 +150,62 @@ export default async function BrandDashboard() {
         <Stat label="Committed" value={money(escrowed)} hint="escrowed, not yet paid" />
         <Stat label="Released" value={money(released)} hint="paid to creators" />
       </dl>
+
+      {crew.length > 0 ? (
+        <section className="flex flex-col gap-3">
+          <div className="flex flex-wrap items-baseline justify-between gap-2">
+            <h2 className="type-micro text-ash">Your creators</h2>
+            <span className="type-micro text-ash/60">
+              view counts are seeded demo data
+            </span>
+          </div>
+
+          <div className="overflow-x-auto rounded-[10px] border border-line">
+            <table className="w-full min-w-[560px] border-collapse text-left">
+              <thead>
+                <tr className="border-b border-line bg-raise">
+                  {["Creator", "Campaign", "Avg views", "Work", "Payment"].map((h) => (
+                    <th key={h} className="type-micro px-4 py-2.5 font-semibold text-ash">
+                      {h}
+                    </th>
+                  ))}
+                </tr>
+              </thead>
+              <tbody>
+                {crew.map((c) => (
+                  <tr key={c.id} className="border-b border-line last:border-b-0">
+                    <td className="px-4 py-3">
+                      <Link
+                        href={`/t/${c.id}`}
+                        className="type-timecode text-[14px] text-bone underline-offset-4 hover:underline"
+                      >
+                        @{c.handle}
+                      </Link>
+                    </td>
+                    <td className="type-small max-w-[220px] truncate px-4 py-3 text-ash">
+                      {c.campaign}
+                    </td>
+                    <td className="type-timecode px-4 py-3 text-[14px] text-ash">
+                      {views(c.avgViews)}
+                    </td>
+                    <td className="type-small px-4 py-3">{c.work}</td>
+                    <td className="px-4 py-3">
+                      <span className="flex items-baseline gap-2">
+                        <span className="type-timecode text-[14px]">
+                          {money(c.amount)}
+                        </span>
+                        <Chip tone={c.payStatus === "released" ? "solid" : "outline"}>
+                          {PAYMENT_STATUS_LABEL[c.payStatus]}
+                        </Chip>
+                      </span>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </section>
+      ) : null}
 
       <div className="flex flex-col gap-3">
         <div className="flex items-center justify-between">

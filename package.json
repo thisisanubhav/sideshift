@@ -6,7 +6,10 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "test:rls": "node tests/rls.mjs",
+    "test:smoke": "node tests/smoke.mjs",
+    "test:thread": "node tests/thread.mjs"
   },
   "dependencies": {
     "@supabase/ssr": "^0.12.5",

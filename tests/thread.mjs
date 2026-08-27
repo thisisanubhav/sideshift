@@ -1,7 +1,7 @@
 // Phase 3: drive the full thread lifecycle through the real HTTP app, as two
 // different signed-in users, and assert both sides read the same state.
 
-const BASE = process.argv[2];
+const BASE = process.argv[2] || "https://sideshift-seven.vercel.app";
 const THREAD = "c310d3d8-31fa-4e1d-9ac9-70f4b9bcf117";
 const REF = "ekjmytmifvanmifaxyfn";
 const SB = `https://${REF}.supabase.co`;

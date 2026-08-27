@@ -62,7 +62,10 @@ export default async function ThreadPage({
       </header>
 
       <div className="grid gap-6 lg:grid-cols-[1fr_300px] lg:gap-8">
-        <div className="flex min-w-0 flex-col gap-5">
+        {/* On mobile the money and the actions come first: burying "Approve and
+            release" under the whole message history is how a brand forgets to
+            pay. On desktop the aside returns to the right rail. */}
+        <div className="order-2 flex min-w-0 flex-col gap-5 lg:order-1">
           {/* The brief is pinned so it never scrolls away mid-argument. */}
           <details open className="group rounded-[10px] border border-line bg-raise">
             <summary className="flex cursor-pointer list-none items-center justify-between gap-3 p-4 [&::-webkit-details-marker]:hidden">
@@ -102,7 +105,7 @@ export default async function ThreadPage({
           )}
         </div>
 
-        <aside className="flex flex-col gap-4 lg:sticky lg:top-24 lg:self-start">
+        <aside className="order-1 flex flex-col gap-4 lg:order-2 lg:sticky lg:top-24 lg:self-start">
           {/* Identical component, identical data, both roles. */}
           <Card className="p-5">
             <PaymentRail

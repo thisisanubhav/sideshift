@@ -1,7 +1,7 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { useRef, useTransition } from "react";
+import { useRef, useState, useTransition } from "react";
 import { PLATFORM_SHORT } from "@/lib/types";
 import { cn } from "@/components/ui";
 import type { BrowseFilters } from "@/lib/queries";
@@ -34,6 +34,15 @@ export function Filters({
   const form = useRef<HTMLFormElement>(null);
   const router = useRouter();
   const [pending, startTransition] = useTransition();
+  // Collapsed on phones so the marketplace itself is above the fold; always
+  // open from lg up, where the rail has its own column.
+  const [open, setOpen] = useState(false);
+
+  const active =
+    filters.platforms.length +
+    filters.niches.length +
+    (filters.minBudget ? 1 : 0) +
+    (filters.repliesFastOnly ? 1 : 0);
 
   function submit() {
     const fd = new FormData(form.current!);
@@ -48,11 +57,23 @@ export function Filters({
     <form
       ref={form}
       onChange={submit}
-      className={cn(
-        "flex flex-col gap-6 transition-opacity",
-        pending && "opacity-60",
-      )}
+      className={cn("flex flex-col transition-opacity", pending && "opacity-60")}
     >
+      <button
+        type="button"
+        onClick={() => setOpen((v) => !v)}
+        aria-expanded={open}
+        className="mb-4 flex items-center justify-between rounded-[8px] border border-line-strong bg-raise px-3.5 py-2.5 text-[14px] lg:hidden"
+      >
+        <span className="type-micro text-ash">
+          Filters{active ? ` · ${active}` : ""}
+        </span>
+        <span className="type-small text-ash">{open ? "Hide" : "Show"}</span>
+      </button>
+
+      <div
+        className={cn("flex-col gap-6 lg:flex", open ? "flex" : "hidden")}
+      >
       <Group label="Sort">
         <select
           name="sort"
@@ -117,6 +138,7 @@ export function Filters({
           defaultChecked={filters.repliesFastOnly}
         />
       </Group>
+      </div>
     </form>
   );
 }
