@@ -25,15 +25,23 @@ create or replace function seed_user(
 declare
   v_id uuid := gen_random_uuid();
 begin
+  -- The token columns must be '' and not NULL. GoTrue scans them into
+  -- non-nullable Go strings, so a NULL here makes every sign-in fail with
+  -- "Database error querying schema" — which is exactly what happened the
+  -- first time this seed ran.
   insert into auth.users (
     instance_id, id, aud, role, email, encrypted_password, email_confirmed_at,
-    raw_app_meta_data, raw_user_meta_data, created_at, updated_at
+    raw_app_meta_data, raw_user_meta_data, created_at, updated_at,
+    confirmation_token, recovery_token, email_change_token_new,
+    email_change_token_current, email_change, phone_change,
+    phone_change_token, reauthentication_token
   ) values (
     '00000000-0000-0000-0000-000000000000', v_id, 'authenticated', 'authenticated',
     p_email, crypt('sideshift2026', gen_salt('bf')), now(),
     '{"provider":"email","providers":["email"]}'::jsonb,
     jsonb_build_object('role', p_role::text, 'display_name', p_name, 'handle', p_handle),
-    now(), now()
+    now(), now(),
+    '', '', '', '', '', '', '', ''
   );
 
   -- GoTrue needs an identity row for password sign-in.
