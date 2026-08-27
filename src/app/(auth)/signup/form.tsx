@@ -3,7 +3,6 @@
 import { useActionState, useState } from "react";
 import { signUp, type AuthState } from "../actions";
 import { Button, FormError, Input, Label, cn } from "@/components/ui";
-import { AuthDivider, GoogleButton } from "@/components/google-button";
 import type { UserRole } from "@/lib/types";
 
 const ROLES: { value: UserRole; title: string; body: string; bars: number[] }[] = [
@@ -26,9 +25,8 @@ export function SignUpForm() {
   const [state, action, pending] = useActionState<AuthState, FormData>(signUp, {});
 
   return (
-    <div className="flex flex-col gap-6">
-      <form action={action} className="flex flex-col gap-6">
-        <input type="hidden" name="role" value={role} />
+    <form action={action} className="flex flex-col gap-6">
+      <input type="hidden" name="role" value={role} />
 
       <fieldset className="flex flex-col gap-2.5">
         <legend className="type-micro mb-2.5 text-slate">Which side are you on</legend>
@@ -139,12 +137,6 @@ export function SignUpForm() {
             ? "Create brand account"
             : "Create creator account"}
       </Button>
-      </form>
-
-      {/* Outside the form above — nested forms are invalid. The chosen role
-          rides along, because Google will not ask which side you are on. */}
-      <AuthDivider />
-      <GoogleButton role={role} />
-    </div>
+    </form>
   );
 }

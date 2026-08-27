@@ -1,7 +1,6 @@
 "use server";
 
 import { redirect } from "next/navigation";
-import { cookies, headers } from "next/headers";
 import { createClient } from "@/lib/supabase/server";
 import { homeFor } from "@/lib/auth";
 import type { UserRole } from "@/lib/types";
@@ -110,50 +109,4 @@ export async function signOut() {
   const supabase = await createClient();
   await supabase.auth.signOut();
   redirect("/");
-}
-
-
-/**
- * Google sign-in.
- *
- * The role is captured here, before we hand off, because Google will not ask
- * and the app cannot place someone without it. It rides in a 10-minute
- * httpOnly cookie and is claimed in /auth/callback.
- *
- * `role` is omitted when signing IN — an existing account keeps the side it
- * already has.
- */
-export async function signInWithGoogle(formData: FormData) {
-  const role = String(formData.get("role") ?? "");
-  const supabase = await createClient();
-
-  const h = await headers();
-  const origin =
-    h.get("origin") ??
-    (h.get("host") ? `https://${h.get("host")}` : "http://localhost:3000");
-
-  if (role === "brand" || role === "creator") {
-    (await cookies()).set("ss_signup_role", role, {
-      httpOnly: true,
-      sameSite: "lax",
-      secure: process.env.NODE_ENV === "production",
-      path: "/",
-      maxAge: 600,
-    });
-  }
-
-  const { data, error } = await supabase.auth.signInWithOAuth({
-    provider: "google",
-    options: { redirectTo: `${origin}/auth/callback` },
-  });
-
-  if (error || !data?.url) {
-    redirect(
-      `/login?error=${encodeURIComponent(
-        "Couldn't reach Google. Try again, or use your email and password.",
-      )}`,
-    );
-  }
-
-  redirect(data.url);
 }

@@ -69,3 +69,23 @@ It is this deserialisation bug, in two places.
 `test:improvements` needs a live response window to assert against. Running
 either leaves the marketplace in a state where the other fails. Run
 `supabase/demo-reset.sql` between runs. Already noted in the README.
+
+
+---
+
+## 3. Removed: Google sign-in (added then reverted, same session)
+
+Built and then removed on request. Recorded because the migrations reached the
+live database and are in its history.
+
+- `0007_oauth_role_claim.sql` added `claim_role()`, `0008` hardened
+  `handle_new_user()` for OAuth-derived handles.
+- `0009_remove_google_signin.sql` reverses both. The two earlier files stay in
+  the repo: deleting them would leave the repo describing a schema the database
+  never had.
+
+Worth keeping in mind if OAuth is revisited: Google does not say which side of
+the marketplace someone is on, so the role has to be captured before the
+redirect and claimed on return, and the handle has to be invented from the
+email local part — which can collide with an existing handle or contain
+characters the `handle_shape` CHECK rejects.
