@@ -82,22 +82,53 @@ the UI labels seeded view counts wherever they appear.
 
 ## Design direction
 
-The interface borrows from a video control room: quiet plum-black surfaces, clear
-timecodes, vertical 9:16 markers, and two semantic accents.
+The interface borrows from a video control room, where a tally light tells the
+room what is live without anyone having to ask. Statuses are tally states, numbers
+are timecodes, and every surface stays quiet so the tally colors carry the signal.
+That suits a product whose argument is that state is never ambiguous: the design
+makes state the most legible thing on the screen.
 
 | Token | Value | Meaning |
 | --- | --- | --- |
-| Pitch | `#17131C` | App background |
-| Raise | `#221C29` | Elevated surface |
-| Bone | `#EFEAF2` | Primary text and money |
-| Ash | `#8B84A0` | Supporting text |
-| Flare | `#FF5A3D` | Time and urgency only |
-| Iris | `#7C6BFF` | Identity and selection only |
+| Bone | `#E9E7E1` | Page background |
+| Card | `#FFFFFF` | Surfaces |
+| Graphite | `#16191C` | Primary text, headers, primary buttons |
+| Slate | `#6B7178` | Secondary text, labels |
+| Tally live | `#FF4D2E` | Active, in production, urgent |
+| Tally standby | `#E0A62B` | Pending, awaiting a response |
+| Tally clear | `#3F9E77` | Approved, released, done |
+| Hairline | `#D3D0C8` | Borders |
 
-Archivo Expanded is reserved for display type, Instrument Sans carries interface
-copy, and JetBrains Mono handles money, counts, countdowns, and timestamps. The
-system uses one-pixel borders, restrained radii, visible keyboard focus, tabular
-figures, and reduced-motion fallbacks. Color never carries status by itself.
+Bricolage Grotesque is reserved for display type, Public Sans carries interface
+copy, and JetBrains Mono handles money, counts, countdowns, dates, and rates —
+including numbers inside sentences. The system uses one-pixel borders, a 4px
+radius throughout, no drop shadows, visible keyboard focus, tabular figures, and
+reduced-motion fallbacks.
+
+**A tally color may only appear where it reports real state** — never as
+decorative fill, gradient, or background, and never as the sole carrier of
+meaning: every status that uses color also states itself in words. The stock
+Tailwind ramps are cleared to `initial` in `@theme`, so `bg-gray-800` and friends
+do not resolve at all and a stray one is a visible bug rather than silent drift.
+
+**The signature element is the tally strip**: a 4px bar down the left edge of any
+card representing a relationship. For an application inside its response window
+the bar *is* the window — it drains from full to empty across the 48 hours,
+computed from the real `expires_at` and recomputed each second rather than
+animated on a loop, and switches from standby to live under six hours.
+
+That rule is easy to state and easy to break. On the browse card the strip was
+lit by "this campaign has slots left", which every open campaign has: fifteen
+cards, one color, no signal. It now lights only for what a creator can act on —
+the last slot, or a deadline inside 24 hours. The delivery deadline turned red at
+ten days out, spending the alarm color on nothing; red is now under 2 days, amber
+under 5. The slot rail contradicted its own caption, drawing a solid dot for a
+slot *taken* beside the words "4 of 5 slots left"; solid now means a slot still
+open, so the rail drains as the campaign fills, in the same direction and with the
+same meaning as the countdown above it.
+
+Responsive to 390px, visible keyboard focus, `prefers-reduced-motion` respected,
+CLS 0 on every screen.
 
 ## Stack
 
@@ -137,22 +168,58 @@ Apply the SQL files in `supabase/migrations/` in filename order, then load the d
 data from `supabase/seed.sql`. If you need the additional accounts created during
 the walkthrough, also run `supabase/seed-demo-accounts.sql`:
 
+Against a hosted project, link once and push the migrations, then load the seed
+files explicitly — nothing here seeds itself:
+
 ```bash
-# From the Supabase dashboard SQL editor or the Supabase CLI
+supabase link --project-ref <project-ref>
 supabase db push
 
-# Apply migrations and the default seed file
-supabase db reset
-
-# Optional: add the extra walkthrough accounts
-# supabase db query < supabase/seed-demo-accounts.sql
+supabase db query --linked -f supabase/seed.sql
+supabase db query --linked -f supabase/seed-demo-accounts.sql   # optional
 ```
+
+Against a local stack, `db reset` applies every migration and runs `supabase/seed.sql`
+in one step:
+
+```bash
+supabase start
+supabase db reset
+supabase db query --local -f supabase/seed-demo-accounts.sql    # optional
+```
+
+Do not mix the two. `db push` targets the linked remote project; `db reset`
+targets the local database and drops it first. Either path also works by pasting
+the files into the dashboard SQL editor in filename order.
 
 The migration history includes the schema, RLS policies, transition functions,
 signup auto-confirmation for demo mode, public marketplace stats, and the final
-responsiveness denominator fix. Migrations `0007` and `0008` are retained because
-they were applied historically; `0009` reverses their Google sign-in behavior
-forward.
+responsiveness denominator fix:
+
+| File | What |
+| --- | --- |
+| `0001_schema.sql` | Tables, enums, constraints, the 48h window trigger, signup trigger |
+| `0002_rls.sql` | Row-level security, helper functions, the private storage bucket |
+| `0003_transitions.sql` | State-transition functions, lazy expiry, the responsiveness view |
+| `0004_fix_null_authority_check.sql` | Privilege-escalation fix |
+| `0005_auto_confirm_signups.sql` | Demo-mode signup with no email round-trip |
+| `0006_public_marketplace_stats.sql` | `marketplace_stats()` — landing figures, readable without a session |
+| `0007_oauth_role_claim.sql` | Google sign-in. **Reverted by `0009`** |
+| `0008_unique_handle_for_oauth_signups.sql` | Handle de-duplication for OAuth. **Reverted by `0009`** |
+| `0009_remove_google_signin.sql` | Reverses `0007` and `0008` forward |
+| `0010_marketplace_stats_denominator.sql` | Adds `decidable_total`, so a 0% built from nothing is distinguishable from a real 0% |
+
+`0007` and `0008` are retained rather than deleted. They were applied to the live
+database and are recorded in its migration history, so removing the files would
+leave the repo describing a schema that never existed. `0009` reverses them
+forward, which is the only honest direction.
+
+Together the seed files produce **10 brands, 24 creators, 15 open campaigns, and
+60 applications** with real history. `seed-demo-accounts.sql` fills in two
+accounts, `@ambitious_coder` and `@hollowbrook`, that were created by hand through
+the signup form during the build: their logins worked and their screens were
+completely empty, which is the one state a demo cannot afford. Their passwords are
+not in this repo — the seeded accounts above are the ones to sign in with.
 
 For a production deployment, remove the demo auto-confirmation migration and keep
 email verification enabled.
@@ -162,21 +229,31 @@ email verification enabled.
 ```bash
 npm run lint
 npx tsc --noEmit
-npm run test:rls
-npm run test:signup
-npm run test:smoke
-npm run test:thread
-npm run test:improvements
+
+npm run test:rls            #  9 row-level-security proofs, straight at PostgREST
+npm run test:signup         # 11 checks: fresh signup on both sides, no email round-trip
+npm run test:smoke          # 19 end-to-end checks against the live deploy
+npm run test:thread         # 26 checks driving the full thread lifecycle
+npm run test:improvements   # 22 checks: the product changes, on a rendered page
 ```
 
-The integration suites use real Supabase JWTs and exercise the state machine rather
-than mocking it. `test:thread` and `test:improvements` mutate demo data, so reset
-the database between runs:
+67 checks in total. The integration suites use real Supabase JWTs and exercise the
+state machine rather than mocking it. `test:rls` is the one that matters most: it
+makes the requests a hostile client would make, because hiding a button is not
+access control.
+
+`test:thread` and `test:improvements` mutate demo data — the first drives the
+walkthrough thread all the way to approved-and-paid, and the second needs a live
+response window to look at. Restore the walkthrough state between runs:
 
 ```bash
-supabase db reset
-# or run supabase/demo-reset.sql in the SQL editor
+supabase db query --linked -f supabase/demo-reset.sql
+# or paste supabase/demo-reset.sql into the dashboard SQL editor
 ```
+
+`demo-reset.sql` is safe to run repeatedly and touches only seeded demo data. It
+puts three fresh response windows back on the board (41 minutes, 9 hours, 44
+hours) and reopens the walkthrough thread.
 
 For visual checks, `tests/render.mjs` uses Chromium at 390px and 1280px to check
 sideways scrolling, hydration errors, and primary-action placement. It is kept out
