@@ -139,7 +139,7 @@ begin
     select * from (values
       ('sunlit', 'Barrier repair routine, morning and night', 'We want honest before-and-after style routines using the Barrier Serum over 14 days. Show the texture, show the pilling if it pills, show your actual bathroom. No ring light, no script. Mention that it is fragrance-free within the first five seconds. We will send product plus a shipping code.', 'Beauty & Skincare', 'tiktok', 3, 15, 30, 45000, 4, 1, 18, 'open'),
       ('sunlit', 'Sunscreen re-application at your desk', 'A single video about re-applying SPF over makeup at 2pm without ruining it. Handheld, one take preferred. We care much more about it being useful than being polished.', 'Beauty & Skincare', 'reels', 1, 20, 40, 32000, 3, 2, 11, 'open'),
-      ('northbound', 'Pour-over on a weekday morning', 'Show the full pour-over with our Ethiopia Guji at whatever hour you actually make coffee. We want the mess. Please weigh the beans on camera and say the ratio out loud. No latte art, we do not sell milk.', 'Food & Drink', 'reels', 2, 20, 40, 27500, 4, 0, 9, 'open'),
+      ('northbound', 'Pour-over on a weekday morning', 'Show the full pour-over with our Ethiopia Guji at whatever hour you actually make coffee. We want the mess. Please weigh the beans on camera and say the ratio out loud. No latte art, we do not sell milk.', 'Food & Drink', 'reels', 2, 20, 40, 27500, 4, 0, 4, 'open'),
       ('gritathletic', 'Garage gym walkthrough with the sled', 'Take the Grit sled through a full conditioning finisher and talk through why you would use it over a treadmill. Show the plates loading. Film it in whatever space you train in, the worse the concrete the better.', 'Fitness', 'shorts', 1, 30, 60, 60000, 4, 3, 21, 'open'),
       ('gritathletic', 'Belt sizing, explained properly', 'Nobody explains lever belt sizing well and we get twelve emails a week about it. One video, tape measure on camera, cover the two most common mistakes.', 'Fitness', 'tiktok', 2, 20, 45, 42000, 2, 0, 14, 'open'),
       ('kettleandfold', 'Everything fits: small kitchen reset', 'Reset your kitchen using the enamel set and the linen runners. We want the before, honestly. Anyone whose kitchen is already tidy is the wrong fit for this brief.', 'Home & Kitchen', 'reels', 2, 25, 45, 38000, 3, 1, 16, 'open'),
@@ -148,10 +148,14 @@ begin
       ('terrabottle', 'Cold water, four hours later', 'Take the 32oz somewhere genuinely cold or genuinely hot and prove the claim on camera with a thermometer. We would rather it underperform on video than be staged.', 'Outdoors', 'tiktok', 2, 15, 35, 41000, 4, 1, 19, 'open'),
       ('nightshiftaudio', 'First interface, first record', 'Set up the Halo 2i and record something in one sitting. Show the latency settings, show the driver install, do not skip the annoying part. Bedroom acoustics welcome.', 'Tech & Audio', 'shorts', 1, 45, 90, 58000, 3, 0, 20, 'open'),
       ('verdantgreens', 'What a week of deliveries looks like', 'Unbox four weekly deliveries across a month and show what you actually did with them, including the bits you wasted. Honesty about waste is fine and we would prefer it.', 'Food & Drink', 'reels', 4, 20, 40, 33000, 4, 2, 26, 'open'),
-      ('verdantgreens', 'The 6am juice, unglamorous version', 'One video, no makeup, no styling, drinking the thing at whatever hour you drink it. We are trying to stop looking like a wellness brand.', 'Food & Drink', 'tiktok', 1, 15, 30, 24000, 5, 1, 8, 'open'),
+      ('verdantgreens', 'The 6am juice, unglamorous version', 'One video, no makeup, no styling, drinking the thing at whatever hour you drink it. We are trying to stop looking like a wellness brand.', 'Food & Drink', 'tiktok', 1, 15, 30, 24000, 5, 1, 2, 'open'),
       ('terrabottle', 'Supply chain, on camera', 'A longer explainer about where recycled steel comes from. We will give you the sourcing documents. This one needs someone comfortable with a serious tone.', 'Outdoors', 'shorts', 1, 60, 90, 70000, 2, 2, 6, 'closed'),
       ('kettleandfold', 'Linen care without a tumble dryer', 'Draft — still deciding whether this is one video or a series, and whether we send the full set or just the runners.', 'Home & Kitchen', 'reels', 2, 20, 40, 36000, 3, 0, 30, 'draft')
     ) as t(brand_handle, title, brief, niche, plat, vids, dmin, dmax, budget, slots, filled, days, status)
+  -- Two of these deadlines sit deliberately close (2 and 4 days). Every open
+  -- campaign used to be eight or more days out, which is not what a real
+  -- marketplace looks like and meant the deadline never changed colour: the
+  -- red / amber / grey thresholds on the browse card were real but unreachable.
   loop
     insert into campaigns (
       brand_id, title, brief, niche, platform, video_count,

@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { PLATFORM_SHORT } from "@/lib/types";
 import { money, duration, shortDate, daysUntil } from "@/lib/format";
-import { ResponsivenessBadge, SlotRail, VerticalCount } from "@/components/rail";
+import { ResponsivenessBadge, SlotRail } from "@/components/rail";
 import { TallyStrip } from "@/components/tally";
 import type { TallyTone } from "@/components/ui";
 import type { CampaignCardData } from "@/lib/queries";
@@ -22,21 +22,22 @@ export function CampaignCard({
 }) {
   const days = daysUntil(c.deadline);
   const slotsLeft = c.slots_total - c.slots_filled;
+  const urgent = slotsLeft === 1 || (days <= 1 && days >= 0);
 
   return (
     <Link
       href={href}
       className="group relative block overflow-hidden rounded-[4px] border border-hairline bg-card p-4 pl-5 transition-[border-color] duration-150 hover:border-graphite/50 sm:p-5 sm:pl-5"
     >
-      {/* A campaign with no slots left is over; one still taking creators is
-          standing by. The tally says which before the card is read. */}
-      <TallyStrip tone={slotsLeft > 0 ? "standby" : "over"} />
+      {/*
+        Colour here has to mean something. Every open campaign has slots left,
+        so "slots remaining" lit every card amber and the tally said nothing.
+        It now marks the two states a creator should actually act on: the last
+        slot, or a deadline inside 24 hours. Everything else is grey.
+      */}
+      <TallyStrip tone={urgent ? "live" : slotsLeft === 0 ? "over" : "neutral"} />
 
       <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:gap-5">
-        <div className="flex shrink-0 flex-col gap-2">
-          <VerticalCount count={c.video_count} />
-        </div>
-
         <div className="flex min-w-0 flex-1 flex-col gap-1.5">
           <h2 className="type-title text-balance text-graphite">{c.title}</h2>
 
@@ -59,7 +60,18 @@ export function CampaignCard({
             {duration(c.duration_min_seconds, c.duration_max_seconds)} · due{" "}
             {shortDate(c.deadline)}
             {days <= 10 ? (
-              <span className="text-tally-live"> · {days}d left to deliver</span>
+              <span
+                className={
+                  days <= 2
+                    ? "text-tally-live"
+                    : days <= 5
+                      ? "text-tally-standby"
+                      : "text-slate"
+                }
+              >
+                {" "}
+                · <span className="type-timecode">{days}d</span> left to deliver
+              </span>
             ) : null}
           </p>
         </div>

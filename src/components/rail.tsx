@@ -6,8 +6,14 @@ import { responsiveness as computeResponsiveness } from "@/lib/format";
  *
  * In a thread the spine runs vertically and carries messages, state changes and
  * money events on one timeline. On a card there is no room for that, so the same
- * object collapses to a horizontal rail of slot nodes. One grammar in both
- * places: filled node = taken, hollow node = open.
+ * object collapses to a horizontal rail of slot nodes.
+ *
+ * A solid node is a slot STILL OPEN, not one taken. This was the other way round
+ * and it fought the sentence sitting next to it: four solid dots beside the words
+ * "4 of 5 slots left" invited you to count the dots and get the right answer for
+ * the wrong reason — until a campaign filled up, when five solid dots meant none
+ * left. The rail now drains as the campaign fills, in the same direction and with
+ * the same meaning as the 48-hour countdown strip: solid is what you have left.
  */
 export function SlotRail({
   filled,
@@ -22,20 +28,20 @@ export function SlotRail({
   return (
     <div className={cn("flex items-center gap-2.5", className)}>
       <div className="flex items-center" role="img"
-           aria-label={`${filled} of ${total} slots filled`}>
+           aria-label={`${left} of ${total} slots left`}>
         {Array.from({ length: total }).map((_, i) => (
           <span key={i} className="flex items-center">
             {i > 0 ? (
               <span
                 aria-hidden
-                className={cn("h-px w-3.5", i <= filled ? "bg-graphite/40" : "bg-hairline")}
+                className={cn("h-px w-3.5", i < left ? "bg-graphite/40" : "bg-hairline")}
               />
             ) : null}
             <span
               aria-hidden
               className={cn(
                 "block size-2 rounded-[4px]",
-                i < filled ? "bg-graphite" : "border border-hairline bg-transparent",
+                i < left ? "bg-graphite" : "border border-hairline bg-transparent",
               )}
             />
           </span>

@@ -20,7 +20,7 @@ type RosterRow = {
   payments: { amount_cents: number; status: PaymentStatus } | null;
   deliverables: { version: number; status: DeliverableStatus }[] | null;
 };
-import { ResponsivenessBadge, SlotRail, VerticalCount } from "@/components/rail";
+import { ResponsivenessBadge, SlotRail } from "@/components/rail";
 import { TallyStrip } from "@/components/tally";
 import { Button, Card, Chip, EmptyState } from "@/components/ui";
 
@@ -251,8 +251,12 @@ export default async function BrandDashboard() {
                     }
                   />
                   <div className="flex flex-wrap items-start justify-between gap-3">
+                    {/* The 9:16 tiles are gone from this card for the same reason
+                        they left the browse card: with the title beside them and
+                        the "2× TikTok" a line below, they were an uncaptioned grey
+                        rectangle that read as a failed image. They stay on the two
+                        detail pages, where the platform label sits on their row. */}
                     <div className="flex min-w-0 gap-4">
-                      <VerticalCount count={c.video_count} />
                       <div className="flex min-w-0 flex-col gap-1">
                         <h3 className="type-title text-balance">{c.title}</h3>
                         <p className="type-small text-slate">
