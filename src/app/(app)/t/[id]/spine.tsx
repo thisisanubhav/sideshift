@@ -87,9 +87,11 @@ function renderEvent(e: SpineEvent) {
           <p
             className={cn(
               "max-w-[46ch] rounded-[4px] px-3.5 py-2.5 text-[15px] leading-relaxed whitespace-pre-wrap",
+              // Your own messages read as the dark bubble; theirs as a plain
+              // card. No quotation marks anywhere — this is a conversation.
               e.mine
-                ? "bg-graphite text-graphite"
-                : "border border-hairline bg-transparent text-graphite",
+                ? "bg-graphite text-card"
+                : "border border-hairline bg-card text-graphite",
             )}
           >
             {e.body}

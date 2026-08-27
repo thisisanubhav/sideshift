@@ -5,12 +5,12 @@ import { PAYMENT_STATUS_LABEL, type PaymentStatus } from "@/lib/types";
 /**
  * The money, rendered by ONE component for both roles.
  *
- * The brand and the creator import the same file and read the same payment row,
- * so "both sides see the same state and the same timestamp" is structural
- * rather than a thing to keep in sync by hand. There is no brand variant.
+ * The brand and the creator import this same file and read the same payments
+ * row, so "both sides see the same state and the same timestamp" is structural
+ * rather than something to keep in sync by hand. There is no brand variant.
  *
- * Money carries no hue. It gets the highest contrast on the screen instead, and
- * the chip *fills* as the money moves: outlined while held, solid once paid.
+ * Each step is a tally: done, current, or not yet. A completed step always
+ * carries the timestamp it happened at, at every breakpoint.
  */
 export function PaymentRail({
   amountCents,
@@ -25,84 +25,89 @@ export function PaymentRail({
   inReviewAt: string | null;
   releasedAt: string | null;
 }) {
+  const order: PaymentStatus[] = ["escrowed", "in_review", "released"];
+  const currentIndex = order.indexOf(status);
+
   const steps = [
-    { key: "escrowed" as const, at: escrowedAt },
-    { key: "in_review" as const, at: inReviewAt },
-    { key: "released" as const, at: releasedAt },
+    { key: "escrowed" as const, at: escrowedAt, pending: "Not yet escrowed" },
+    { key: "in_review" as const, at: inReviewAt, pending: "Awaiting a cut" },
+    { key: "released" as const, at: releasedAt, pending: "Pending approval" },
   ];
 
-  const released = status === "released";
-
   return (
-    /**
-     * Release is the terminal moment of the whole product and the only reason a
-     * creator is here — and it used to render at exactly the same weight as the
-     * escrowed state before it. The voice rule forbids being cheerful about
-     * someone else's money, but *marked* and *cheerful* are different things.
-     *
-     * So it extends the grammar the system already has: the escrow chip fills
-     * as the money moves. Here that fill scales to the whole card. No new
-     * colour, no confetti — the surface simply inverts once it is paid.
-     */
-    <div
-      className={cn(
-        "flex flex-col gap-4",
-        released && "-m-5 rounded-[4px] bg-graphite p-5 text-card",
-      )}
-    >
-      <div className="flex flex-col gap-2.5">
-        <span className="type-timecode text-[32px] leading-none font-semibold">
+    <div className="flex flex-col gap-4">
+      <div className="flex flex-col gap-1">
+        <h2 className="type-micro text-slate">Payment status</h2>
+        <span className="type-timecode text-[32px] leading-none">
           {money(amountCents, { cents: true })}
-        </span>
-        <span
-          data-payment-status={status}
-          className={cn(
-            "type-micro w-fit rounded-[4px] px-2.5 py-1",
-            released
-              ? "border border-card bg-graphite text-graphite"
-              : "border border-graphite/45 text-graphite",
-          )}
-        >
-          {PAYMENT_STATUS_LABEL[status]}
         </span>
       </div>
 
-      <dl className="flex flex-col gap-0">
-        {steps.map((s) => (
-          <div
-            key={s.key}
-            className={cn(
-              "flex items-baseline justify-between gap-3 border-t py-2 first:border-t-0",
-              released ? "border-card/15" : "border-hairline",
-            )}
-          >
-            <dt
-              className={cn(
-                "type-small",
-                released ? "text-card" : s.at ? "text-graphite" : "text-slate",
-              )}
-            >
-              {PAYMENT_STATUS_LABEL[s.key]}
-            </dt>
-            <dd
-              className={cn(
-                "type-timecode text-[13px]",
-                released ? "text-card/70" : s.at ? "text-slate" : "text-slate/40",
-              )}
-            >
-              {s.at ? spineStamp(s.at) : "—"}
-            </dd>
-          </div>
-        ))}
-      </dl>
+      <ol className="flex flex-col">
+        {steps.map((s, i) => {
+          const done = Boolean(s.at) && i <= currentIndex;
+          const current = i === currentIndex;
 
-      <p className={cn("type-small", released ? "text-card/80" : "text-slate")}>
+          return (
+            <li key={s.key} className="relative flex gap-3 pb-4 last:pb-0">
+              {/* the run between tallies */}
+              {i < steps.length - 1 ? (
+                <span
+                  aria-hidden
+                  className={cn(
+                    "absolute top-3 bottom-0 left-[3px] w-px",
+                    done ? "bg-tally-clear/40" : "bg-hairline",
+                  )}
+                />
+              ) : null}
+
+              <span
+                aria-hidden
+                className={cn(
+                  "relative mt-1.5 size-[7px] shrink-0 rounded-[4px]",
+                  done
+                    ? "bg-tally-clear"
+                    : current
+                      ? "bg-tally-live"
+                      : "border border-hairline bg-card",
+                )}
+              />
+
+              <div className="flex min-w-0 flex-1 flex-col gap-0.5">
+                <span
+                  className={cn(
+                    "type-micro",
+                    done ? "text-tally-clear" : current ? "text-tally-live" : "text-slate",
+                  )}
+                >
+                  {PAYMENT_STATUS_LABEL[s.key]}
+                </span>
+                {s.at ? (
+                  <span className="type-timecode text-[13px] text-slate">
+                    {spineStamp(s.at)}
+                  </span>
+                ) : (
+                  <span className="type-small text-slate">{s.pending}</span>
+                )}
+              </div>
+            </li>
+          );
+        })}
+      </ol>
+
+      <p className="type-small border-t border-hairline pt-3 text-slate">
         {status === "released"
           ? "Paid. Both sides are looking at the same timestamp."
           : status === "in_review"
             ? "Held while the brand reviews the cut. Approving releases it."
-            : "Held since the moment the brand accepted. Neither side can move it until the work is approved."}
+            : "Held since the brand accepted. Neither side can move it until the work is approved."}
       </p>
+
+      {/* Kept for the end-to-end tests, which assert on payment state from the
+          rendered page rather than from the database. */}
+      <span data-payment-status={status} className="sr-only">
+        {PAYMENT_STATUS_LABEL[status]}
+      </span>
     </div>
   );
 }
