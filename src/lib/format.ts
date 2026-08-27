@@ -52,6 +52,20 @@ export function stamp(iso: string) {
   });
 }
 
+/**
+ * The stamp on every node of the spine: 27.08 · 14:02:11.
+ *
+ * Seconds are not pedantry — they are what makes "the brand approved this
+ * eleven seconds after I sent it" and "four days later" read differently at a
+ * glance. Fixed to UTC so the brand and the creator, in different timezones,
+ * are quoting each other the same number.
+ */
+export function spineStamp(iso: string) {
+  const d = new Date(iso);
+  const p = (n: number) => String(n).padStart(2, "0");
+  return `${p(d.getUTCDate())}.${p(d.getUTCMonth() + 1)} · ${p(d.getUTCHours())}:${p(d.getUTCMinutes())}:${p(d.getUTCSeconds())}`;
+}
+
 export function shortDate(iso: string) {
   return new Date(iso).toLocaleDateString("en-GB", {
     day: "numeric",
