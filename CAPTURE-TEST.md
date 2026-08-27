@@ -37,9 +37,85 @@
 **Log location:** `.agent-logs/` — committed, and explicitly *not* in `.gitignore`
 (verified with `git check-ignore`).
 
-## 3. Canary log file
+## 3. Canary log files
 
-<!-- PENDING: filled in once the canaries land. See section 5. -->
+Two sessions, two canaries, both captured automatically with no manual step.
+
+### Canary 1 — the session that installed the hook
+
+`.agent-logs/2026-08-27_07-36-37_5b96c281-f978-48d1-8286-8ff7e9a3ec28.md`
+
+```
+[LOG_ENTRY type=PROMPT num=1 session=5b96c281]
+timestamp: 2026-08-27T07:36:37.023Z
+model: claude-opus-5
+
+CAPTURE TEST — 8x assignment, Anubhav
+
+
+[LOG_ENTRY type=RESPONSE num=1 session=5b96c281]
+timestamp: 2026-08-27T07:37:14.612Z
+model: claude-opus-5
+
+Canary #1 landed. `/hooks` wasn't available in this environment, but the settings
+watcher picked up `.claude/settings.json` on its own — the hook fired without any
+reload.
+[... full response continues in the log file ...]
+```
+
+### Canary 2 — a second, independent session
+
+`.agent-logs/2026-08-27_07-38-27_50f09b8e-0e51-4f3a-a2e9-cf04b84e912f.md`
+
+```
+---
+session_id: 50f09b8e-0e51-4f3a-a2e9-cf04b84e912f
+date: 2026-08-27
+author: thisisanubhav
+model: claude-opus-5
+tool: claude-code
+project: sideshift
+total_exchanges: 1
+first_prompt_time: 2026-08-27T07:38:27.792Z
+last_prompt_time: 2026-08-27T07:38:27.792Z
+---
+
+# Session Log - 2026-08-27
+
+Session: `50f09b8e` | Project: `sideshift` | Author: `thisisanubhav`
+
+---
+
+[LOG_ENTRY type=PROMPT num=1 session=50f09b8e]
+timestamp: 2026-08-27T07:38:27.792Z
+model: claude-opus-5
+
+CAPTURE TEST — 8x assignment, Anubhav
+
+
+[LOG_ENTRY type=RESPONSE num=1 session=50f09b8e]
+timestamp: 2026-08-27T07:38:48.259Z
+model: claude-opus-5
+
+Capture confirmed working in this session.
+
+This is the fresh canary session (`50f09b8e`), and the hook fired on its own —
+`.agent-logs/2026-08-27_07-38-27_50f09b8e-....md` already exists with correct
+frontmatter and one entry:
+[... full response continues in the log file ...]
+```
+
+Session 2 is the one that matters: it is a session that did **not** install the
+hook, started cold with no knowledge of it, and was captured anyway. A hook that
+only works in the session that created it would have produced nothing here.
+
+### A note on the nesting you will see
+
+Some `[LOG_ENTRY` lines inside these files are *quoted*, not real — my responses
+about the capture system contain log excerpts, and those are captured verbatim
+along with everything else. `grep -c` over-counts as a result. The authoritative
+count is the `total_exchanges` field in the frontmatter. Nothing was tidied up to
+avoid this; the log is what it is.
 
 ## 4. What I tried first that did not work
 
@@ -85,9 +161,20 @@ than the gap. What covers that period instead:
 
 Everything from the turn that installed this hook onward is captured automatically.
 
-There is one Claude Code caveat that affects the first canary: the settings watcher
-only watches directories that already had a settings file when the session started.
-`.claude/` did not exist when this session began, so the hooks are written correctly
-but are not yet loaded in *this* session. Opening `/hooks` once reloads them; a
-restart also does it. That is a user action — I cannot trigger it from inside the
-turn.
+## 6. A prediction I got wrong
+
+Before running the canaries I wrote here that the settings watcher would not pick
+up `.claude/` in a session that started before the directory existed, and that
+`/hooks` or a restart would be needed to load it.
+
+Both halves were wrong, and I am leaving the correction visible rather than
+editing the claim away:
+
+- `/hooks` **is not available in this environment at all** — it returned
+  "`/hooks` isn't available in this environment."
+- The hook **fired anyway**, in the installing session, with no reload. Canary 1
+  landed seconds later.
+
+So the watcher does pick up a `.claude/settings.json` created mid-session, at
+least in the VS Code extension. The caveat I inherited was either wrong or does
+not apply here. Worth knowing if you hit the same thing.
