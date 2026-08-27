@@ -9,7 +9,8 @@ import {
 } from "@/lib/types";
 import type { ApplicationStatus, DeclineReason, Platform } from "@/lib/types";
 import { Countdown } from "@/components/countdown";
-import { Button, Card, Chip, EmptyState } from "@/components/ui";
+import { Button, Chip, EmptyState } from "@/components/ui";
+import { TallyCard, TallyCountdownStrip, TallyStrip } from "@/components/tally";
 import { WithdrawButton } from "./withdraw";
 
 export const metadata = { title: "Your applications — SideShift" };
@@ -94,7 +95,15 @@ export default async function CreatorApplications() {
             const c = r.campaigns;
             const threadId = threadFor.get(r.id);
             return (
-              <Card key={r.id} className="flex flex-col gap-4 p-4 sm:p-5">
+              <TallyCard key={r.id} className="flex flex-col gap-4 p-4 sm:p-5">
+                {r.status === "pending" ? (
+                  <TallyCountdownStrip
+                    expiresAt={r.expires_at}
+                    initialMs={new Date(r.expires_at).getTime() - Date.now()}
+                  />
+                ) : (
+                  <TallyStrip tone={CHIP_TONE[r.status]} />
+                )}
                 <div className="flex flex-wrap items-start justify-between gap-3">
                   <div className="flex min-w-0 flex-col gap-1">
                     <h2 className="type-title text-balance">
@@ -166,7 +175,7 @@ export default async function CreatorApplications() {
                     slot was freed. This does not count against you.
                   </p>
                 ) : null}
-              </Card>
+              </TallyCard>
             );
           })}
         </div>

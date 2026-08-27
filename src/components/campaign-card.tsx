@@ -2,6 +2,8 @@ import Link from "next/link";
 import { PLATFORM_SHORT } from "@/lib/types";
 import { money, duration, shortDate, daysUntil } from "@/lib/format";
 import { ResponsivenessBadge, SlotRail, VerticalCount } from "@/components/rail";
+import { TallyStrip } from "@/components/tally";
+import type { TallyTone } from "@/components/ui";
 import type { CampaignCardData } from "@/lib/queries";
 
 /**
@@ -19,12 +21,17 @@ export function CampaignCard({
   href: string;
 }) {
   const days = daysUntil(c.deadline);
+  const slotsLeft = c.slots_total - c.slots_filled;
 
   return (
     <Link
       href={href}
       className="group block rounded-[4px] border border-hairline bg-card p-4 transition-[border-color,background-color,transform] duration-150 hover:border-graphite/30 hover:bg-graphite/45 active:scale-[0.995] sm:p-5"
     >
+      {/* A campaign with no slots left is over; one still taking creators is
+          standing by. The tally says which before the card is read. */}
+      <TallyStrip tone={slotsLeft > 0 ? "standby" : "over"} />
+
       <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:gap-5">
         <div className="flex shrink-0 flex-col gap-2">
           <VerticalCount count={c.video_count} />

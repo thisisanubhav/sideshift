@@ -3,7 +3,8 @@
 import { useActionState, useState } from "react";
 import Link from "next/link";
 import { acceptApplication, declineApplication, type DecisionState } from "../../actions";
-import { Button, Chip, FormError, Select, Textarea } from "@/components/ui";
+import { Button, Chip, FormError, Select, Textarea, type TallyTone } from "@/components/ui";
+import { TallyCard, TallyCountdownStrip, TallyStrip } from "@/components/tally";
 import { Countdown } from "@/components/countdown";
 import { money, views, followers, stamp } from "@/lib/format";
 import {
@@ -69,7 +70,12 @@ export function ApplicantCard({
   const decided = a.status !== "pending";
 
   return (
-    <div className="flex flex-col gap-4 rounded-[4px] border border-hairline bg-card p-4 sm:p-5">
+    <TallyCard className="flex flex-col gap-4 p-4 sm:p-5">
+      {a.status === "pending" ? (
+        <TallyCountdownStrip expiresAt={a.expires_at} initialMs={a.windowMs} />
+      ) : (
+        <TallyStrip tone={APPLICANT_TONE[a.status]} />
+      )}
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div className="flex min-w-0 flex-col gap-1">
           <div className="flex flex-wrap items-baseline gap-2">
@@ -172,7 +178,7 @@ export function ApplicantCard({
                     ? "No slots left"
                     : `Accept and escrow ${money(a.rate_cents)}`}
                 </Button>
-                <Button variant="danger" onClick={() => setDeclining(true)}>
+                <Button variant="secondary" onClick={() => setDeclining(true)}>
                   Decline
                 </Button>
               </div>
@@ -209,7 +215,7 @@ export function ApplicantCard({
                 <div className="flex flex-col gap-2.5 sm:flex-row">
                   <Button
                     type="submit"
-                    variant="danger"
+                    variant="secondary"
                     className="sm:flex-1"
                     disabled={declinePending}
                   >
@@ -265,9 +271,17 @@ export function ApplicantCard({
           </p>
         ) : null}
       </div>
-    </div>
+    </TallyCard>
   );
 }
+
+const APPLICANT_TONE: Record<ApplicationStatus, TallyTone> = {
+  pending: "standby",
+  accepted: "clear",
+  declined: "over",
+  expired: "over",
+  withdrawn: "over",
+};
 
 function Metric({
   label,
