@@ -17,6 +17,12 @@ Every seeded account uses the password `sideshift2026`.
 | `gritathletic@sideshift.demo` | Brand with a bad record. Four applications left to expire, and the public rate says so. |
 | `sunlit@sideshift.demo` | Brand on the other end of Maya's thread. Open it in a second browser to watch payment release live. |
 
+> **The countdowns are real clocks.** When I submitted this there were three live
+> response windows: 41 minutes, 9 hours and 44 hours. If you are reading this a
+> few days later, some will have genuinely expired — which is the product working,
+> and worth seeing once. `supabase/demo-reset.sql` puts three fresh windows back
+> and reopens the walkthrough thread.
+
 ## The five-minute path
 
 1. Sign in as `northbound`. The dashboard leads with **how many applications are
