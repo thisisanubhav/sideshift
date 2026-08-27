@@ -46,6 +46,11 @@ async function get(path, cookie) {
   return { status: r.status, location: r.headers.get("location"), body };
 }
 
+// Tags are stripped before matching: numbers render inside mono spans, so
+// "4 of 5 slots left" is split across elements in the raw HTML.
+const text = (html) =>
+  html.replace(/<!--\s*-->/g, "").replace(/<[^>]+>/g, " ").replace(/\s+/g, " ");
+
 const checks = [];
 function check(name, pass, detail = "") {
   checks.push({ name, pass, detail });
@@ -73,7 +78,7 @@ const run = async () => {
     browse.body.includes("answered in time"));
   check("browse shows the new-brand state or a rate",
     browse.body.includes("answered in time") || browse.body.includes("no response history"));
-  check("browse shows slots left", /slots? left|All slots filled/.test(browse.body));
+  check("browse shows slots left", /\d+ of \d+ slots? left|All slots filled/.test(text(browse.body)));
 
   const filtered = await get("/c/browse?platform=shorts", cc);
   check("platform filter actually filters",

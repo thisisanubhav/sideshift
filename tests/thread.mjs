@@ -65,7 +65,12 @@ const run = async () => {
   const b1 = await page(`/t/${THREAD}`, brand.cookie);
   check("creator can open the thread", c1.status === 200, `${c1.status}`);
   check("brand can open the thread", b1.status === 200, `${b1.status}`);
-  check("brief is pinned in the thread", c1.body.includes("The brief") && c1.body.includes("Barrier Serum"));
+  check("brief is on the thread for both sides",
+    c1.body.includes("Brief details") && b1.body.includes("Brief details"));
+  // Open for the brand, who is checking work against a brief they wrote;
+  // collapsed for the creator, who read it when they applied.
+  check("brand sees the brief body without expanding",
+    b1.body.includes("Barrier Serum"));
   check("spine shows the accept event", c1.body.includes("Accepted"));
   check("spine shows the seeded opening message", c1.body.includes("Welcome aboard"));
 
