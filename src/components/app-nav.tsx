@@ -50,9 +50,9 @@ export function AppNav({
             aria-current={active ? "page" : undefined}
             className={cn(
               // 44px min height: these were 33px and failed every touch guideline.
-              "inline-flex min-h-11 items-center rounded-[8px] px-3 text-[14px] font-medium whitespace-nowrap transition-colors",
+              "inline-flex min-h-11 items-center rounded-[8px] px-3 text-[14px] font-medium whitespace-nowrap transition-[background-color,color,transform] duration-150 active:scale-[0.98]",
               active
-                ? "bg-iris/15 text-bone"
+                ? "bg-iris/15 text-bone ring-1 ring-inset ring-iris/25"
                 : "text-ash hover:bg-raise-2 hover:text-bone",
             )}
           >

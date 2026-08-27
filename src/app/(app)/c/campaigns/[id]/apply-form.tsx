@@ -97,7 +97,8 @@ export function ApplyForm({
         {/* Asking above budget is allowed and sometimes right — but the creator
             should know they're doing it, and what it costs. */}
         {over > 0 ? (
-          <p className="type-small text-flare">
+          <p className="type-small text-bone">
+            {/* Marked, not alarmed - and not Flare: a rate is not a clock. */}
             {money(over * 100)} above the posted budget. Brands can decline for
             this — and if they do, they have to tell you.
           </p>

@@ -66,10 +66,11 @@ const NODES = [
 export function HeroSpine() {
   return (
     <div
-      className="rounded-[10px] border border-line bg-raise p-5 sm:p-6"
+      className="relative overflow-hidden rounded-[10px] border border-line bg-raise p-5 sm:p-6"
       role="img"
       aria-label="One thread: accepted and escrowed, a message from the brand, a 9:16 deliverable submitted, then payment released — all on one timeline."
     >
+      <div aria-hidden className="absolute inset-x-0 top-0 h-px bg-bone/10" />
       <ol aria-hidden className="relative flex flex-col gap-5">
         <span className="absolute top-2 bottom-2 left-[3.5px] w-px bg-line-strong" />
         {NODES.map((n, i) => (

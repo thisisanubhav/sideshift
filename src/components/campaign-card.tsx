@@ -23,7 +23,7 @@ export function CampaignCard({
   return (
     <Link
       href={href}
-      className="group block rounded-[10px] border border-line bg-raise p-4 transition-colors hover:border-bone/25 sm:p-5"
+      className="group block rounded-[10px] border border-line bg-raise p-4 transition-[border-color,background-color,transform] duration-150 hover:border-bone/30 hover:bg-raise-2/45 active:scale-[0.995] sm:p-5"
     >
       <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:gap-5">
         <div className="flex shrink-0 flex-col gap-2">
@@ -32,7 +32,7 @@ export function CampaignCard({
         </div>
 
         <div className="flex min-w-0 flex-1 flex-col gap-1.5">
-          <h2 className="type-title text-balance group-hover:text-bone">{c.title}</h2>
+          <h2 className="type-title text-balance text-bone">{c.title}</h2>
 
           {/* Identity line: who this is, and whether they answer. Read together,
               at the same size, before the creator commits an hour to a pitch. */}

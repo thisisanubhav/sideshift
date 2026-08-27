@@ -47,14 +47,13 @@ export default async function Home() {
         </nav>
       </header>
 
-      <main id="main" className="mx-auto w-full max-w-6xl flex-1 px-5 py-14 sm:px-8 sm:py-20">
-        <section className="grid items-start gap-10 lg:grid-cols-[1fr_460px] lg:gap-14">
-          <div className="flex flex-col gap-6">
-            <p className="type-micro text-ash">Paid UGC, without the guesswork</p>
+      <main id="main" className="mx-auto w-full max-w-6xl flex-1 px-5 py-12 sm:px-8 sm:py-16">
+        <section className="grid items-start gap-10 lg:grid-cols-[minmax(0,1fr)_460px] lg:gap-16">
+          <div className="flex flex-col gap-6 lg:pt-3">
             <h1 className="type-display-xl text-balance">
               One thread per creator. Brief, chat, approval, payment.
             </h1>
-            <p className="max-w-xl text-lg text-ash">
+            <p className="max-w-[62ch] text-lg leading-relaxed text-ash">
               Brands post paid short-form video briefs. Creators apply with a rate.
               Everything after that happens on a single timeline that both sides
               read the same way — no Slack, no email, no wondering.
@@ -69,7 +68,7 @@ export default async function Home() {
             </div>
 
             {s ? (
-              <dl className="mt-2 grid grid-cols-2 gap-px overflow-hidden rounded-[10px] border border-line bg-line sm:grid-cols-4">
+              <dl className="mt-3 grid grid-cols-2 gap-px overflow-hidden rounded-[10px] border border-line bg-line sm:grid-cols-4">
                 <Stat label="Open briefs" value={String(s.open_campaigns)} />
                 <Stat label="Creators" value={String(s.creators)} />
                 <Stat label="Escrowed now" value={money(s.escrowed_cents)} />
@@ -86,10 +85,12 @@ export default async function Home() {
 
         {/* The three promises, each shown in the product's own grammar rather
             than described in a card with a coloured eyebrow. */}
-        <section className="mt-20 flex flex-col gap-4 sm:mt-28">
-          <h2 className="type-micro text-ash">What&apos;s different</h2>
+        <section className="mt-20 flex flex-col gap-6 sm:mt-28">
+          <h2 className="type-display-l max-w-xl text-balance">
+            A marketplace that makes the next step obvious.
+          </h2>
 
-          <div className="grid gap-4 lg:grid-cols-3">
+          <div className="grid gap-0 overflow-hidden rounded-[10px] border border-line lg:grid-cols-3 lg:divide-x lg:divide-line">
             <Promise
               title="Every application gets an answer"
               body="A 48-hour window, counted down in front of both of you. Let it lapse and the application expires on its own, the slot frees, and it shows in your public rate."
@@ -129,17 +130,19 @@ export default async function Home() {
         </section>
 
         {/* The wedge gets its own moment, because it is the argument. */}
-        <section className="mt-16 flex flex-col gap-4 rounded-[10px] border border-line bg-raise p-6 sm:mt-20 sm:p-8">
-          <h2 className="type-display-l max-w-2xl text-balance">
-            Before you spend an hour on a pitch, see whether this brand answers.
-          </h2>
-          <p className="max-w-2xl text-ash">
-            Every campaign card carries the share of applications that brand
-            answered inside the window — computed from real applications, never
-            shown without its denominator, and never guessed at from one data
-            point. No competitor shows it.
-          </p>
-          <div className="flex flex-wrap items-center gap-x-6 gap-y-2 pt-1">
+        <section className="mt-16 grid gap-7 rounded-[10px] border border-line bg-raise p-6 sm:mt-20 sm:p-8 lg:grid-cols-[minmax(0,1fr)_auto] lg:items-end">
+          <div className="flex flex-col gap-4">
+            <h2 className="type-display-l max-w-2xl text-balance">
+              Before you spend an hour on a pitch, see whether this brand answers.
+            </h2>
+            <p className="max-w-2xl text-ash">
+              Every campaign card carries the share of applications that brand
+              answered inside the window — computed from real applications, never
+              shown without its denominator, and never guessed at from one data
+              point. No competitor shows it.
+            </p>
+          </div>
+          <div className="flex flex-col gap-3 border-t border-line pt-5 lg:min-w-[238px] lg:border-t-0 lg:border-l lg:pl-7 lg:pt-0">
             <span className="inline-flex items-center gap-1.5 text-[14px]">
               <span aria-hidden className="size-1.5 rounded-full bg-bone" />
               <span className="type-timecode font-semibold">92%</span>
@@ -190,7 +193,7 @@ function Promise({
   demo: React.ReactNode;
 }) {
   return (
-    <div className="flex flex-col gap-4 rounded-[10px] border border-line bg-raise p-5">
+    <div className="flex flex-col gap-4 border-b border-line bg-raise p-5 last:border-b-0 lg:border-b-0 lg:not-last:border-r lg:not-last:border-line">
       <div className="rounded-[8px] border border-line-strong bg-pitch p-3.5">
         {demo}
       </div>

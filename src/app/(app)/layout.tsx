@@ -34,7 +34,7 @@ export default async function AppLayout({
       >
         Skip to content
       </a>
-      <header className="sticky top-0 z-30 border-b border-line bg-pitch/95 backdrop-blur">
+      <header className="sticky top-0 z-30 border-b border-line bg-pitch">
         <div className="mx-auto flex w-full max-w-6xl items-center gap-4 px-4 py-3 sm:px-6">
           <Link href={`/${viewer.role === "brand" ? "b" : "c"}`} aria-label="SideShift home">
             <Wordmark />

@@ -17,7 +17,8 @@ type ButtonProps = React.ButtonHTMLAttributes<HTMLButtonElement> & {
 // The ring must be at full contrast the instant focus arrives.
 const BUTTON_BASE =
   "inline-flex items-center justify-center gap-2 rounded-[8px] font-semibold " +
-  "transition-[background-color,border-color,color] duration-150 " +
+  "transition-[background-color,border-color,color,transform] duration-150 " +
+  "active:scale-[0.98] " +
   "disabled:cursor-not-allowed disabled:opacity-40 whitespace-nowrap select-none";
 
 const BUTTON_VARIANT = {
@@ -90,7 +91,7 @@ export function Label({
 const FIELD_BASE =
   "w-full rounded-[8px] border border-line-strong bg-pitch px-3 text-bone " +
   "placeholder:text-ash/60 transition-[background-color,border-color,color] " +
-  "duration-150 hover:border-bone/25 focus:border-iris disabled:opacity-50";
+  "duration-150 hover:border-bone/35 focus:border-iris disabled:cursor-not-allowed disabled:opacity-50";
 
 export function Input({
   className,

@@ -34,6 +34,8 @@
 @layer base {
   :root {
     color-scheme: dark;
+    --header-height: 6.5rem;
+    scroll-padding-top: calc(var(--header-height) + 1rem);
   }
 
   html {
@@ -47,6 +49,36 @@
     font-size: 15px;
     line-height: 1.5;
     -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+
+  a {
+    text-underline-offset: 0.2em;
+  }
+
+  input,
+  textarea,
+  select {
+    caret-color: var(--color-iris);
+  }
+
+  * {
+    scrollbar-color: var(--color-raise-2) var(--color-pitch);
+  }
+
+  *::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+  }
+
+  *::-webkit-scrollbar-track {
+    background: var(--color-pitch);
+  }
+
+  *::-webkit-scrollbar-thumb {
+    border: 3px solid var(--color-pitch);
+    border-radius: 999px;
+    background: var(--color-raise-2);
   }
 
   /* Visible keyboard focus everywhere, and only for keyboard users. */
@@ -123,4 +155,5 @@
     font-variant-numeric: tabular-nums;
     letter-spacing: -0.01em;
   }
+
 }
