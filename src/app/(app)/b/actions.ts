@@ -98,7 +98,7 @@ export async function publishCampaign(formData: FormData) {
 // authority in the database — the UI is not the enforcement point.
 // ---------------------------------------------------------------------------
 
-export type DecisionState = { error?: string };
+export type DecisionState = { error?: string; threadId?: string; declined?: boolean };
 
 export async function acceptApplication(
   _prev: DecisionState,
@@ -109,12 +109,18 @@ export async function acceptApplication(
   const campaignId = String(formData.get("campaign_id") ?? "");
 
   const supabase = await createClient();
-  const { error } = await supabase.rpc("accept_application", { p_application_id: id });
+  const { data, error } = await supabase.rpc("accept_application", {
+    p_application_id: id,
+  });
   if (error) return { error: error.message };
 
   revalidatePath(`/b/campaigns/${campaignId}`);
+  revalidatePath("/b/applicants");
   revalidatePath("/b");
-  return {};
+
+  // Hand the new thread back so the card can confirm in place. Money just moved;
+  // the card silently vanishing from the queue is not acknowledgement.
+  return { threadId: typeof data === "string" ? data : undefined };
 }
 
 export async function declineApplication(
@@ -140,6 +146,7 @@ export async function declineApplication(
   if (error) return { error: error.message };
 
   revalidatePath(`/b/campaigns/${campaignId}`);
+  revalidatePath("/b/applicants");
   revalidatePath("/b");
-  return {};
+  return { declined: true };
 }

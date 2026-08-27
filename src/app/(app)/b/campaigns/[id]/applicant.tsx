@@ -55,6 +55,7 @@ export function ApplicantCard({
   slotsLeft: number;
 }) {
   const [declining, setDeclining] = useState(false);
+  const [confirming, setConfirming] = useState(false);
   const [accept, acceptAction, accepting] = useActionState<DecisionState, FormData>(
     acceptApplication,
     {},
@@ -104,30 +105,73 @@ export function ApplicantCard({
       {c.bio ? <p className="type-small text-ash">{c.bio}</p> : null}
 
       <div className="flex flex-col gap-3 border-t border-line pt-3">
-        {a.status === "pending" ? (
+        {accept.threadId ? (
+          <div className="flex flex-wrap items-center justify-between gap-3 rounded-[8px] border border-bone/30 bg-raise-2 p-3.5">
+            <p className="type-small">
+              Accepted. <span className="type-timecode text-bone">{money(a.rate_cents)}</span>{" "}
+              is escrowed for @{c.handle}.
+            </p>
+            <Link href={`/t/${accept.threadId}`}>
+              <Button variant="primary" size="sm">Open thread</Button>
+            </Link>
+          </div>
+        ) : decline.declined ? (
+          <p className="type-small">
+            Declined, and @{c.handle} has been told why.
+          </p>
+        ) : a.status === "pending" ? (
           <>
             <Countdown expiresAt={a.expires_at} initialMs={a.windowMs} />
 
             <FormError>{accept.error || decline.error}</FormError>
 
-            {!declining ? (
-              <div className="flex flex-col gap-2.5 sm:flex-row">
-                <form action={acceptAction} className="sm:flex-1">
-                  <input type="hidden" name="application_id" value={a.id} />
-                  <input type="hidden" name="campaign_id" value={campaignId} />
-                  <Button
-                    type="submit"
-                    variant="primary"
-                    className="w-full"
-                    disabled={accepting || slotsLeft <= 0}
-                  >
-                    {accepting
-                      ? "Accepting…"
-                      : slotsLeft <= 0
-                        ? "No slots left"
+            {confirming ? (
+              /* Accepting moves real money and cannot be undone, so it gets at
+                 least the friction the free, re-approachable decline already
+                 had. The button keeps its name through the confirm — an action
+                 does not get renamed halfway. */
+              <div className="flex flex-col gap-3 rounded-[8px] border border-bone/30 bg-raise-2 p-3.5">
+                <p className="type-small">
+                  Escrow{" "}
+                  <span className="type-timecode text-bone">
+                    {money(a.rate_cents)}
+                  </span>{" "}
+                  to @{c.handle} and open a thread. This can&apos;t be undone,
+                  and it uses one of your {slotsLeft} remaining slot
+                  {slotsLeft === 1 ? "" : "s"}.
+                </p>
+                <div className="flex flex-col gap-2 sm:flex-row">
+                  <form action={acceptAction} className="sm:flex-1">
+                    <input type="hidden" name="application_id" value={a.id} />
+                    <input type="hidden" name="campaign_id" value={campaignId} />
+                    <Button
+                      type="submit"
+                      variant="primary"
+                      className="w-full"
+                      disabled={accepting}
+                    >
+                      {accepting
+                        ? "Escrowing…"
                         : `Accept and escrow ${money(a.rate_cents)}`}
+                    </Button>
+                  </form>
+                  <Button variant="ghost" onClick={() => setConfirming(false)}>
+                    Cancel
                   </Button>
-                </form>
+                </div>
+              </div>
+            ) : !declining ? (
+              <div className="flex flex-col gap-2.5 sm:flex-row">
+                <Button
+                  variant="primary"
+                  className="sm:max-w-[360px] sm:flex-1"
+                  disabled={slotsLeft <= 0}
+                  onClick={() => setConfirming(true)}
+                >
+                  {slotsLeft <= 0
+                    ? "No slots left"
+                    : `Accept and escrow ${money(a.rate_cents)}`}
+                </Button>
                 <Button variant="danger" onClick={() => setDeclining(true)}>
                   Decline
                 </Button>
