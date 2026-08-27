@@ -33,8 +33,16 @@ export default async function ApplicantQueue() {
 
   const rows = data ?? [];
 
+  // "Today" is the rest of the calendar day in UTC, matching the timestamps the
+  // app shows everywhere else. Already sorted nearest-expiry first by the query.
+  const endOfDay = new Date();
+  endOfDay.setUTCHours(23, 59, 59, 999);
+  const expiringToday = rows.filter(
+    (a) => new Date(a.expires_at).getTime() <= endOfDay.getTime(),
+  ).length;
+
   return (
-    <div className="flex flex-col gap-7">
+    <div className="flex flex-col gap-6">
       <div className="flex flex-col gap-2">
         <h1 className="type-display-xl">Waiting on you</h1>
         <p className="text-slate">
@@ -42,6 +50,28 @@ export default async function ApplicantQueue() {
           on its own and shows up in your public response rate.
         </p>
       </div>
+
+      {rows.length > 0 ? (
+        <dl className="grid grid-cols-2 gap-px overflow-hidden rounded-[4px] border border-hairline bg-hairline sm:max-w-sm">
+          <div className="flex flex-col gap-1 bg-card p-4">
+            <dt className="type-micro text-slate">Expiring today</dt>
+            <dd
+              className={
+                "type-timecode text-[32px] leading-none " +
+                (expiringToday > 0 ? "text-tally-live" : "text-graphite")
+              }
+            >
+              {String(expiringToday).padStart(2, "0")}
+            </dd>
+          </div>
+          <div className="flex flex-col gap-1 bg-card p-4">
+            <dt className="type-micro text-slate">Waiting in total</dt>
+            <dd className="type-timecode text-[32px] leading-none">
+              {String(rows.length).padStart(2, "0")}
+            </dd>
+          </div>
+        </dl>
+      ) : null}
 
       {rows.length === 0 ? (
         <EmptyState
