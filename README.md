@@ -129,39 +129,48 @@ Two deliberate choices:
 
 ## Design
 
-Six tokens, dark-first, one theme. Colour is **semantic, never decorative**:
+**Video control room.** The vocabulary of a broadcast switcher, where a tally
+light tells the room what is live right now. Statuses are tally states, numbers
+are timecodes, and the interface stays quiet so the tally colours carry all the
+signal. That suits a product whose whole argument is that state is never
+ambiguous: the design makes state the most legible thing on every screen.
 
 | Token | Hex | Role |
 |---|---|---|
-| Pitch | `#17131C` | Page ground. Warm plum-black, not neutral. |
-| Raise | `#221C29` | Cards. Flat fill, one 1px border. No gradients, no glows, no shadows. |
-| Bone | `#EFEAF2` | Text — **and money**. |
-| Ash | `#8B84A0` | Secondary text and labels. |
-| Flare | `#FF5A3D` | **Time only.** Countdowns, expiry, overdue. Nothing else is ever this colour. |
-| Iris | `#7C6BFF` | **Identity only.** Selection, active state. |
+| bone | `#E9E7E1` | page background |
+| card | `#FFFFFF` | surfaces |
+| graphite | `#16191C` | primary text, headers, primary buttons |
+| slate | `#6B7178` | secondary text, labels |
+| tally-live | `#FF4D2E` | active, in production, urgent |
+| tally-standby | `#E0A62B` | pending, awaiting response |
+| tally-clear | `#3F9E77` | approved, released, done |
+| hairline | `#D3D0C8` | borders |
 
-Two rules do most of the work. **Money has no hue** — it is the most important
-number, so it gets the highest contrast instead, and the escrow chip *fills* as
-the money moves: outlined while held, solid once paid. **Status differentiates by
-shape and fill, not colour** — outlined is open, solid is terminal-and-good, struck
-is terminal-and-over. That is how six colours cover nine statuses without a legend.
+**Tally colours appear only on status indicators, countdowns, and one primary
+action per screen** — never as decorative fill, gradient or background. The
+stock Tailwind ramps are cleared to `initial` in `@theme`, so `bg-gray-800` and
+friends do not resolve at all and a stray one is a visible bug rather than
+silent drift.
 
-**Type:** Archivo Expanded for display, rationed to three instances per screen;
-Instrument Sans for body; JetBrains Mono with tabular figures for every money
-value, view count, countdown and timestamp — so a ticking countdown never shifts
-the layout by a pixel.
+**Type:** Bricolage Grotesque for display (page titles and section headings
+only), Public Sans for body and labels, and **JetBrains Mono for every number in
+the app** — money, view counts, countdowns, dates, rates, slot counts, response
+rates, including numbers inside sentences. Scale 48 / 32 / 24 / 18 / 15 / 13 /
+11; body 15; labels 11 uppercase with wide tracking.
 
-**Signature element — the Spine.** One vertical line down the thread carrying
-messages, state changes and money events in a single chronological order, each
-node stamped with a UTC timecode to the second. There is no separate activity log,
-because splitting the money out of the conversation is the failure this product
-exists to fix. It compresses to a horizontal slot rail on cards and dashboard rows,
-so the same object represents state everywhere.
+**Geometry:** 4px radius everywhere, `rounded-full` only on avatars, 1px
+hairline borders, no drop shadows anywhere.
+
+**Signature element — the tally strip.** A 4px bar down the left edge of every
+card representing a relationship: an application, a thread, a campaign slot. For
+an application inside its response window the bar *is* the window — it drains
+from full to empty across the 48 hours, computed from the real `expires_at` and
+recomputed each second rather than animated on a loop, and switches from
+standby to live under six hours. Under `prefers-reduced-motion` it sits at its
+correct static fill. Everything around it stays quiet.
 
 Responsive to 390px, visible keyboard focus, `prefers-reduced-motion` respected,
-tabular figures to avoid layout shift.
-
----
+CLS 0 on every screen.
 
 ## Stack
 

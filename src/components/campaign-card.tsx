@@ -35,7 +35,6 @@ export function CampaignCard({
       <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:gap-5">
         <div className="flex shrink-0 flex-col gap-2">
           <VerticalCount count={c.video_count} />
-          <span className="type-micro text-slate">{PLATFORM_SHORT[c.platform]}</span>
         </div>
 
         <div className="flex min-w-0 flex-1 flex-col gap-1.5">

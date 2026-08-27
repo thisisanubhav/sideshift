@@ -67,15 +67,12 @@ export function DeliverableFrame({
       </div>
 
       <div className="flex items-center justify-between gap-3 border-t border-hairline p-3">
-        <span className="type-timecode text-[13px] text-slate">
-          v{String(deliverable.version).padStart(2, "0")}
-        </span>
         {href ? (
           <a
             href={href}
             target="_blank"
             rel="noreferrer"
-            className="type-small text-graphite underline underline-offset-4"
+            className="type-small inline-flex min-h-11 items-center text-graphite underline underline-offset-4"
           >
             {deliverable.fileUrl ? "Open the file" : "Open the delivery link"}
           </a>

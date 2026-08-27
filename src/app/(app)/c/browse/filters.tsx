@@ -63,7 +63,7 @@ export function Filters({
         type="button"
         onClick={() => setOpen((v) => !v)}
         aria-expanded={open}
-        className="mb-4 flex items-center justify-between rounded-[4px] border border-hairline bg-card px-3.5 py-2.5 text-[15px] lg:hidden"
+        className="mb-4 flex min-h-11 items-center justify-between rounded-[4px] border border-hairline bg-card px-3.5 text-[15px] lg:hidden"
       >
         <span className="type-micro text-slate">
           Filters{active ? ` · ${active}` : ""}

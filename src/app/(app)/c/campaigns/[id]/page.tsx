@@ -43,7 +43,7 @@ export default async function CampaignDetail({
 
   return (
     <div className="flex flex-col gap-8">
-      <Link href="/c/browse" className="type-small w-fit text-slate hover:text-graphite">
+      <Link href="/c/browse" className="type-small inline-flex min-h-11 w-fit items-center text-slate hover:text-graphite">
         ← All campaigns
       </Link>
 

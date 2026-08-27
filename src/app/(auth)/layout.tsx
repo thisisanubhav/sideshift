@@ -9,7 +9,7 @@ export default function AuthLayout({
   return (
     <div className="flex min-h-dvh flex-col">
       <header className="border-b border-hairline px-5 py-4 sm:px-8">
-        <Link href="/" className="inline-flex" aria-label="SideShift home">
+        <Link href="/" className="inline-flex min-h-11 items-center" aria-label="SideShift home">
           <Wordmark />
         </Link>
       </header>

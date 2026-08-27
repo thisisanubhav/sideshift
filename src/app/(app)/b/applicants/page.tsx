@@ -130,7 +130,7 @@ export default async function ApplicantQueue() {
               <div key={a.id} className="flex flex-col gap-2">
                 <Link
                   href={`/b/campaigns/${camp.id}`}
-                  className="type-micro w-fit text-slate hover:text-graphite"
+                  className="type-micro inline-flex min-h-11 w-fit items-center text-slate hover:text-graphite"
                 >
                   {camp.title} ↗
                 </Link>

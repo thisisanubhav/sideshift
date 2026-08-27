@@ -67,7 +67,7 @@ export default async function ThreadPage({
           to "what is happening now" anywhere on this screen, and no actions up
           here competing with the ones beside the payment they act on. */}
       <header className="flex flex-col gap-3">
-        <Link href={backHref} className="type-small w-fit text-slate hover:text-graphite">
+        <Link href={backHref} className="type-small inline-flex min-h-11 w-fit items-center text-slate hover:text-graphite">
           ← Threads
         </Link>
 

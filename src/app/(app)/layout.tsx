@@ -36,7 +36,11 @@ export default async function AppLayout({
       </a>
       <header className="sticky top-0 z-30 border-b border-hairline bg-bone/95 backdrop-blur">
         <div className="mx-auto flex w-full max-w-6xl items-center gap-4 px-4 py-3 sm:px-6">
-          <Link href={`/${viewer.role === "brand" ? "b" : "c"}`} aria-label="SideShift home">
+          <Link
+            href={`/${viewer.role === "brand" ? "b" : "c"}`}
+            aria-label="SideShift home"
+            className="inline-flex min-h-11 items-center"
+          >
             <Wordmark />
           </Link>
 

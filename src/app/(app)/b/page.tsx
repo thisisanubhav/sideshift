@@ -179,7 +179,7 @@ export default async function BrandDashboard() {
                     <td className="px-4 py-3">
                       <Link
                         href={`/t/${c.id}`}
-                        className="type-timecode text-[15px] text-graphite underline-offset-4 hover:underline"
+                        className="type-timecode inline-flex min-h-11 items-center text-[15px] text-graphite underline-offset-4 hover:underline"
                       >
                         @{c.handle}
                       </Link>

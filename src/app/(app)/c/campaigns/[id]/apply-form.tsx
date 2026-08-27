@@ -108,7 +108,7 @@ export function ApplyForm({
           <button
             type="button"
             onClick={() => setRate(usual)}
-            className="type-small w-fit text-graphite underline underline-offset-4 hover:text-slate"
+            className="type-small inline-flex min-h-11 w-fit items-center text-graphite underline underline-offset-4 hover:text-slate"
           >
             Your usual rate is {money(baseRateCents)} — ask for that instead
           </button>

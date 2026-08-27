@@ -99,7 +99,7 @@ export default async function BrandCampaignPage({
 
   return (
     <div className="flex flex-col gap-8">
-      <Link href="/b" className="type-small w-fit text-slate hover:text-graphite">
+      <Link href="/b" className="type-small inline-flex min-h-11 w-fit items-center text-slate hover:text-graphite">
         ← Your campaigns
       </Link>
 
