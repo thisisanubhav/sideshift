@@ -3,7 +3,7 @@ import { redirect } from "next/navigation";
 import { getViewer, homeFor } from "@/lib/auth";
 import { createClient } from "@/lib/supabase/server";
 import { Wordmark } from "@/components/wordmark";
-import { Button, Chip } from "@/components/ui";
+import { Button, Chip, cn } from "@/components/ui";
 import { money, timecode } from "@/lib/format";
 import { HeroSpine } from "./hero-spine";
 
@@ -14,6 +14,8 @@ type Stats = {
   escrowed_cents: number;
   released_cents: number;
   answered_pct: number;
+  /** Denominator behind answered_pct: 0 means there is no rate to show yet. */
+  decidable_total: number;
 };
 
 export default async function Home() {
@@ -25,6 +27,18 @@ export default async function Home() {
   const supabase = await createClient();
   const { data } = await supabase.rpc("marketplace_stats");
   const s = (Array.isArray(data) ? data[0] : data) as Stats | undefined;
+
+  // A figure with no data is dropped rather than rendered as an empty box.
+  const stats = !s
+    ? []
+    : [
+        { label: "Open briefs", value: s.open_campaigns, text: String(s.open_campaigns) },
+        { label: "Creators", value: s.creators, text: String(s.creators) },
+        { label: "Escrowed now", value: s.escrowed_cents, text: money(s.escrowed_cents) },
+        { label: "Answered in time", value: s.decidable_total, text: `${s.answered_pct}%` },
+      ]
+        .filter((x) => Number(x.value) > 0)
+        .map((x) => ({ label: x.label, value: x.text }));
 
   return (
     <div className="flex min-h-dvh flex-col">
@@ -67,12 +81,16 @@ export default async function Home() {
               </Link>
             </div>
 
-            {s ? (
-              <dl className="mt-3 grid grid-cols-2 gap-px overflow-hidden rounded-[4px] border border-hairline bg-hairline sm:grid-cols-4">
-                <Stat label="Open briefs" value={String(s.open_campaigns)} />
-                <Stat label="Creators" value={String(s.creators)} />
-                <Stat label="Escrowed now" value={money(s.escrowed_cents)} />
-                <Stat label="Answered in time" value={`${s.answered_pct}%`} />
+            {stats.length > 0 ? (
+              <dl
+                className={cn(
+                  "mt-3 grid grid-cols-2 gap-px overflow-hidden rounded-[4px] border border-hairline bg-hairline",
+                  stats.length >= 4 ? "sm:grid-cols-4" : "sm:grid-cols-3",
+                )}
+              >
+                {stats.map((st) => (
+                  <Stat key={st.label} label={st.label} value={st.value} />
+                ))}
               </dl>
             ) : null}
             <p className="type-small text-slate">
@@ -176,9 +194,13 @@ export default async function Home() {
 
 function Stat({ label, value }: { label: string; value: string }) {
   return (
-    <div className="flex flex-col gap-1 bg-graphite p-3.5">
+    <div className="flex flex-col gap-1 bg-card p-3.5">
       <dt className="type-micro text-slate">{label}</dt>
-      <dd className="type-timecode text-[18px] leading-tight">{value}</dd>
+      {/* Colour is explicit, never inherited. This rendered black-on-black
+          when the box was graphite and the value fell back to body colour. */}
+      <dd className="type-timecode text-[18px] leading-tight text-graphite">
+        {value}
+      </dd>
     </div>
   );
 }
