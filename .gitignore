@@ -48,8 +48,6 @@ next-env.d.ts
 research/screenshots/
 .DS_Store
 
-# third-party design tooling, not part of the submission
-.claude/skills/
 
 # impeccable tool state, not part of the submission
 .impeccable/
