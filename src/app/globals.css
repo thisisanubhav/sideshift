@@ -13,6 +13,26 @@
    --------------------------------------------------------------------------- */
 
 @theme {
+  /* Stock Tailwind ramps are cleared FIRST, before the palette is declared.
+     Order matters: `--color-slate-*: initial` wipes the whole `slate`
+     namespace including a bare `--color-slate`, so declaring the palette
+     afterwards is what keeps `text-slate` alive. Clearing these means
+     `bg-gray-800` and friends stop resolving at all, so a stray one is a
+     visible bug rather than silent drift back to shadcn grey. */
+  --color-slate-*: initial;
+  --color-gray-*: initial;
+  --color-zinc-*: initial;
+  --color-neutral-*: initial;
+  --color-stone-*: initial;
+  --color-blue-*: initial;
+  --color-indigo-*: initial;
+  --color-violet-*: initial;
+  --color-purple-*: initial;
+  --color-red-*: initial;
+  --color-amber-*: initial;
+  --color-green-*: initial;
+  --color-emerald-*: initial;
+
   /* Palette — nothing outside this set. */
   --color-bone: #e9e7e1; /* page background */
   --color-card: #ffffff; /* surfaces */
@@ -31,22 +51,6 @@
   --radius-card: 4px;
   --radius-control: 4px;
 
-  /* Nothing may silently fall back to a stock Tailwind ramp. Clearing these
-     means `bg-gray-800` and friends stop resolving at all, so a stray one is a
-     visible bug rather than an invisible drift back to shadcn grey. */
-  --color-slate-*: initial;
-  --color-gray-*: initial;
-  --color-zinc-*: initial;
-  --color-neutral-*: initial;
-  --color-stone-*: initial;
-  --color-blue-*: initial;
-  --color-indigo-*: initial;
-  --color-violet-*: initial;
-  --color-purple-*: initial;
-  --color-red-*: initial;
-  --color-amber-*: initial;
-  --color-green-*: initial;
-  --color-emerald-*: initial;
 }
 
 @layer base {

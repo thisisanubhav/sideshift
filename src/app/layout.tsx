@@ -40,10 +40,11 @@ export default function RootLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html lang="en">
-      <body
-        className={`${bricolage.variable} ${publicSans.variable} ${jetbrains.variable} antialiased`}
-      >
+    <html
+      lang="en"
+      className={`${bricolage.variable} ${publicSans.variable} ${jetbrains.variable}`}
+    >
+      <body className="antialiased">
         {children}
       </body>
     </html>
