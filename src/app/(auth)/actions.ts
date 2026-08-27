@@ -59,10 +59,20 @@ export async function signUp(
     return { error: error.message };
   }
 
+  // GoTrue withholds the session at signup when "Confirm email" is on, but the
+  // auto_confirm_users trigger (migration 0005) has already stamped
+  // email_confirmed_at, so a password sign-in right now succeeds. This keeps the
+  // two-browser walkthrough from stalling on an email nobody will click.
   if (!data.session) {
-    return {
-      notice: `Check ${email} for a confirmation link, then sign in.`,
-    };
+    const { error: signInError } = await supabase.auth.signInWithPassword({
+      email,
+      password,
+    });
+    if (signInError) {
+      return {
+        notice: `Account created. Check ${email} for a confirmation link, then sign in.`,
+      };
+    }
   }
 
   redirect(homeFor(role));

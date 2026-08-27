@@ -213,19 +213,37 @@ Migrations are in `supabase/migrations/` and apply in filename order:
 | `0002_rls.sql` | Row-level security, helper functions, the private storage bucket |
 | `0003_transitions.sql` | State-transition functions, lazy expiry, the responsiveness view |
 | `0004_fix_null_authority_check.sql` | Privilege-escalation fix (see below) |
+| `0005_auto_confirm_signups.sql` | Demo-mode signup with no email round-trip |
 
 Then `supabase/seed.sql` for the demo marketplace: 8 brands, 22 creators, 12 open
 campaigns, 39 applications with real history.
 
-**One manual step:** turn **off** Authentication → Sign In / Providers → Email →
-*Confirm email*. Seeded accounts are pre-confirmed, but a fresh signup will
-otherwise wait on an email that never gets clicked in a demo. Stated here rather
-than silently assumed.
+**No manual dashboard steps.** Everything, including auth behaviour, is in the
+migrations.
+
+That last migration is worth explaining. Supabase ships with "Confirm email" on,
+which means signup returns a user but no session — and the two-browser
+walkthrough stalls on a link nobody clicks during a demo. The usual fix is a
+dashboard toggle, which is invisible to anyone cloning the repo and depends on
+who is logged in. Instead:
+
+> GoTrue decides whether to *issue a session at signup* from its own config, but
+> it decides whether to *permit a sign-in* by reading `email_confirmed_at` off the
+> row. A `BEFORE INSERT` trigger stamps that column, and the signup action signs
+> the user straight in.
+
+Same outcome as the toggle, reproducible from `git clone`, and visible in the
+repo rather than in someone's dashboard.
+
+**It is a demo-mode trade-off and it does mean email addresses are never
+verified.** A production deployment drops `0005` and leaves confirmation on.
+`tests/signup.mjs` proves the flow works end to end.
 
 ### Tests
 
 ```bash
 npm run test:rls      # 9 row-level-security proofs, straight at PostgREST
+npm run test:signup   # 11 checks: fresh signup on both sides, no email round-trip
 npm run test:smoke    # 19 end-to-end checks against the live deploy
 npm run test:thread   # 25 checks driving the full thread lifecycle
 ```
